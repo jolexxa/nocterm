@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:nocterm/nocterm.dart';
+import 'package:nocterm/src/components/focusable.dart';
 import 'package:nocterm/src/framework/terminal_canvas.dart';
 import 'package:nocterm/src/rectangle.dart';
 
@@ -160,7 +161,7 @@ class NoctermTestBinding extends NoctermBinding {
         buffer,
         Rect.fromLTWH(0, 0, size.width.toDouble(), size.height.toDouble()),
       );
-      renderObject.paint(canvas, Offset.zero);
+      renderObject.paintWithContext(canvas, Offset.zero);
     }
 
     // Store the buffer for inspection
@@ -194,6 +195,11 @@ class NoctermTestBinding extends NoctermBinding {
       }
     });
 
+    // Check if this is a FocusableElement
+    if (!handled && element is FocusableElement) {
+      handled = element.handleKeyEvent(event);
+    }
+    
     // If no child handled it, and this element's component can handle keys, try it
     if (!handled && element.component is KeyboardHandler) {
       final handler = element.component as KeyboardHandler;

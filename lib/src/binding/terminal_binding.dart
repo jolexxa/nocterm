@@ -424,7 +424,7 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
         buffer,
         Rect.fromLTWH(0, 0, size.width.toDouble(), size.height.toDouble()),
       );
-      renderObject.paint(canvas, Offset.zero);
+      renderObject.paintWithContext(canvas, Offset.zero);
     }
 
     // Render to terminal

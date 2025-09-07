@@ -135,77 +135,77 @@ class _ScrollDemoState extends State<ScrollDemo> {
       child: Column(
         children: [
           Text('SingleChildScrollView Demo', style: TextStyle(fontWeight: FontWeight.bold)),
-        SizedBox(height: 1),
-        Expanded(
-          child: Row(
-            children: [
-              // Vertical scroll example
-              Expanded(
-                child: Column(
-                  children: [
-                    Text('Vertical Scroll:', style: TextStyle(color: Colors.green)),
-                    SizedBox(height: 1),
-                    Expanded(
-                      child: Container(
+          SizedBox(height: 1),
+          Expanded(
+            child: Row(
+              children: [
+                // Vertical scroll example
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text('Vertical Scroll:', style: TextStyle(color: Colors.green)),
+                      SizedBox(height: 1),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: BoxBorder.all(color: Colors.green),
+                          ),
+                          child: SingleChildScrollView(
+                            controller: scrollController1,
+                            padding: EdgeInsets.all(1),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('ScrollController Info:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(''),
+                                for (int i = 0; i < 50; i++)
+                                  Text('Line $i: This is scrollable content that extends beyond the viewport'),
+                                Text(''),
+                                Text('--- END OF CONTENT ---', style: TextStyle(color: Colors.yellow)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(width: 2),
+
+                // Horizontal scroll example
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text('Horizontal Scroll:', style: TextStyle(color: Colors.blue)),
+                      SizedBox(height: 1),
+                      Container(
+                        height: 5,
                         decoration: BoxDecoration(
-                          border: BoxBorder.all(color: Colors.green),
+                          border: BoxBorder.all(color: Colors.blue),
                         ),
                         child: SingleChildScrollView(
-                          controller: scrollController1,
-                          padding: EdgeInsets.all(1),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
                             children: [
-                              Text('ScrollController Info:', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text(''),
-                              for (int i = 0; i < 50; i++)
-                                Text('Line $i: This is scrollable content that extends beyond the viewport'),
-                              Text(''),
-                              Text('--- END OF CONTENT ---', style: TextStyle(color: Colors.yellow)),
+                              Text(
+                                  'This is a very long line of text that requires horizontal scrolling to read completely. '),
+                              Text('It continues with more content here. '),
+                              Text('And even more content to demonstrate horizontal scrolling capabilities.'),
                             ],
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-
-              SizedBox(width: 2),
-
-              // Horizontal scroll example
-              Expanded(
-                child: Column(
-                  children: [
-                    Text('Horizontal Scroll:', style: TextStyle(color: Colors.blue)),
-                    SizedBox(height: 1),
-                    Container(
-                      height: 5,
-                      decoration: BoxDecoration(
-                        border: BoxBorder.all(color: Colors.blue),
-                      ),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            Text(
-                                'This is a very long line of text that requires horizontal scrolling to read completely. '),
-                            Text('It continues with more content here. '),
-                            Text('And even more content to demonstrate horizontal scrolling capabilities.'),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Component _buildListViewDemo() {
     return Padding(
@@ -220,33 +220,33 @@ class _ScrollDemoState extends State<ScrollDemo> {
                 border: BoxBorder.all(color: Colors.magenta),
               ),
               child: ListView(
-              controller: scrollController2,
-              padding: EdgeInsets.all(1),
-              children: [
-                for (int i = 0; i < 30; i++)
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 1),
-                    decoration: BoxDecoration(
-                      border: BoxBorder(
-                        bottom: BorderSide(color: Colors.gray),
+                controller: scrollController2,
+                padding: EdgeInsets.all(1),
+                children: [
+                  for (int i = 0; i < 30; i++)
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 1),
+                      decoration: BoxDecoration(
+                        border: BoxBorder(
+                          bottom: BorderSide(color: Colors.gray),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Text('[${i.toString().padLeft(2, '0')}]', style: TextStyle(color: Colors.cyan)),
+                          SizedBox(width: 2),
+                          Text('List item $i - Static content'),
+                        ],
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Text('[${i.toString().padLeft(2, '0')}]', style: TextStyle(color: Colors.cyan)),
-                        SizedBox(width: 2),
-                        Text('List item $i - Static content'),
-                      ],
-                    ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Component _buildListViewBuilderDemo() {
     return Padding(
@@ -254,78 +254,78 @@ class _ScrollDemoState extends State<ScrollDemo> {
       child: Column(
         children: [
           Text('ListView.builder Demo (Lazy Loading)', style: TextStyle(fontWeight: FontWeight.bold)),
-        SizedBox(height: 1),
-        Expanded(
-          child: Row(
-            children: [
-              // Standard builder
-              Expanded(
-                child: Column(
-                  children: [
-                    Text('Standard Builder:', style: TextStyle(color: Colors.yellow)),
-                    SizedBox(height: 1),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: BoxBorder.all(color: Colors.yellow),
-                        ),
-                        child: ListView.builder(
-                          itemCount: 1000,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              padding: EdgeInsets.all(1),
-                              child: Text('Item #$index (of 1000) - Efficiently rendered on demand'),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(width: 2),
-
-              // Separated builder
-              Expanded(
-                child: Column(
-                  children: [
-                    Text('Separated Builder:', style: TextStyle(color: Colors.red)),
-                    SizedBox(height: 1),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: BoxBorder.all(color: Colors.red),
-                        ),
-                        child: ListView.separated(
-                          itemCount: 100,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              padding: EdgeInsets.symmetric(vertical: 1),
-                              child: Text('Item $index'),
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return Container(
-                              height: 1,
-                              child: Center(
-                                child: Text('─' * 20, style: TextStyle(color: Colors.gray)),
-                              ),
-                            );
-                          },
+          SizedBox(height: 1),
+          Expanded(
+            child: Row(
+              children: [
+                // Standard builder
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text('Standard Builder:', style: TextStyle(color: Colors.yellow)),
+                      SizedBox(height: 1),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: BoxBorder.all(color: Colors.yellow),
+                          ),
+                          child: ListView.builder(
+                            itemCount: 1000,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                padding: EdgeInsets.all(1),
+                                child: Text('Item #$index (of 1000) - Efficiently rendered on demand'),
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+
+                SizedBox(width: 2),
+
+                // Separated builder
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text('Separated Builder:', style: TextStyle(color: Colors.red)),
+                      SizedBox(height: 1),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: BoxBorder.all(color: Colors.red),
+                          ),
+                          child: ListView.separated(
+                            itemCount: 100,
+                            itemBuilder: (context, index) {
+                              return Container(
+                                padding: EdgeInsets.symmetric(vertical: 1),
+                                child: Text('Item $index'),
+                              );
+                            },
+                            separatorBuilder: (context, index) {
+                              return Container(
+                                height: 1,
+                                child: Center(
+                                  child: Text('─' * 20, style: TextStyle(color: Colors.gray)),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Component _buildListViewWithScrollbar() {
     final controller = ScrollController();
@@ -355,65 +355,66 @@ class _ScrollDemoState extends State<ScrollDemo> {
       child: Column(
         children: [
           Text('Scrollbar Demo', style: TextStyle(fontWeight: FontWeight.bold)),
-        SizedBox(height: 1),
-        Expanded(
-          child: Row(
-            children: [
-              // SingleChildScrollView with scrollbar
-              Expanded(
-                child: Column(
-                  children: [
-                    Text('SingleChildScrollView + Scrollbar:', style: TextStyle(color: Colors.cyan)),
-                    SizedBox(height: 1),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: BoxBorder.all(color: Colors.cyan),
-                        ),
-                        child: Scrollbar(
-                          controller: scrollController3,
-                          thumbVisibility: true,
-                          child: SingleChildScrollView(
+          SizedBox(height: 1),
+          Expanded(
+            child: Row(
+              children: [
+                // SingleChildScrollView with scrollbar
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text('SingleChildScrollView + Scrollbar:', style: TextStyle(color: Colors.cyan)),
+                      SizedBox(height: 1),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: BoxBorder.all(color: Colors.cyan),
+                          ),
+                          child: Scrollbar(
                             controller: scrollController3,
-                            padding: EdgeInsets.all(1),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                for (int i = 0; i < 100; i++) Text('Line $i: Content with visible scrollbar indicator'),
-                              ],
+                            thumbVisibility: true,
+                            child: SingleChildScrollView(
+                              controller: scrollController3,
+                              padding: EdgeInsets.all(1),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  for (int i = 0; i < 100; i++)
+                                    Text('Line $i: Content with visible scrollbar indicator'),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
-              SizedBox(width: 2),
+                SizedBox(width: 2),
 
-              // ListView with scrollbar
-              Expanded(
-                child: Column(
-                  children: [
-                    Text('ListView + Scrollbar:', style: TextStyle(color: Colors.green)),
-                    SizedBox(height: 1),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: BoxBorder.all(color: Colors.green),
+                // ListView with scrollbar
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text('ListView + Scrollbar:', style: TextStyle(color: Colors.green)),
+                      SizedBox(height: 1),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: BoxBorder.all(color: Colors.green),
+                          ),
+                          child: _buildListViewWithScrollbar(),
                         ),
-                        child: _buildListViewWithScrollbar(),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 }

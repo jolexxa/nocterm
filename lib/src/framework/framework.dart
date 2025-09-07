@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:nocterm/src/components/basic.dart';
 import 'package:nocterm/src/rectangle.dart';
 import 'package:nocterm/src/size.dart';
+import 'package:nocterm/src/style.dart';
 
 import 'terminal_canvas.dart';
 
@@ -18,6 +19,7 @@ part 'stateful_component.dart';
 part 'buildable_element.dart';
 part 'keys.dart';
 part 'binding.dart';
+part 'render_error_box.dart';
 
 typedef ComponentBuilder = Component Function(BuildContext context);
 typedef StateSetter = void Function(VoidCallback fn);

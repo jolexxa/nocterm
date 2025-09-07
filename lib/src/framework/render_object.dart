@@ -237,6 +237,9 @@ abstract class RenderObject {
 
   bool _needsLayout = true;
   bool _needsPaint = true;
+  bool _hasLayoutError = false;
+  Object? _lastError;
+  StackTrace? _lastStackTrace;
 
   /// Whether this render object has been laid out and has a size.
   bool get hasSize => _size != null;
@@ -280,14 +283,27 @@ abstract class RenderObject {
   /// The [parentUsesSize] parameter indicates whether the parent depends on
   /// this render object's size for its own layout. This is used for optimization.
   void layout(BoxConstraints constraints, {bool parentUsesSize = false}) {
+    // Always reset error state when layout is called, even if we might skip the actual layout
+    _hasLayoutError = false;
+    _lastError = null;
+    _lastStackTrace = null;
+
     if (!_needsLayout && constraints == _constraints) return;
 
     _constraints = constraints;
     // TODO remove the || true at some point
     if (_needsLayout || _size == null || true) {
-      performLayout();
-      assert(_size != null, 'performLayout() did not set a size');
-      _needsLayout = false;
+      try {
+        performLayout();
+        assert(_size != null, 'performLayout() did not set a size');
+        _needsLayout = false;
+      } catch (e, stack) {
+        _reportException('performLayout', e, stack);
+        // Set a default size to prevent cascading failures
+        _size = constraints.constrain(const Size(10, 5));
+        _needsLayout = false;
+        _hasLayoutError = true;
+      }
     }
   }
 
@@ -329,9 +345,55 @@ abstract class RenderObject {
     // Subclasses override this to paint
   }
 
+  /// Internal paint method with error handling.
+  void paintWithContext(TerminalCanvas canvas, Offset offset) {
+    // If there was a layout error, show error box and return
+    if (_hasLayoutError) {
+      _paintErrorBox(canvas, offset);
+      return;
+    }
+
+    // Clear error info if no layout error
+    if (!_hasLayoutError) {
+      _lastError = null;
+      _lastStackTrace = null;
+    }
+
+    try {
+      paint(canvas, offset);
+    } catch (e, stack) {
+      _reportException('paint', e, stack);
+      // Try to paint an error indicator
+      _paintErrorBox(canvas, offset);
+    }
+  }
+
+  /// Paint an error box when painting fails.
+  void _paintErrorBox(TerminalCanvas canvas, Offset offset) {
+    try {
+      if (hasSize) {
+        final errorBox = RenderTUIErrorBox(
+          message: _hasLayoutError ? 'Layout Error in $runtimeType' : 'Paint Error in $runtimeType',
+          error: _lastError,
+          stackTrace: _lastStackTrace,
+        );
+        errorBox._constraints = constraints;
+        errorBox._size = size;
+        errorBox.paint(canvas, offset);
+      }
+    } catch (_) {
+      // If even error painting fails, give up silently
+    }
+  }
+
   /// Attach this render object to the tree with the given owner.
   void attach(PipelineOwner owner) {
     this.owner = owner;
+    // Clear any error state when attaching to the tree
+    _hasLayoutError = false;
+    _lastError = null;
+    _lastStackTrace = null;
+
     // If we were already marked as needing layout or paint, notify the owner
     if (_needsLayout && parent == null) {
       owner.requestLayout(this);
@@ -398,9 +460,46 @@ abstract class RenderObject {
 
   /// Called during layout to update internal layout state.
   void _layoutWithoutResize() {
-    performLayout();
-    _needsLayout = false;
-    markNeedsPaint();
+    // Reset error state when attempting layout
+    _hasLayoutError = false;
+    _lastError = null;
+    _lastStackTrace = null;
+
+    try {
+      performLayout();
+      _needsLayout = false;
+      markNeedsPaint();
+    } catch (e, stack) {
+      _reportException('performLayout', e, stack);
+      // Mark as laid out to prevent infinite loops
+      _needsLayout = false;
+      _hasLayoutError = true;
+      // Set a default size if not set
+      if (_size == null && _constraints != null) {
+        _size = _constraints!.constrain(const Size(20, 5));
+      }
+    }
+  }
+
+  /// Report an exception that occurred during rendering.
+  void _reportException(String method, Object exception, StackTrace stack) {
+    // Report to stderr (will be caught by zone)
+    print('Exception in RenderObject.$method: $exception');
+    print('Stack trace: $stack');
+
+    // Store the error details
+    _lastError = exception;
+    _lastStackTrace = stack;
+
+    // Replace this render object with an error box if possible
+    _replaceWithErrorBox(exception, stack);
+  }
+
+  /// Replace this render object with an error box.
+  /// This is a best-effort operation that may not always be possible.
+  void _replaceWithErrorBox(Object exception, StackTrace stack) {
+    // This will be overridden by specific render object types
+    // that can actually perform the replacement
   }
 
   /// Get the depth of this node in the tree (for sorting)
@@ -758,12 +857,12 @@ class MultiChildRenderObjectElement extends RenderObjectElement {
   /// the element itself is not a RenderObjectElement (e.g., StatelessComponent).
   RenderObject? _findLastRenderObjectDescendant(Element element) {
     RenderObject? result;
-    
+
     // If this is a RenderObjectElement, return its render object
     if (element is RenderObjectElement) {
       return element.renderObject;
     }
-    
+
     // Otherwise, traverse children to find the last render object
     element.visitChildren((Element child) {
       final RenderObject? childRenderObject = _findLastRenderObjectDescendant(child);
@@ -771,7 +870,7 @@ class MultiChildRenderObjectElement extends RenderObjectElement {
         result = childRenderObject;
       }
     });
-    
+
     return result;
   }
 
