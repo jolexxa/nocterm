@@ -34,6 +34,10 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
   final _keyboardEventController = StreamController<KeyboardEvent>.broadcast();
   final _inputParser = InputParser();
   final _mouseEventController = StreamController<MouseEvent>.broadcast();
+  
+  // Event-driven loop support
+  final _eventLoopController = StreamController<void>.broadcast();
+  Stream<void> get _eventLoopStream => _eventLoopController.stream;
   StreamSubscription? _inputSubscription;
   StreamSubscription? _sigwinchSubscription;
   Size? _lastKnownSize;
@@ -294,9 +298,27 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
     drawFrame();
 
     // Keep the app running until shutdown is called
-    while (!_shouldExit) {
-      await Future.delayed(const Duration(milliseconds: 16)); // ~60 FPS max
-    }
+    // Use a completer-based approach for truly event-driven behavior
+    final exitCompleter = Completer<void>();
+    
+    // Listen to the event stream
+    final subscription = _eventLoopStream.listen((_) {
+      // Events are handled by scheduleFrame, nothing to do here
+    });
+    
+    // Check periodically for exit condition (much less frequently)
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_shouldExit) {
+        timer.cancel();
+        subscription.cancel();
+        if (!exitCompleter.isCompleted) {
+          exitCompleter.complete();
+        }
+      }
+    });
+    
+    // Wait until we should exit
+    await exitCompleter.future;
   }
 
   /// Shutdown the terminal and cleanup
@@ -308,6 +330,12 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
     _inputController.close();
     _keyboardEventController.close();
     _mouseEventController.close();
+    
+    // Wake up event loop one last time before closing
+    if (!_eventLoopController.isClosed) {
+      _eventLoopController.add(null);
+      _eventLoopController.close();
+    }
 
     // Stop hot reload if it was initialized
     shutdownWithHotReload();
@@ -345,6 +373,11 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
       drawFrame();
       _frameTimer = null;
     });
+    
+    // Wake up the event loop
+    if (!_eventLoopController.isClosed) {
+      _eventLoopController.add(null);
+    }
   }
 
   @override
