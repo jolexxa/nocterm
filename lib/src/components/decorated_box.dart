@@ -416,12 +416,12 @@ class RenderDecoratedBox extends RenderObject with RenderObjectWithChildMixin<Re
       _paintDecoration(canvas, offset);
       if (child != null) {
         final BoxParentData childParentData = child!.parentData as BoxParentData;
-        child!.paint(canvas, offset + childParentData.offset);
+        child!.paintWithContext(canvas, offset + childParentData.offset);
       }
     } else {
       if (child != null) {
         final BoxParentData childParentData = child!.parentData as BoxParentData;
-        child!.paint(canvas, offset + childParentData.offset);
+        child!.paintWithContext(canvas, offset + childParentData.offset);
       }
       _paintDecoration(canvas, offset);
     }

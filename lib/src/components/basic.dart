@@ -230,6 +230,13 @@ class Flexible extends ParentDataComponent<FlexParentData> {
   }) : super(child: child, data: FlexParentData(flex: flex, fit: fit));
 }
 
+/// Proxy component that wraps a single child
+abstract class ProxyComponent extends Component {
+  const ProxyComponent({super.key, required this.child});
+
+  final Component child;
+}
+
 /// Component that applies parent data to its child
 class ParentDataComponent<T extends ParentData> extends ProxyComponent {
   const ParentDataComponent({
@@ -241,80 +248,7 @@ class ParentDataComponent<T extends ParentData> extends ProxyComponent {
   final T data;
 
   @override
-  ParentDataElement<T> createElement() => ParentDataElement<T>(this);
-}
-
-/// Proxy component that wraps a single child
-abstract class ProxyComponent extends Component {
-  const ProxyComponent({super.key, required this.child});
-
-  final Component child;
-}
-
-/// Element that manages parent data for its child
-class ParentDataElement<T extends ParentData> extends Element {
-  ParentDataElement(ParentDataComponent<T> component) : super(component);
-
-  @override
-  ParentDataComponent<T> get component => super.component as ParentDataComponent<T>;
-
-  Element? _child;
-
-  @override
-  void mount(Element? parent, dynamic newSlot) {
-    super.mount(parent, newSlot);
-    _child = updateChild(null, component.child, null);
-    _updateParentData();
-  }
-
-  @override
-  void update(Component newComponent) {
-    super.update(newComponent);
-    assert(component == newComponent);
-    _child = updateChild(_child, (newComponent as ParentDataComponent<T>).child, null);
-  }
-
-  void _updateParentData() {
-    // Apply parent data to the child's render object
-    void applyParentData(Element element) {
-      if (element is RenderObjectElement) {
-        // Don't override existing parent data, just set it if it's null
-        // The parent's setupParentData will be called to ensure correct type
-        element.renderObject.parentData = component.data;
-      } else {
-        element.visitChildren(applyParentData);
-      }
-    }
-
-    if (_child != null) {
-      applyParentData(_child!);
-    }
-  }
-
-  @override
-  void performRebuild() {
-    if (_child != null) {
-      _child!.performRebuild();
-    }
-    _updateParentData();
-  }
-
-  @override
-  void visitChildren(ElementVisitor visitor) {
-    if (_child != null) {
-      visitor(_child!);
-    }
-  }
-
-  @override
-  void detachRenderObject() {
-    // Nothing to do
-  }
-
-  @override
-  void attachRenderObject(dynamic newSlot) {
-    // Nothing to do
-  }
+  Element createElement() => ParentDataElement<T>(this);
 }
 
 // BoxDecoration and related classes are now in decorated_box.dart

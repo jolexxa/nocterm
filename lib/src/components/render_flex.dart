@@ -121,7 +121,7 @@ class RenderFlex extends RenderObject with ContainerRenderObjectMixin<RenderObje
     return direction == Axis.horizontal
         ? BoxConstraints(
             minWidth: 0,
-            maxWidth: maxMainAxisExtent ?? double.infinity,  // Pass infinity for non-flex children
+            maxWidth: maxMainAxisExtent ?? double.infinity, // Pass infinity for non-flex children
             minHeight: 0,
             maxHeight: constraints.maxHeight,
           )
@@ -129,7 +129,7 @@ class RenderFlex extends RenderObject with ContainerRenderObjectMixin<RenderObje
             minWidth: 0,
             maxWidth: constraints.maxWidth,
             minHeight: 0,
-            maxHeight: maxMainAxisExtent ?? double.infinity,  // Pass infinity for non-flex children
+            maxHeight: maxMainAxisExtent ?? double.infinity, // Pass infinity for non-flex children
           );
   }
 
@@ -141,6 +141,11 @@ class RenderFlex extends RenderObject with ContainerRenderObjectMixin<RenderObje
     double maxCrossAxisExtent = 0;
     final double maxMainAxisExtent = direction == Axis.horizontal ? constraints.maxWidth : constraints.maxHeight;
     final bool canFlex = maxMainAxisExtent.isFinite;
+
+    // Throw if infinite constraints along main axis
+    if (maxMainAxisExtent == double.infinity) {
+      throw Exception('RenderFlex has infinite constraints along the main axis');
+    }
 
     // First pass: layout non-flexible children and count total flex
     for (final child in children) {
@@ -306,7 +311,7 @@ class RenderFlex extends RenderObject with ContainerRenderObjectMixin<RenderObje
     // Paint each child using the pre-calculated positions from performLayout
     for (final child in children) {
       final FlexParentData childParentData = child.parentData as FlexParentData;
-      child.paint(canvas, offset + childParentData.offset);
+      child.paintWithContext(canvas, offset + childParentData.offset);
     }
 
     // Paint overflow indicator if needed

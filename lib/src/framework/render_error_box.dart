@@ -27,7 +27,7 @@ class RenderTUIErrorBox extends RenderObject with RenderObjectWithChildMixin<Ren
   final StackTrace? _stackTrace;
 
   /// Maximum size to use when constraints are unbounded
-  static const double _kMaxSize = 100000.0;
+  static const double _kMaxSize = 100.0;
 
   @override
   void performLayout() {

@@ -14,6 +14,7 @@ part 'element.dart';
 part 'build_context.dart';
 part 'build_owner.dart';
 part 'render_object.dart';
+part 'proxy_element.dart';
 part 'stateless_component.dart';
 part 'stateful_component.dart';
 part 'buildable_element.dart';
