@@ -23,3 +23,5 @@ export 'src/framework/framework.dart';
 
 export 'src/components/spacer.dart';
 export 'src/process/pty_controller.dart';
+export 'src/components/stack.dart';
+export 'src/components/render_stack.dart' show Stack;

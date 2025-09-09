@@ -4,6 +4,9 @@ import 'package:nocterm/src/framework/terminal_canvas.dart';
 import 'render_text.dart';
 import 'render_flex.dart';
 
+// Import from stack.dart for alignment and text direction
+import 'stack.dart' show AlignmentGeometry, Alignment, TextDirection;
+
 // Container is now defined in decorated_box.dart with full decoration support
 export 'decorated_box.dart'
     show
@@ -315,34 +318,7 @@ class Matrix4 {
   const Matrix4.identity();
 }
 
-// Alignment classes
-abstract class AlignmentGeometry {
-  const AlignmentGeometry();
-}
-
-class Alignment extends AlignmentGeometry {
-  const Alignment(this.x, this.y);
-
-  final double x;
-  final double y;
-
-  static const Alignment topLeft = Alignment(-1.0, -1.0);
-  static const Alignment topCenter = Alignment(0.0, -1.0);
-  static const Alignment topRight = Alignment(1.0, -1.0);
-  static const Alignment centerLeft = Alignment(-1.0, 0.0);
-  static const Alignment center = Alignment(0.0, 0.0);
-  static const Alignment centerRight = Alignment(1.0, 0.0);
-  static const Alignment bottomLeft = Alignment(-1.0, 1.0);
-  static const Alignment bottomCenter = Alignment(0.0, 1.0);
-  static const Alignment bottomRight = Alignment(1.0, 1.0);
-
-  /// Returns the offset that is this fraction within the given size.
-  Offset alongOffset(Offset other) {
-    final double centerX = other.dx / 2.0;
-    final double centerY = other.dy / 2.0;
-    return Offset(centerX + x * centerX, centerY + y * centerY);
-  }
-}
+// Alignment classes are now exported from stack.dart
 
 // Layout enums
 enum Axis { horizontal, vertical }
@@ -352,8 +328,6 @@ enum MainAxisAlignment { start, end, center, spaceBetween, spaceAround, spaceEve
 enum MainAxisSize { min, max }
 
 enum CrossAxisAlignment { start, end, center, stretch, baseline }
-
-enum TextDirection { ltr, rtl }
 
 enum VerticalDirection { up, down }
 
