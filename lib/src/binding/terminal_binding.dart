@@ -219,7 +219,6 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
 
   /// Route a keyboard event through the component tree
   void _routeKeyboardEvent(KeyboardEvent event) {
-    print('DEBUG: _routeKeyboardEvent called with event: $event');
     if (rootElement == null) return;
 
     // Try to dispatch the event to the root element
