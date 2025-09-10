@@ -16,6 +16,7 @@ export 'src/components/focusable.dart';
 export 'src/components/focus_scope.dart';
 export 'src/components/block_focus.dart';
 export 'src/components/scroll_controller.dart';
+export 'src/components/auto_scroll_controller.dart';
 export 'src/components/single_child_scroll_view.dart';
 export 'src/components/list_view.dart';
 export 'src/components/text_field.dart';

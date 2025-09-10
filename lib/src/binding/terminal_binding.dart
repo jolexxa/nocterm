@@ -42,6 +42,9 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
   // Event-driven loop support
   final _eventLoopController = StreamController<void>.broadcast();
   Stream<void> get _eventLoopStream => _eventLoopController.stream;
+  
+  // Post-frame callbacks
+  final List<VoidCallback> _postFrameCallbacks = [];
   StreamSubscription? _inputSubscription;
   StreamSubscription? _sigwinchSubscription;
   StreamSubscription? _sigintSubscription;
@@ -529,6 +532,23 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
       }
     }
     terminal.flush();
+    
+    // Execute post-frame callbacks
+    final callbacks = List<VoidCallback>.from(_postFrameCallbacks);
+    _postFrameCallbacks.clear();
+    for (final callback in callbacks) {
+      callback();
+    }
+  }
+  
+  /// Schedules a callback to be executed after the next frame is drawn.
+  /// 
+  /// This is useful for performing actions that depend on the layout being
+  /// complete, such as scrolling to a specific position after adding content.
+  void addPostFrameCallback(VoidCallback callback) {
+    _postFrameCallbacks.add(callback);
+    // Schedule a frame if one isn't already scheduled
+    scheduleFrame();
   }
 }
 
