@@ -130,10 +130,8 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
             drawFrame();
           }
 
-          // Exit on Ctrl+C or Escape
-          if (event.matches(LogicalKey.keyC, ctrl: true)) {
-            shutdown();
-          }
+          // Note: Ctrl+C is handled by SIGINT signal handler, not here
+          // This prevents double-handling and ensures proper cleanup
         } else if (inputEvent is MouseInputEvent) {
           final event = inputEvent.event;
           // Add to mouse event stream
@@ -175,17 +173,31 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
     // Listen for termination signals to ensure cleanup runs
     if (Platform.isLinux || Platform.isMacOS) {
       // Handle SIGINT (Ctrl+C)
-      _sigintSubscription = ProcessSignal.sigint.watch().listen((_) {
+      _sigintSubscription = ProcessSignal.sigint.watch().listen((_) async {
         // Perform cleanup before exit
         shutdown();
+        
+        // CRITICAL: Ensure all terminal cleanup commands are sent
+        // Some terminals buffer output, so we need to flush multiple times
+        await stdout.flush();
+        
+        // Give a small delay to ensure the terminal processes the commands
+        // This is especially important for mouse tracking disable sequences
+        await Future.delayed(const Duration(milliseconds: 50));
+        
         // Exit the process
         exit(0);
       });
 
       // Handle SIGTERM (kill command)
-      _sigtermSubscription = ProcessSignal.sigterm.watch().listen((_) {
+      _sigtermSubscription = ProcessSignal.sigterm.watch().listen((_) async {
         // Perform cleanup before exit
         shutdown();
+        
+        // Ensure cleanup completes
+        await stdout.flush();
+        await Future.delayed(const Duration(milliseconds: 50));
+        
         // Exit the process
         exit(0);
       });
@@ -413,6 +425,11 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
       stdout.write('\x1B[?1006l'); // Disable SGR mouse mode
       stdout.write('\x1B[?1002l'); // Disable button event tracking
       stdout.write('\x1B[?1000l'); // Disable basic mouse tracking
+      
+      // Send a terminal reset sequence as a final safety measure
+      // This helps ensure the terminal is in a clean state
+      stdout.write('\x1B[c'); // Reset Device Attributes (soft reset)
+      
       stdout.flush();
 
       terminal.clear();
