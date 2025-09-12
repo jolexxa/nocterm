@@ -1,18 +1,17 @@
 import 'dart:async';
 import '../framework/framework.dart';
 import '../components/basic.dart';
-import '../components/render_stack.dart' show Stack;
-import '../components/stack.dart' show Positioned, Alignment;
 import '../components/keyboard_listener.dart';
-import '../components/block_focus.dart';
+import '../components/stack.dart' show Alignment;
 import '../keyboard/logical_key.dart';
 import '../style.dart';
 import 'route.dart';
 import 'route_settings.dart';
 import 'pop_behavior.dart';
 import 'navigator_observer.dart';
+import 'overlay.dart';
 
-/// A widget that manages a stack of routes
+/// A widget that manages a stack of routes using an overlay
 class Navigator extends StatefulComponent {
   /// The initial home route
   final Component? home;
@@ -59,16 +58,18 @@ class Navigator extends StatefulComponent {
   /// Get the navigator state from the context (throws if not found)
   static NavigatorState of(BuildContext context) {
     final NavigatorState? navigator = maybeOf(context);
-    assert(navigator != null, 'No TuiNavigator found in context');
+    assert(navigator != null, 'No Navigator found in context');
     return navigator!;
   }
 }
 
-/// State for the TuiNavigator
+/// State for the Navigator
 class NavigatorState extends State<Navigator> {
-  final List<_RouteEntry> _routeStack = [];
-  final StreamController<void> _navigationStream = StreamController.broadcast();
+  final List<Route> _routes = [];
+  final GlobalKey<OverlayState> _overlayKey = GlobalKey<OverlayState>();
   final Map<Route, Completer<dynamic>> _routeCompleters = {};
+
+  OverlayState? get _overlay => _overlayKey.currentState;
 
   @override
   void initState() {
@@ -78,7 +79,9 @@ class NavigatorState extends State<Navigator> {
 
   @override
   void dispose() {
-    _navigationStream.close();
+    for (final route in _routes) {
+      route.dispose();
+    }
     super.dispose();
   }
 
@@ -87,22 +90,22 @@ class NavigatorState extends State<Navigator> {
       _buildInitialRouteStack(component.initialRoute!);
     } else if (component.home != null) {
       final route = PageRoute(
-        component: component.home!,
+        builder: (context) => component.home!,
         settings: const RouteSettings(name: '/'),
       );
-      _routeStack.add(_RouteEntry(route));
+      _installRoute(route);
     } else if (component.routes != null && component.routes!.containsKey('/')) {
       final route = PageRoute(
-        component: component.routes!['/']!(context),
+        builder: component.routes!['/']!,
         settings: const RouteSettings(name: '/'),
       );
-      _routeStack.add(_RouteEntry(route));
+      _installRoute(route);
     }
 
     // Notify observers
-    for (final entry in _routeStack) {
+    for (final route in _routes) {
       for (final observer in component.observers) {
-        observer.didPush(entry.route, null);
+        observer.didPush(route, null);
       }
     }
   }
@@ -113,10 +116,12 @@ class NavigatorState extends State<Navigator> {
     // Always start with home route if available
     if (component.home != null || (component.routes?.containsKey('/') ?? false)) {
       final homeRoute = PageRoute(
-        component: component.home ?? component.routes!['/']!(context),
+        builder: component.home != null 
+            ? (context) => component.home!
+            : component.routes!['/']!,
         settings: const RouteSettings(name: '/'),
       );
-      _routeStack.add(_RouteEntry(homeRoute));
+      _installRoute(homeRoute);
     }
 
     // Build up the route stack
@@ -125,7 +130,7 @@ class NavigatorState extends State<Navigator> {
       currentPath += '/$segment';
       final route = _createRoute(RouteSettings(name: currentPath));
       if (route != null) {
-        _routeStack.add(_RouteEntry(route));
+        _installRoute(route);
       }
     }
   }
@@ -136,7 +141,7 @@ class NavigatorState extends State<Navigator> {
       final builder = component.routes![settings.name];
       if (builder != null) {
         return PageRoute(
-          component: builder(context),
+          builder: builder,
           settings: settings,
         );
       }
@@ -156,15 +161,24 @@ class NavigatorState extends State<Navigator> {
     return null;
   }
 
+  void _installRoute(Route route) {
+    route.navigatorState = this;
+    route.install();
+    _routes.add(route);
+  }
+
   /// Push a new route onto the stack
   Future<T?> push<T>(Route<T> route) {
-    setState(() {
-      _routeStack.add(_RouteEntry(route));
-    });
+    _installRoute(route);
+    
+    // Add overlay entries to the overlay
+    if (_overlay != null) {
+      _overlay!.insertAll(route.overlayEntries);
+    }
 
     // Notify observers
     for (final observer in component.observers) {
-      observer.didPush(route, _routeStack.length > 1 ? _routeStack[_routeStack.length - 2].route : null);
+      observer.didPush(route, _routes.length > 1 ? _routes[_routes.length - 2] : null);
     }
 
     final completer = Completer<T?>();
@@ -173,11 +187,9 @@ class NavigatorState extends State<Navigator> {
   }
 
   /// Push a component directly onto the navigation stack.
-  ///
-  /// Returns a Future that completes with the result when the route is popped.
   Future<T?> pushComponent<T>(Component component, {String? name}) {
     final route = PageRoute<T>(
-      component: component,
+      builder: (context) => component,
       settings: RouteSettings(name: name),
     );
     return push(route);
@@ -195,115 +207,42 @@ class NavigatorState extends State<Navigator> {
     return push(route as Route<T>);
   }
 
-  /// Replace the current route with a new one.
-  ///
-  /// The [result] parameter will be passed to the previous route's future.
-  /// Returns a Future that completes with the result when the new route is popped.
-  Future<T?> pushReplacement<T, TO>(Route<T> route, {TO? result}) {
-    if (_routeStack.isNotEmpty) {
-      final oldRoute = _routeStack.last.route;
-
-      setState(() {
-        _routeStack.removeLast();
-        _routeStack.add(_RouteEntry(route));
-      });
-
-      // Notify observers
-      for (final observer in component.observers) {
-        observer.didReplace(newRoute: route, oldRoute: oldRoute);
-      }
-
-      // Complete the old route's future
-      if (_routeCompleters.containsKey(oldRoute)) {
-        _routeCompleters[oldRoute]!.complete(result);
-        _routeCompleters.remove(oldRoute);
-      }
-    } else {
-      return push(route);
-    }
-
-    final completer = Completer<T?>();
-    _routeCompleters[route] = completer;
-    return completer.future;
-  }
-
-  /// Replace with a named route
-  Future<T?> pushReplacementNamed<T, TO>(String name, {Object? arguments, TO? result}) {
-    final settings = RouteSettings(name: name, arguments: arguments);
-    final route = _createRoute(settings);
-
-    if (route == null) {
-      throw FlutterError('Could not find a route named "$name"');
-    }
-
-    return pushReplacement(route as Route<T>, result: result);
-  }
-
   /// Pop the current route off the navigation stack.
-  ///
-  /// The [result] will be passed to the route's future.
-  /// Does nothing if there's only one route in the stack.
   void pop<T>([T? result]) {
     if (!canPop()) return;
 
-    final route = _routeStack.last.route;
+    final route = _routes.last;
 
-    setState(() {
-      _routeStack.removeLast();
-    });
+    // Remove the route
+    _routes.removeLast();
+    
+    // Remove overlay entries
+    for (final entry in route.overlayEntries) {
+      entry.remove();
+    }
+    
+    // Dispose the route
+    route.dispose();
 
     // Notify observers
     for (final observer in component.observers) {
-      observer.didPop(route, _routeStack.isNotEmpty ? _routeStack.last.route : null);
+      observer.didPop(route, _routes.isNotEmpty ? _routes.last : null);
     }
 
-    // Complete the route's future
+    // Complete the route's future after the current frame
     if (_routeCompleters.containsKey(route)) {
-      _routeCompleters[route]!.complete(result);
+      final completer = _routeCompleters[route]!;
       _routeCompleters.remove(route);
+      // Use scheduleMicrotask to defer completion
+      Future.microtask(() => completer.complete(result));
     }
-  }
-
-  /// Pop routes until the predicate returns true.
-  ///
-  /// The [predicate] is called with each route starting from the top of the stack.
-  /// Stops when predicate returns true or the stack has only one route.
-  void popUntil(bool Function(Route) predicate) {
-    while (_routeStack.isNotEmpty && !predicate(_routeStack.last.route)) {
-      pop();
-    }
-  }
-
-  /// Push a new route and remove all routes until predicate returns true.
-  ///
-  /// This is useful for resetting the navigation stack to a known state.
-  Future<T?> pushAndRemoveUntil<T>(Route<T> route, bool Function(Route) predicate) {
-    // Remove routes until predicate is true
-    while (_routeStack.isNotEmpty && !predicate(_routeStack.last.route)) {
-      final oldRoute = _routeStack.removeLast().route;
-
-      // Notify observers
-      for (final observer in component.observers) {
-        observer.didRemove(oldRoute, null);
-      }
-
-      // Complete the old route's future
-      if (_routeCompleters.containsKey(oldRoute)) {
-        _routeCompleters[oldRoute]!.complete(null);
-        _routeCompleters.remove(oldRoute);
-      }
-    }
-
-    return push(route);
   }
 
   /// Check if the current route can be popped.
-  ///
-  /// Returns false if there's only one route or if the PopBehavior prevents it.
   bool canPop() {
-    if (_routeStack.length <= 1) return false;
+    if (_routes.length <= 1) return false;
 
-    final currentRoute = _routeStack.last.route;
+    final currentRoute = _routes.last;
 
     // Check route's own canPop
     if (!currentRoute.canPop()) return false;
@@ -326,7 +265,7 @@ class NavigatorState extends State<Navigator> {
     double? height,
   }) {
     final route = ModalRoute<T>(
-      component: builder(context),
+      builder: builder,
       settings: const RouteSettings(name: '<dialog>'),
       barrierDismissible: barrierDismissible,
       decoration: decoration ??
@@ -345,7 +284,7 @@ class NavigatorState extends State<Navigator> {
   bool _handleKeyPress(LogicalKey key) {
     if (component.popBehavior.shouldPop(key)) {
       // Check if current route is modal with barrierDismissible
-      final currentRoute = _routeStack.last.route;
+      final currentRoute = _routes.last;
       if (currentRoute is ModalRoute && !currentRoute.barrierDismissible) {
         return false; // Don't pop if barrier is not dismissible
       }
@@ -369,105 +308,19 @@ class NavigatorState extends State<Navigator> {
 
   @override
   Component build(BuildContext context) {
-    if (_routeStack.isEmpty) {
-      return Container(
-        child: const Center(
-          child: Text('No routes'),
-        ),
-      );
+    // Get all overlay entries from all routes
+    final List<OverlayEntry> allEntries = [];
+    for (final route in _routes) {
+      allEntries.addAll(route.overlayEntries);
     }
 
-    // Find all modal routes at the top of the stack
-    int firstModalIndex = _routeStack.length;
-    for (int i = _routeStack.length - 1; i >= 0; i--) {
-      if (_routeStack[i].route.isModal) {
-        firstModalIndex = i;
-      } else {
-        break;
-      }
-    }
-
-    // Build the component tree
-    if (firstModalIndex < _routeStack.length) {
-      // We have modals to render
-      final List<Component> stackChildren = [];
-
-      // Render the last non-modal route as background (fill the entire screen)
-      // Wrap it in BlockFocus to prevent keyboard events from reaching it
-      if (firstModalIndex > 0) {
-        stackChildren.add(
-          Positioned.fill(
-            child: BlockFocus(
-              blocking: true,
-              child: _routeStack[firstModalIndex - 1].route.component,
-            ),
-          ),
-        );
-      } else {
-        // If the first route is a modal, we need some background
-        stackChildren.add(
-          Positioned.fill(
-            child: Container(),
-          ),
-        );
-      }
-
-      // Render each modal
-      for (int i = firstModalIndex; i < _routeStack.length; i++) {
-        final route = _routeStack[i].route;
-        if (route is ModalRoute) {
-          // Add modal content
-          Component modalContent = route.component;
-
-          // Apply decoration if provided
-          if (route.decoration != null) {
-            modalContent = DecoratedBox(
-              decoration: route.decoration!,
-              child: modalContent,
-            );
-          }
-
-          // Apply size constraints if provided
-          if (route.width != null || route.height != null) {
-            modalContent = SizedBox(
-              width: route.width,
-              height: route.height,
-              child: modalContent,
-            );
-          }
-
-          // Apply alignment - always use Positioned.fill for proper Stack positioning
-          stackChildren.add(
-            Positioned.fill(
-              child: Align(
-                alignment: route.alignment,
-                child: modalContent,
-              ),
-            ),
-          );
-        }
-      }
-
-      // Wrap the stack in a KeyboardListener that doesn't block events
-      return KeyboardListener(
-        onKeyEvent: _handleKeyPress,
-        autofocus: true,
-        child: Stack(children: stackChildren),
-      );
-    }
-
-    // No modals, just render the current route
     return KeyboardListener(
       onKeyEvent: _handleKeyPress,
       autofocus: true,
-      child: _routeStack.last.route.component,
+      child: Overlay(
+        key: _overlayKey,
+        initialEntries: allEntries,
+      ),
     );
   }
-}
-
-/// Internal class to track route entries
-class _RouteEntry {
-  final Route route;
-
-  _RouteEntry(this.route);
 }
