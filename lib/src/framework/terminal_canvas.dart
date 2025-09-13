@@ -43,12 +43,24 @@ class TerminalCanvas {
       }
 
       // Set the main cell
+      final cellX = area.left.round() + currentColumn;
+      final cellY = area.top.round() + y;
+
+      // Get existing cell to preserve background if needed
+      final existingCell = buffer.getCell(cellX, cellY);
+      final effectiveStyle = style ?? const TextStyle();
+
+      // If no background is set in the style, preserve the existing background
+      final finalStyle = effectiveStyle.backgroundColor == null && existingCell != null
+          ? effectiveStyle.copyWith(backgroundColor: existingCell.style.backgroundColor)
+          : effectiveStyle;
+
       buffer.setCell(
-        area.left.round() + currentColumn,
-        area.top.round() + y,
+        cellX,
+        cellY,
         Cell(
           char: char,
-          style: style ?? const TextStyle(),
+          style: finalStyle,
         ),
       );
 
@@ -57,12 +69,24 @@ class TerminalCanvas {
       if (width == 2 && currentColumn + 1 < area.width) {
         // Mark the cell as occupied by the emoji's second half
         // We use a special marker that won't be rendered
+        final nextCellX = area.left.round() + currentColumn + 1;
+        final nextCellY = area.top.round() + y;
+
+        // Get existing cell to preserve background if needed
+        final nextExistingCell = buffer.getCell(nextCellX, nextCellY);
+        final nextEffectiveStyle = style ?? const TextStyle();
+
+        // If no background is set in the style, preserve the existing background
+        final nextFinalStyle = nextEffectiveStyle.backgroundColor == null && nextExistingCell != null
+            ? nextEffectiveStyle.copyWith(backgroundColor: nextExistingCell.style.backgroundColor)
+            : nextEffectiveStyle;
+
         buffer.setCell(
-          area.left.round() + currentColumn + 1,
-          area.top.round() + y,
+          nextCellX,
+          nextCellY,
           Cell(
             char: '\u200B', // Zero-width space as a marker
-            style: style ?? const TextStyle(),
+            style: nextFinalStyle,
           ),
         );
       }
