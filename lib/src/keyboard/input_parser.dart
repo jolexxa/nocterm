@@ -75,12 +75,11 @@ class InputParser {
             if (mouseEvent != null) {
               return (MouseInputEvent(mouseEvent), terminatorIndex + 1);
             } else {
-              // Skip this unparseable event to prevent buffer buildup
-              // Return a dummy event just to consume the bytes
-              return (KeyboardInputEvent(KeyboardEvent(
-                logicalKey: LogicalKey(0, 'unknown'),
-                modifiers: const ModifierKeys(),
-              )), terminatorIndex + 1);
+              // Skip this unparseable mouse event - don't convert to keyboard event
+              // Just consume the bytes to prevent buffer buildup
+              _buffer.removeRange(0, terminatorIndex + 1);
+              // Try to parse the next event in the buffer
+              return _parseBufferWithLength();
             }
           } else {
             return null; // Need more bytes

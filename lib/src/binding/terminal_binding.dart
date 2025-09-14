@@ -290,7 +290,7 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
   void _routeMouseEvent(MouseEvent event) {
     if (rootElement == null) return;
 
-    // For now, just route wheel events to scrollable widgets
+    // Handle wheel events for scrollable widgets
     if (event.button == MouseButton.wheelUp || event.button == MouseButton.wheelDown) {
       // Find the render object at the mouse position
       final renderObject = _findRenderObjectInTree(rootElement!);
@@ -298,6 +298,9 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
         _dispatchMouseWheelAtPosition(rootElement!, event, Offset(event.x.toDouble(), event.y.toDouble()), Offset.zero);
       }
     }
+    // For non-wheel mouse events (movement, clicks), we currently don't dispatch them
+    // This prevents them from being converted to keyboard events
+    // In the future, we could add proper mouse event handling here
   }
 
   /// Find the render object in the element tree
