@@ -21,6 +21,7 @@ class ListView extends StatefulComponent {
   ListView({
     super.key,
     this.scrollDirection = Axis.vertical,
+    this.reverse = false,
     this.controller,
     this.padding,
     this.itemExtent,
@@ -38,6 +39,7 @@ class ListView extends StatefulComponent {
   const ListView.builder({
     super.key,
     this.scrollDirection = Axis.vertical,
+    this.reverse = false,
     this.controller,
     this.padding,
     this.itemExtent,
@@ -50,6 +52,7 @@ class ListView extends StatefulComponent {
   const ListView.separated({
     super.key,
     this.scrollDirection = Axis.vertical,
+    this.reverse = false,
     this.controller,
     this.padding,
     this.lazy = false,
@@ -60,6 +63,19 @@ class ListView extends StatefulComponent {
 
   /// The axis along which the scroll view scrolls.
   final Axis scrollDirection;
+
+  /// Whether the scroll view scrolls in the reading direction.
+  ///
+  /// For example, if [scrollDirection] is [Axis.horizontal], then the scroll
+  /// view scrolls from left to right when [reverse] is false and from right to
+  /// left when [reverse] is true.
+  ///
+  /// Similarly, if [scrollDirection] is [Axis.vertical], then the scroll view
+  /// scrolls from top to bottom when [reverse] is false and from bottom to top
+  /// when [reverse] is true.
+  ///
+  /// Defaults to false.
+  final bool reverse;
 
   /// An object that can be used to control the position to which this scroll
   /// view is scrolled.
@@ -132,6 +148,7 @@ class _ListViewState extends State<ListView> {
   Component build(BuildContext context) {
     return _ListViewport(
       scrollDirection: component.scrollDirection,
+      reverse: component.reverse,
       controller: _effectiveController,
       padding: component.padding,
       itemExtent: component.itemExtent,
@@ -147,6 +164,7 @@ class _ListViewState extends State<ListView> {
 class _ListViewport extends RenderObjectComponent {
   const _ListViewport({
     required this.scrollDirection,
+    this.reverse = false,
     required this.controller,
     this.padding,
     this.itemExtent,
@@ -157,6 +175,7 @@ class _ListViewport extends RenderObjectComponent {
   });
 
   final Axis scrollDirection;
+  final bool reverse;
   final ScrollController controller;
   final EdgeInsets? padding;
   final double? itemExtent;
@@ -172,6 +191,7 @@ class _ListViewport extends RenderObjectComponent {
   RenderObject createRenderObject(BuildContext context) {
     return RenderListViewport(
       scrollDirection: scrollDirection,
+      reverse: reverse,
       controller: controller,
       padding: padding,
       itemExtent: itemExtent,
@@ -184,6 +204,7 @@ class _ListViewport extends RenderObjectComponent {
   void updateRenderObject(BuildContext context, RenderListViewport renderObject) {
     renderObject
       ..scrollDirection = scrollDirection
+      ..reverse = reverse
       ..controller = controller
       ..padding = padding
       ..itemExtent = itemExtent
@@ -337,12 +358,14 @@ class _ListViewportElement extends RenderObjectElement {
 class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
   RenderListViewport({
     required Axis scrollDirection,
+    bool reverse = false,
     required ScrollController controller,
     EdgeInsets? padding,
     double? itemExtent,
     bool lazy = false,
     bool hasSeparators = false,
   })  : _scrollDirection = scrollDirection,
+        _reverse = reverse,
         _controller = controller,
         _padding = padding,
         _itemExtent = itemExtent,
@@ -358,6 +381,15 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
   set scrollDirection(Axis value) {
     if (_scrollDirection != value) {
       _scrollDirection = value;
+      markNeedsLayout();
+    }
+  }
+
+  bool _reverse;
+  bool get reverse => _reverse;
+  set reverse(bool value) {
+    if (_reverse != value) {
+      _reverse = value;
       markNeedsLayout();
     }
   }
@@ -516,11 +548,18 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
       );
     }
 
+    // Update scroll metrics
+    final maxExtent = math.max(0.0, totalExtent - viewportExtent);
     _controller.updateMetrics(
       minScrollExtent: 0,
-      maxScrollExtent: math.max(0, totalExtent - viewportExtent),
+      maxScrollExtent: maxExtent,
       viewportDimension: viewportExtent,
     );
+
+    // If reverse and not yet positioned, start at the end
+    if (_reverse && _controller.offset == 0 && maxExtent > 0) {
+      _controller.jumpTo(maxExtent);
+    }
 
     // Clean up invisible children in lazy mode
     if (_lazy && _visibleChildren.isNotEmpty) {
@@ -746,11 +785,26 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
       Rect.fromLTWH(offset.dx, offset.dy, size.width, size.height),
     );
 
+    // Calculate viewport extent for reverse mode
+    final viewportExtent = scrollDirection == Axis.vertical
+        ? size.height - effectivePadding.top - effectivePadding.bottom
+        : size.width - effectivePadding.left - effectivePadding.right;
+
     // Paint only visible children
     for (final child in _visibleChildren) {
+      double childPosition = child.offset - _controller.offset;
+
+      // In reverse mode, flip the position
+      if (_reverse) {
+        final childExtent = scrollDirection == Axis.vertical
+            ? child.renderObject.size.height
+            : child.renderObject.size.width;
+        childPosition = viewportExtent - childPosition - childExtent;
+      }
+
       final childOffset = scrollDirection == Axis.vertical
-          ? Offset(effectivePadding.left, effectivePadding.top + child.offset - _controller.offset)
-          : Offset(effectivePadding.left + child.offset - _controller.offset, effectivePadding.top);
+          ? Offset(effectivePadding.left, effectivePadding.top + childPosition)
+          : Offset(effectivePadding.left + childPosition, effectivePadding.top);
 
       child.renderObject.paint(clippedCanvas, childOffset);
     }
