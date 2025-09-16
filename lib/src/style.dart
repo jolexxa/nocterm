@@ -7,31 +7,31 @@ abstract class Colors {
   Colors._();
 
   /// Completely opaque black.
-  static const Color black = Color.fromRGB(0, 0, 0);
+  static const Color black = Color.fromRGB(24, 24, 28);
 
   /// Completely opaque red.
-  static const Color red = Color.fromRGB(255, 0, 0);
+  static const Color red = Color.fromRGB(231, 97, 112);
 
   /// Completely opaque green.
-  static const Color green = Color.fromRGB(0, 255, 0);
+  static const Color green = Color.fromRGB(139, 213, 152);
 
   /// Completely opaque yellow.
-  static const Color yellow = Color.fromRGB(255, 255, 0);
+  static const Color yellow = Color.fromRGB(241, 213, 137);
 
   /// Completely opaque blue.
-  static const Color blue = Color.fromRGB(0, 0, 255);
+  static const Color blue = Color.fromRGB(139, 179, 244);
 
   /// Completely opaque magenta.
-  static const Color magenta = Color.fromRGB(255, 0, 255);
+  static const Color magenta = Color.fromRGB(198, 160, 246);
 
   /// Completely opaque cyan.
-  static const Color cyan = Color.fromRGB(0, 255, 255);
+  static const Color cyan = Color.fromRGB(139, 213, 202);
 
   /// Completely opaque white.
-  static const Color white = Color.fromRGB(255, 255, 255);
+  static const Color white = Color.fromRGB(248, 248, 242);
 
   /// Completely opaque grey.
-  static const Color grey = Color.fromRGB(128, 128, 128);
+  static const Color grey = Color.fromRGB(146, 153, 166);
 
   /// Completely opaque gray (American spelling).
   static const Color gray = grey;
@@ -39,25 +39,25 @@ abstract class Colors {
   // Bright/bold terminal colors
 
   /// Bright black (dark grey).
-  static const Color brightBlack = Color.fromRGB(85, 85, 85);
+  static const Color brightBlack = Color.fromRGB(98, 104, 117);
 
   /// Bright red.
-  static const Color brightRed = Color.fromRGB(255, 85, 85);
+  static const Color brightRed = Color.fromRGB(255, 139, 148);
 
   /// Bright green.
-  static const Color brightGreen = Color.fromRGB(85, 255, 85);
+  static const Color brightGreen = Color.fromRGB(163, 239, 178);
 
   /// Bright yellow.
-  static const Color brightYellow = Color.fromRGB(255, 255, 85);
+  static const Color brightYellow = Color.fromRGB(255, 234, 170);
 
   /// Bright blue.
-  static const Color brightBlue = Color.fromRGB(85, 85, 255);
+  static const Color brightBlue = Color.fromRGB(163, 203, 255);
 
   /// Bright magenta.
-  static const Color brightMagenta = Color.fromRGB(255, 85, 255);
+  static const Color brightMagenta = Color.fromRGB(224, 189, 255);
 
   /// Bright cyan.
-  static const Color brightCyan = Color.fromRGB(85, 255, 255);
+  static const Color brightCyan = Color.fromRGB(163, 239, 228);
 
   /// Bright white.
   static const Color brightWhite = Color.fromRGB(255, 255, 255);
