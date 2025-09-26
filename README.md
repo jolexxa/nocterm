@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-cross--platform-brightgreen)](https://dart.dev/platforms)
 
-A powerful, Flutter-inspired Terminal User Interface framework with Riverpod state management for building beautiful command-line applications in Dart.
+A powerful, Flutter-inspired Terminal User Interface framework for building beautiful command-line applications in Dart.
 
 ![Nocterm Example](doc/assets/screenshot.png)
 
@@ -20,7 +20,6 @@ A powerful, Flutter-inspired Terminal User Interface framework with Riverpod sta
 - **🔥 Hot Reload** - Instant UI updates during development for rapid iteration
 - **🎨 Rich Styling** - Full color support, borders, padding, and text styling
 - **⚡ Reactive State** - Riverpod integration plus built-in `StatefulComponent` and `setState()`
-- **🐭 Mouse Support** - Full mouse interaction including wheel scrolling and click events
 - **⌨️ Input Handling** - Comprehensive keyboard event system with focus management
 - **📐 Flexible Layouts** - Row, Column, Stack, ConstrainedBox, and overlay-based layouts
 - **📝 Rich Text** - Markdown rendering with formatted text, lists, and code blocks
