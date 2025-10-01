@@ -3,6 +3,7 @@ export 'src/backend/terminal.dart';
 export 'src/buffer.dart';
 export 'src/frame.dart';
 export 'src/style.dart';
+export 'src/shutdown.dart';
 export 'src/components/progress_bar.dart';
 export 'src/components/scrollbar.dart';
 export 'src/test/nocterm_tester.dart';

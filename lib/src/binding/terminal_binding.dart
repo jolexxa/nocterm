@@ -645,6 +645,22 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
     // Schedule a frame if one isn't already scheduled
     scheduleFrame();
   }
+
+  /// Request application shutdown with proper cleanup
+  ///
+  /// This is the recommended way to exit a nocterm application.
+  /// It ensures all terminal cleanup (including mouse tracking disable)
+  /// happens before the process exits.
+  ///
+  /// IMPORTANT: Do NOT call dart:io's exit() directly, as it will bypass
+  /// terminal cleanup and may leave the terminal in a broken state (e.g.,
+  /// mouse movement producing escape sequences).
+  ///
+  /// Instead, always use this method or set [_shouldExit] to true.
+  void requestShutdown([int exitCode = 0]) {
+    _performImmediateShutdown();
+    exit(exitCode);
+  }
 }
 
 /// Run a TUI application
