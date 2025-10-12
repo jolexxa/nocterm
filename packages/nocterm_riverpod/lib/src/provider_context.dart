@@ -35,17 +35,18 @@ extension ProviderContext on BuildContext {
   /// ```
   T watch<T>(ProviderListenable<T> provider) {
     final element = this as Element;
-    
+    assert(element.mounted, 'watch called on an unmounted component');
+
     // Register this element as depending on the inherited provider scope
     // This ensures we get notified when the scope changes
     dependOnInheritedComponentOfExactType<UncontrolledProviderScope>();
-    
+
     // Get the provider scope element
     final scopeElement = ProviderScope.scopeElementOf(this);
-    
+
     // Get or create dependencies for this element
     final dependencies = scopeElement.getDependencies(element);
-    
+
     // Watch the provider through the dependency tracker
     return dependencies.watch(provider, scopeElement.container);
   }
@@ -72,13 +73,13 @@ extension ProviderContext on BuildContext {
     void Function(Object error, StackTrace stackTrace)? onError,
   }) {
     final element = this as Element;
-    
+
     // Get the provider scope element (don't register as dependent for listen)
     final scopeElement = ProviderScope.scopeElementOf(this);
-    
+
     // Get or create dependencies for this element
     final dependencies = scopeElement.getDependencies(element);
-    
+
     // Listen through the dependency tracker
     dependencies.listen(
       provider,
