@@ -122,13 +122,25 @@ class _InactiveElements {
     _elements.remove(element);
   }
 
+  static void _unmount(Element element) {
+    assert(element._lifecycleState == _ElementLifecycle.inactive);
+    // Recursively unmount all children first (depth-first)
+    element.visitChildren((Element child) {
+      assert(child._parent == element);
+      _unmount(child);
+    });
+    // Then unmount this element
+    element.unmount();
+    assert(element._lifecycleState == _ElementLifecycle.defunct);
+  }
+
   void _unmountAll() {
     final List<Element> elements = _elements.toList()..sort((a, b) => b.depth - a.depth);
     _elements.clear();
 
     for (final element in elements) {
       assert(element._lifecycleState == _ElementLifecycle.inactive);
-      element.unmount();
+      _unmount(element);
     }
   }
 }

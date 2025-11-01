@@ -132,3 +132,45 @@ class Terminal {
     write(sequence);
   }
 }
+
+/// Terminal that writes output to a socket instead of stdout.
+/// Used for shell mode where the app renders into a separate shell process.
+class SocketTerminal extends Terminal {
+  final Socket _socket;
+
+  SocketTerminal(this._socket, {Size? size}) : super(size: size);
+
+  @override
+  void flush() {
+    if (_writeBuffer.isNotEmpty) {
+      final bufferContent = _writeBuffer.toString();
+      _socket.write(bufferContent);
+      _writeBuffer.clear();
+    }
+  }
+
+  @override
+  void enterAlternateScreen() {
+    if (!_altScreenEnabled) {
+      flush();
+      _socket.write(Terminal._alternateBuffer);
+      clear();
+      _altScreenEnabled = true;
+    }
+  }
+
+  @override
+  void leaveAlternateScreen() {
+    if (_altScreenEnabled) {
+      flush();
+      _socket.write(Terminal._mainBuffer);
+      _altScreenEnabled = false;
+    }
+  }
+
+  @override
+  void showCursor() {
+    flush();
+    _socket.write(Terminal._showCursor);
+  }
+}

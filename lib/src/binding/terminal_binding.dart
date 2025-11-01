@@ -20,7 +20,8 @@ import 'hot_reload_mixin.dart';
 
 /// Terminal UI binding that handles terminal input/output and event loop
 class TerminalBinding extends NoctermBinding with HotReloadBinding {
-  TerminalBinding(this.terminal) {
+  TerminalBinding(this.terminal, {Stream<List<int>>? inputStream})
+      : _customInputStream = inputStream {
     _instance = this;
     _initializePipelineOwner();
   }
@@ -29,6 +30,7 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
   static TerminalBinding get instance => _instance!;
 
   final term.Terminal terminal;
+  final Stream<List<int>>? _customInputStream;
   PipelineOwner? _pipelineOwner;
   PipelineOwner get pipelineOwner => _pipelineOwner!;
 
@@ -81,16 +83,17 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
     // ESC [ ? 1002 h - Use Cell Motion Mouse Tracking
     // ESC [ ? 1003 h - Enable all motion mouse tracking
     // ESC [ ? 1006 h - Enable SGR mouse mode
-    stdout.write('\x1B[?1000h'); // Basic mouse tracking
-    stdout.write('\x1B[?1002h'); // Button event tracking
-    stdout.write('\x1B[?1003h'); // All motion tracking
-    stdout.write('\x1B[?1006h'); // SGR mouse mode
+    terminal.write('\x1B[?1000h'); // Basic mouse tracking
+    terminal.write('\x1B[?1002h'); // Button event tracking
+    terminal.write('\x1B[?1003h'); // All motion tracking
+    terminal.write('\x1B[?1006h'); // SGR mouse mode
 
     // Enable bracketed paste mode
     // ESC [ ? 2004 h - Enables bracketed paste mode
     // When enabled, pasted text is wrapped in ESC[200~ ... ESC[201~
     // This allows applications to distinguish pasted text from typed text
-    stdout.write('\x1B[?2004h'); // Bracketed paste mode
+    terminal.write('\x1B[?2004h'); // Bracketed paste mode
+    terminal.flush();
 
     // Store initial size
     _lastKnownSize = terminal.size;
@@ -106,19 +109,29 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
   }
 
   void _startInputHandling() {
-    // Only set stdin mode if we have a terminal
-    try {
-      if (stdin.hasTerminal) {
-        stdin.echoMode = false;
-        stdin.lineMode = false;
+    // Use custom input stream if provided (for shell mode), otherwise use stdin
+    final inputStream = _customInputStream ?? stdin;
+
+    // Only set stdin mode if we're using stdin and have a terminal
+    if (_customInputStream == null) {
+      try {
+        if (stdin.hasTerminal) {
+          stdin.echoMode = false;
+          stdin.lineMode = false;
+        }
+      } catch (e) {
+        // Ignore errors when running without a proper terminal
+        // This happens in CI/CD environments or when piping output
       }
-    } catch (e) {
-      // Ignore errors when running without a proper terminal
-      // This happens in CI/CD environments or when piping output
     }
 
     // Listen for input at the byte level for proper escape sequence handling
-    _inputSubscription = stdin.listen((bytes) {
+    _inputSubscription = inputStream.listen((bytes) {
+      // In shell mode, check for terminal size OSC sequences
+      if (_customInputStream != null) {
+        bytes = _processShellModeBytes(bytes);
+      }
+
       // Parse the bytes and process ALL events in the buffer
       _inputParser.addBytes(bytes);
 
@@ -172,6 +185,63 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
         // Ignore decode errors for escape sequences
       }
     });
+  }
+
+  /// Process bytes in shell mode to extract terminal size OSC sequences
+  /// Returns filtered bytes with OSC sequences removed
+  List<int> _processShellModeBytes(List<int> bytes) {
+    final result = <int>[];
+    int i = 0;
+
+    while (i < bytes.length) {
+      // Check for OSC 9999 sequence: ESC ] 9999 ; <cols> ; <rows> BEL
+      if (i + 6 < bytes.length &&
+          bytes[i] == 0x1b &&
+          bytes[i + 1] == 0x5d) {
+        // Found ESC ]
+        // Look for the BEL terminator
+        int end = i + 2;
+        while (end < bytes.length && bytes[end] != 0x07) {
+          end++;
+        }
+
+        if (end < bytes.length) {
+          // Found complete OSC sequence
+          final oscContent = utf8.decode(bytes.sublist(i + 2, end));
+
+          // Check if it's our terminal size sequence
+          if (oscContent.startsWith('9999;')) {
+            final parts = oscContent.substring(5).split(';');
+            if (parts.length == 2) {
+              try {
+                final cols = int.parse(parts[0]);
+                final rows = int.parse(parts[1]);
+                final newSize = Size(cols.toDouble(), rows.toDouble());
+
+                // Update terminal size
+                terminal.updateSize(newSize);
+                _lastKnownSize = newSize;
+
+                // Trigger a redraw with new size
+                scheduleFrame();
+              } catch (e) {
+                // Invalid size, ignore
+              }
+            }
+          }
+
+          // Skip this OSC sequence
+          i = end + 1;
+          continue;
+        }
+      }
+
+      // Regular byte, keep it
+      result.add(bytes[i]);
+      i++;
+    }
+
+    return result;
   }
 
   void _startResizeHandling() {
@@ -262,18 +332,19 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
     // Perform terminal cleanup synchronously
     try {
       // IMPORTANT: Disable mouse tracking BEFORE leaving alternate screen
-      stdout.write('\x1B[?1003l'); // Disable all motion tracking
-      stdout.write('\x1B[?1006l'); // Disable SGR mouse mode
-      stdout.write('\x1B[?1002l'); // Disable button event tracking
-      stdout.write('\x1B[?1000l'); // Disable basic mouse tracking
+      terminal.write('\x1B[?1003l'); // Disable all motion tracking
+      terminal.write('\x1B[?1006l'); // Disable SGR mouse mode
+      terminal.write('\x1B[?1002l'); // Disable button event tracking
+      terminal.write('\x1B[?1000l'); // Disable basic mouse tracking
+      terminal.flush();
 
       // Restore terminal
       terminal.showCursor();
       terminal.leaveAlternateScreen();
       terminal.clear();
 
-      // Restore stdin
-      if (stdin.hasTerminal) {
+      // Restore stdin (only in normal mode, not shell mode)
+      if (_customInputStream == null && stdin.hasTerminal) {
         stdin.echoMode = true;
         stdin.lineMode = true;
       }
@@ -712,11 +783,32 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
 }
 
 /// Run a TUI application
+///
+/// Automatically detects if a nocterm shell is running by checking for
+/// `.nocterm/shell_handle` file. If found, the app will render into the
+/// shell instead of directly to stdout, allowing IDE debugger support.
+///
+/// In shell mode, print() statements go to the host's stdout (your IDE/terminal),
+/// while the TUI renders in the shell. In normal mode, prints go to log.txt.
 Future<void> runApp(Component app, {bool enableHotReload = true}) async {
-  // Create logger with in-memory buffering and debounced writes
-  final logger = Logger();
+  // Check for shell mode
+  final shellHandleFile = File('.nocterm/shell_handle');
+  final useShellMode = await shellHandleFile.exists();
 
-  // Store reference to binding for signal handler access
+  if (useShellMode) {
+    // Shell mode: connect to nocterm shell
+    // In this mode, prints go to host stdout for debugging
+    await _runAppInShellMode(app, shellHandleFile, enableHotReload);
+  } else {
+    // Normal mode: render directly to terminal
+    // In this mode, prints go to log.txt since stdout is used for TUI
+    final logger = Logger();
+    await _runAppNormalMode(app, logger, enableHotReload);
+  }
+}
+
+/// Run app in normal mode (direct terminal rendering)
+Future<void> _runAppNormalMode(Component app, Logger logger, bool enableHotReload) async {
   TerminalBinding? binding;
 
   try {
@@ -759,6 +851,58 @@ Future<void> runApp(Component app, {bool enableHotReload = true}) async {
       await logger.close();
     } catch (_) {
       // Ignore errors if already closed
+    }
+  }
+}
+
+/// Run app in shell mode (render to nocterm shell via socket)
+Future<void> _runAppInShellMode(Component app, File shellHandleFile, bool enableHotReload) async {
+  TerminalBinding? binding;
+
+  try {
+    // Read socket path from handle file
+    final socketPath = await shellHandleFile.readAsString();
+
+    // Connect to shell socket
+    final socket = await Socket.connect(
+      InternetAddress(socketPath.trim(), type: InternetAddressType.unix),
+      0,
+    );
+
+    await runZoned(() async {
+      // Use SocketTerminal which writes to socket instead of stdout
+      // And use socket as input stream instead of stdin
+      final terminal = term.SocketTerminal(socket);
+      binding = TerminalBinding(terminal, inputStream: socket);
+
+      binding!.initialize();
+      binding!.attachRootComponent(app);
+
+      // Initialize hot reload in development mode
+      if (enableHotReload && !bool.fromEnvironment('dart.vm.product')) {
+        await binding!.initializeHotReload();
+      }
+
+      await binding!.runEventLoop();
+    },
+        zoneSpecification: ZoneSpecification(
+          print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
+            // In shell mode, print() goes to the host's stdout (IDE/terminal)
+            // so developers can see debug output while the TUI renders in the shell
+            parent.print(zone, message);
+          },
+          handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone, Object error, StackTrace stackTrace) {
+            // Errors also go to host's stderr for debugging
+            stderr.writeln('ERROR: $error\n$stackTrace');
+          },
+        ));
+  } catch (e) {
+    // Log connection errors to stderr in shell mode
+    stderr.writeln('Shell mode error: $e');
+  } finally {
+    // Ensure binding cleanup if not already done
+    if (binding != null && !binding!._shouldExit) {
+      binding!.shutdown();
     }
   }
 }

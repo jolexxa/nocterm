@@ -34,6 +34,36 @@ abstract class State<T extends StatefulComponent> {
   @protected
   void didChangeDependencies() {}
 
+  /// Called when this State is temporarily removed from the tree.
+  ///
+  /// The framework calls this method when this [State] object is removed from
+  /// the tree temporarily. It may be reinserted into another part of the tree
+  /// (e.g., if the subtree containing this [State] object is grafted from one
+  /// location to another due to the use of a [GlobalKey]).
+  ///
+  /// If the State is reinserted into the tree, [activate] will be called.
+  /// Otherwise, [dispose] will be called.
+  ///
+  /// Subclasses should override this method to release any resources that will
+  /// be reallocated if the State is reactivated (via [activate]).
+  @protected
+  void deactivate() {}
+
+  /// Called when this State is reinserted into the tree after being removed
+  /// via [deactivate].
+  ///
+  /// In most cases, after a [State] object has been deactivated, it is not
+  /// reinserted into the tree, and its [dispose] method will be called.
+  ///
+  /// In some cases, however, after a [State] object has been deactivated, the
+  /// framework will reinsert it into another part of the tree (e.g., if the
+  /// subtree containing this [State] object is grafted from one location in
+  /// the tree to another due to the use of a [GlobalKey]). If that happens,
+  /// the framework will call [activate] to give the [State] object a chance to
+  /// reacquire any resources that it released in [deactivate].
+  @protected
+  void activate() {}
+
   /// Clean up resources. Called when the State object is removed permanently.
   @protected
   void dispose() {}
@@ -55,7 +85,8 @@ abstract class State<T extends StatefulComponent> {
   @protected
   void setState(VoidCallback fn) {
     assert(_element != null);
-    assert(_element!._lifecycleState == _ElementLifecycle.active);
+    assert(_element!._lifecycleState == _ElementLifecycle.active,
+        'Element is not active but ${_element!._lifecycleState} instead');
 
     fn();
     _element!.markNeedsBuild();
@@ -83,8 +114,27 @@ class StatefulElement extends BuildableElement {
 
   @override
   void mount(Element? parent, dynamic newSlot) {
+    // Set up the element tree structure first (from Element.mount)
+    assert(_lifecycleState == _ElementLifecycle.initial);
+    assert(parent == null || parent._lifecycleState == _ElementLifecycle.active);
+    _parent = parent;
+    _slot = newSlot;
+    _depth = parent != null ? parent.depth + 1 : 1;
+    _lifecycleState = _ElementLifecycle.active;
+    if (parent != null) {
+      _owner = parent.owner;
+    }
+    final Key? key = component.key;
+    if (key is GlobalKey) {
+      owner!._registerGlobalKey(key, this);
+    }
+
+    // Now that parent is set, call initState() so context.read() works
     _state.initState();
-    super.mount(parent, newSlot);
+
+    // Finally, do the initial build
+    assert(_child == null);
+    performRebuild();
   }
 
   @override
@@ -98,10 +148,29 @@ class StatefulElement extends BuildableElement {
   }
 
   @override
+  void activate() {
+    super.activate();
+    _state.activate();
+    // Since the State could have observed the deactivate() and thus disposed of
+    // resources allocated in the build method, we have to rebuild the widget
+    // so that its State can reallocate its resources.
+    markNeedsBuild();
+  }
+
+  @override
+  void deactivate() {
+    _state.deactivate();
+    super.deactivate();
+  }
+
+  @override
   void unmount() {
     super.unmount();
     _state.dispose();
     _state._element = null;
+    // Release resources to reduce the severity of memory leaks caused by
+    // defunct, but accidentally retained Elements.
+    _state._component = null;
   }
 
   @override

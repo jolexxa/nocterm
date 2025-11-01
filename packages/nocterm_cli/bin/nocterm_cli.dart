@@ -1,0 +1,52 @@
+import 'dart:io';
+
+import 'package:args/args.dart';
+import 'package:nocterm_cli/commands/shell_command.dart';
+
+void main(List<String> arguments) async {
+  final parser = ArgParser()
+    ..addCommand('shell', ArgParser()..addFlag('help', abbr: 'h', help: 'Show help'));
+
+  try {
+    final results = parser.parse(arguments);
+
+    if (results.command == null) {
+      _printUsage(parser);
+      exit(1);
+    }
+
+    final command = results.command!;
+
+    switch (command.name) {
+      case 'shell':
+        if (command['help'] as bool) {
+          print('Usage: nocterm shell');
+          print('');
+          print('Start a nocterm shell server that nocterm apps can render into.');
+          print('This allows running nocterm apps from IDEs with debugger support.');
+          exit(0);
+        }
+        await runShellCommand();
+        break;
+      default:
+        _printUsage(parser);
+        exit(1);
+    }
+  } on FormatException catch (e) {
+    print('Error: ${e.message}');
+    print('');
+    _printUsage(parser);
+    exit(1);
+  }
+}
+
+void _printUsage(ArgParser parser) {
+  print('nocterm CLI - Tools for nocterm TUI framework');
+  print('');
+  print('Usage: nocterm <command> [arguments]');
+  print('');
+  print('Available commands:');
+  print('  shell    Start a nocterm shell server for debugging');
+  print('');
+  print('Run "nocterm <command> --help" for more information about a command.');
+}

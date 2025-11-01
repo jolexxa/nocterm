@@ -11,8 +11,8 @@ enum _ElementLifecycle {
 abstract class Element implements BuildContext {
   Element(this._component);
 
-  Component _component;
-  Component get component => _component;
+  Component? _component;
+  Component get component => _component!;
 
   Element? _parent;
   @override
@@ -105,6 +105,10 @@ abstract class Element implements BuildContext {
     if (key is GlobalKey) {
       owner!._unregisterGlobalKey(key, this);
     }
+    // Release resources to reduce the severity of memory leaks caused by
+    // defunct, but accidentally retained Elements.
+    _component = null;
+    _dependencies = null;
     _lifecycleState = _ElementLifecycle.defunct;
   }
 
