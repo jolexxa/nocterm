@@ -16,6 +16,8 @@ import '../keyboard/mouse_event.dart';
 import '../components/block_focus.dart';
 import '../rendering/mouse_tracker.dart';
 import '../rendering/mouse_hit_test.dart';
+import '../utils/log_server.dart';
+import '../utils/logger.dart';
 import 'hot_reload_mixin.dart';
 
 /// Terminal UI binding that handles terminal input/output and event loop
@@ -788,8 +790,9 @@ class TerminalBinding extends NoctermBinding with HotReloadBinding {
 /// `.nocterm/shell_handle` file. If found, the app will render into the
 /// shell instead of directly to stdout, allowing IDE debugger support.
 ///
-/// In shell mode, print() statements go to the host's stdout (your IDE/terminal),
-/// while the TUI renders in the shell. In normal mode, prints go to log.txt.
+/// Logs are streamed via WebSocket and can be viewed with `nocterm logs`.
+/// In shell mode, print() statements also appear in the host's stdout.
+/// In normal mode, only WebSocket logs are available.
 Future<void> runApp(Component app, {bool enableHotReload = true}) async {
   // Check for shell mode
   final shellHandleFile = File('.nocterm/shell_handle');
@@ -797,21 +800,32 @@ Future<void> runApp(Component app, {bool enableHotReload = true}) async {
 
   if (useShellMode) {
     // Shell mode: connect to nocterm shell
-    // In this mode, prints go to host stdout for debugging
+    // In this mode, prints go to both WebSocket logs and host stdout
     await _runAppInShellMode(app, shellHandleFile, enableHotReload);
   } else {
     // Normal mode: render directly to terminal
-    // In this mode, prints go to log.txt since stdout is used for TUI
-    final logger = Logger();
-    await _runAppNormalMode(app, logger, enableHotReload);
+    // In this mode, prints go to WebSocket logs since stdout is used for TUI
+    await _runAppNormalMode(app, enableHotReload);
   }
 }
 
 /// Run app in normal mode (direct terminal rendering)
-Future<void> _runAppNormalMode(Component app, Logger logger, bool enableHotReload) async {
+Future<void> _runAppNormalMode(Component app, bool enableHotReload) async {
   TerminalBinding? binding;
+  LogServer? logServer;
+  Logger? logger;
 
   try {
+    // Start log server
+    logServer = LogServer();
+    try {
+      await logServer.start();
+      logger = Logger(logServer: logServer);
+    } catch (e) {
+      stderr.writeln('Failed to start log server: $e');
+      // Continue without logging
+    }
+
     await runZoned(() async {
       final terminal = term.Terminal();
       binding = TerminalBinding(terminal);
@@ -828,12 +842,12 @@ Future<void> _runAppNormalMode(Component app, Logger logger, bool enableHotReloa
     },
         zoneSpecification: ZoneSpecification(
           print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
-            // Write to logger with in-memory buffering
-            logger.log(message);
+            // Write to logger via WebSocket
+            logger?.log(message);
           },
           handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone, Object error, StackTrace stackTrace) {
             // Log errors with stack traces
-            logger.log('ERROR: $error\n$stackTrace');
+            logger?.log('ERROR: $error\n$stackTrace');
           },
         ));
   } catch (e) {
@@ -845,10 +859,10 @@ Future<void> _runAppNormalMode(Component app, Logger logger, bool enableHotReloa
       binding!.shutdown();
     }
 
-    // Flush and close logger gracefully
+    // Close logger and log server gracefully
     try {
-      await logger.flush();
-      await logger.close();
+      await logger?.close();
+      await logServer?.close();
     } catch (_) {
       // Ignore errors if already closed
     }
@@ -858,8 +872,20 @@ Future<void> _runAppNormalMode(Component app, Logger logger, bool enableHotReloa
 /// Run app in shell mode (render to nocterm shell via socket)
 Future<void> _runAppInShellMode(Component app, File shellHandleFile, bool enableHotReload) async {
   TerminalBinding? binding;
+  LogServer? logServer;
+  Logger? logger;
 
   try {
+    // Start log server
+    logServer = LogServer();
+    try {
+      await logServer.start();
+      logger = Logger(logServer: logServer);
+    } catch (e) {
+      stderr.writeln('Failed to start log server: $e');
+      // Continue without logging
+    }
+
     // Read socket path from handle file
     final socketPath = await shellHandleFile.readAsString();
 
@@ -887,13 +913,17 @@ Future<void> _runAppInShellMode(Component app, File shellHandleFile, bool enable
     },
         zoneSpecification: ZoneSpecification(
           print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
-            // In shell mode, print() goes to the host's stdout (IDE/terminal)
-            // so developers can see debug output while the TUI renders in the shell
+            // In shell mode, print() goes to both:
+            // 1. WebSocket logs (for nocterm logs command)
+            logger?.log(message);
+            // 2. Host's stdout (IDE/terminal for immediate debugging)
             parent.print(zone, message);
           },
           handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone, Object error, StackTrace stackTrace) {
-            // Errors also go to host's stderr for debugging
-            stderr.writeln('ERROR: $error\n$stackTrace');
+            // Errors also go to both
+            final errorMessage = 'ERROR: $error\n$stackTrace';
+            logger?.log(errorMessage);
+            stderr.writeln(errorMessage);
           },
         ));
   } catch (e) {
@@ -903,6 +933,14 @@ Future<void> _runAppInShellMode(Component app, File shellHandleFile, bool enable
     // Ensure binding cleanup if not already done
     if (binding != null && !binding!._shouldExit) {
       binding!.shutdown();
+    }
+
+    // Close logger and log server gracefully
+    try {
+      await logger?.close();
+      await logServer?.close();
+    } catch (_) {
+      // Ignore errors if already closed
     }
   }
 }

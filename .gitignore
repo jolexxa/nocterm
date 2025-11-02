@@ -8,7 +8,7 @@ pubspec.lock
 
 /third_party/
 
-log.txt
+.nocterm/
 
 CLAUDE.md
 .claude/

@@ -17,6 +17,10 @@ dart compile exe bin/nocterm_cli.dart -o ../../nocterm
 
 Start a nocterm shell server that nocterm apps can render into. This allows running nocterm apps from IDEs with debugger support.
 
+### `nocterm logs`
+
+Stream logs from a running nocterm app via WebSocket. Logs are displayed in real-time until you press Ctrl+C or the app exits.
+
 **How it works:**
 
 1. The shell creates a Unix domain socket at `.nocterm/shell.sock`
@@ -48,7 +52,7 @@ The app will automatically render into the shell instead of its own stdout.
 - ✅ Set breakpoints and inspect state
 - ✅ No changes needed to app code - works automatically
 - ✅ Falls back to normal rendering if shell is not running
-- ✅ `print()` statements appear in your IDE/terminal, not log.txt
+- ✅ `print()` statements appear in your IDE/terminal AND in logs
 - ✅ Debug output is visible while TUI renders in the shell
 
 ## Development Workflow
@@ -57,8 +61,11 @@ The app will automatically render into the shell instead of its own stdout.
 
 ```bash
 # Run app directly - renders to its own terminal
-# print() statements go to log.txt
+# print() statements stream to WebSocket logs
 dart run bin/my_app.dart
+
+# In another terminal, view logs:
+./nocterm logs
 ```
 
 ### Shell Mode (IDE Debugging)
@@ -69,11 +76,14 @@ dart run bin/my_app.dart
 
 # IDE or Terminal 2: Run app with debugger
 # App automatically detects shell and renders there
-# print() statements appear in your IDE/terminal!
+# print() statements appear in your IDE/terminal AND in logs!
 dart run bin/my_app.dart
+
+# Optional Terminal 3: View logs
+./nocterm logs
 ```
 
-**Note:** In shell mode, `print()` statements appear in the terminal/IDE where you run the app (Terminal 2 above), while the TUI renders in the shell (Terminal 1). This makes debugging much easier!
+**Note:** In shell mode, `print()` statements appear in BOTH the terminal/IDE where you run the app (Terminal 2 above) AND are streamed to WebSocket logs (viewable with `nocterm logs`), while the TUI renders in the shell (Terminal 1). This gives you maximum flexibility for debugging!
 
 ## Technical Details
 
