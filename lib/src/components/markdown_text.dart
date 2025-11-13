@@ -25,7 +25,7 @@ import 'rich_text.dart';
 /// - Images are shown as [Image: alt text]
 /// - Tables are rendered with basic ASCII formatting
 /// - No font size changes (headers use bold/colors instead)
-class MarkdownText extends StatelessComponent {
+class MarkdownText extends StatefulComponent {
   /// Creates a markdown text widget.
   ///
   /// The [data] parameter must not be null.
@@ -58,23 +58,46 @@ class MarkdownText extends StatelessComponent {
   final MarkdownStyleSheet? styleSheet;
 
   @override
-  Component build(BuildContext context) {
-    final effectiveStyleSheet = styleSheet ?? MarkdownStyleSheet.terminal();
+  State<MarkdownText> createState() => _MarkdownTextState();
+}
+
+class _MarkdownTextState extends State<MarkdownText> {
+  late List<InlineSpan> _spans;
+
+  @override
+  void initState() {
+    super.initState();
+    _parseMarkdown();
+  }
+
+  @override
+  void didUpdateComponent(MarkdownText oldComponent) {
+    super.didUpdateComponent(oldComponent);
+    if (oldComponent.data != component.data || oldComponent.styleSheet != component.styleSheet) {
+      _parseMarkdown();
+    }
+  }
+
+  void _parseMarkdown() {
+    final effectiveStyleSheet = component.styleSheet ?? MarkdownStyleSheet.terminal();
     final document = md.Document(
       extensionSet: md.ExtensionSet.gitHubFlavored,
       encodeHtml: false,
     );
-    final nodes = document.parse(data);
+    final nodes = document.parse(component.data);
 
     final visitor = _MarkdownVisitor(effectiveStyleSheet);
-    final spans = visitor.visitNodes(nodes);
+    _spans = visitor.visitNodes(nodes);
+  }
 
+  @override
+  Component build(BuildContext context) {
     return RichText(
-      text: TextSpan(children: spans),
-      textAlign: textAlign,
-      softWrap: softWrap,
-      overflow: overflow,
-      maxLines: maxLines,
+      text: TextSpan(children: _spans),
+      textAlign: component.textAlign,
+      softWrap: component.softWrap,
+      overflow: component.overflow,
+      maxLines: component.maxLines,
     );
   }
 }

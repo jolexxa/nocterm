@@ -1,5 +1,4 @@
 import '../framework/framework.dart';
-import '../keyboard/mouse_event.dart';
 
 /// Details for tap down events.
 class TapDownDetails {

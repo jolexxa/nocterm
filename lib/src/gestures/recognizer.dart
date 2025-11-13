@@ -1,4 +1,3 @@
-import 'dart:async';
 import '../keyboard/mouse_event.dart';
 import '../framework/framework.dart';
 
