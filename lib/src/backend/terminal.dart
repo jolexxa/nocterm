@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:nocterm/src/size.dart';
+import 'package:nocterm/src/style.dart';
 
 class Position {
   final int x;
@@ -11,6 +12,7 @@ class Position {
 
 class Terminal {
   late Size _size;
+  Stream<String>? _oscStream;
   bool _altScreenEnabled = false;
 
   // Write buffer for batching output
@@ -25,6 +27,12 @@ class Terminal {
   static const _alternateBuffer = '\x1b[?1049h';
   static const _mainBuffer = '\x1b[?1049l';
 
+  // Regex pattern to match RGB color responses
+  static const _rgbPattern =
+      'rgb:([0-9a-fA-F]{4})/([0-9a-fA-F]{4})/([0-9a-fA-F]{4})';
+  static final _bgRegexp = RegExp('11;$_rgbPattern');
+  static final _fgRegexp = RegExp('10;$_rgbPattern');
+
   Terminal({Size? size}) {
     _size = size ?? _getTerminalSize();
   }
@@ -35,9 +43,14 @@ class Terminal {
     _size = newSize;
   }
 
+  void bindOSCStream(Stream<String> oscStream) {
+    _oscStream = oscStream;
+  }
+
   static Size _getTerminalSize() {
     if (stdout.hasTerminal) {
-      return Size(stdout.terminalColumns.toDouble(), stdout.terminalLines.toDouble());
+      return Size(
+          stdout.terminalColumns.toDouble(), stdout.terminalLines.toDouble());
     }
     return const Size(80, 80);
   }
@@ -109,8 +122,72 @@ class Terminal {
     //stdout.flush();
   }
 
+  /// Set terminal foreground color
+  void setForeground(Color color) {
+    write('\x1b]10;#');
+    write(color.red.toRadixString(16).padLeft(2, '0'));
+    write(color.green.toRadixString(16).padLeft(2, '0'));
+    write(color.blue.toRadixString(16).padLeft(2, '0'));
+    write('\x07');
+  }
+
+  /// Set terminal background color
+  void setBackground(Color color) {
+    write('\x1b]11;#');
+    write(color.red.toRadixString(16).padLeft(2, '0'));
+    write(color.green.toRadixString(16).padLeft(2, '0'));
+    write(color.blue.toRadixString(16).padLeft(2, '0'));
+    write('\x07');
+  }
+
+  /// Get the terminal's default foreground color
+  Future<Color?> getForegroundColor({
+    Duration timeout = const Duration(milliseconds: 100),
+  }) async {
+    write('\x1b]10;?\x07');
+    return _oscStream
+        ?.firstWhere(_fgRegexp.hasMatch)
+        .timeout(timeout)
+        .then((event) {
+      final match = _fgRegexp.firstMatch(event);
+      if (match == null) return null;
+      return Color.fromRGB(
+        int.parse(match.group(1)!, radix: 16) ~/ 256,
+        int.parse(match.group(2)!, radix: 16) ~/ 256,
+        int.parse(match.group(3)!, radix: 16) ~/ 256,
+      );
+    }).catchError((_) => null);
+  }
+
+  /// Get the terminal's default background color
+  Future<Color?> getBackgroundColor({
+    Duration timeout = const Duration(milliseconds: 100),
+  }) async {
+    write('\x1b]11;?\x07');
+    flush();
+    return _oscStream
+        ?.firstWhere(_bgRegexp.hasMatch)
+        .timeout(timeout)
+        .then((event) {
+      final match = _bgRegexp.firstMatch(event);
+      if (match == null) return null;
+      return Color.fromRGB(
+        int.parse(match.group(1)!, radix: 16) ~/ 256,
+        int.parse(match.group(2)!, radix: 16) ~/ 256,
+        int.parse(match.group(3)!, radix: 16) ~/ 256,
+      );
+    }).catchError((_) => null);
+  }
+
+  /// Restore terminal colors to defaults
+  void restoreColors() {
+    stdout.write('\x1b]110'); // foreground
+    stdout.write('\x1b]111'); // background
+  }
+
   void reset() {
     showCursor();
+    restoreColors();
     leaveAlternateScreen();
     stdout.write('\x1b[0m'); // Reset all attributes
   }

@@ -39,6 +39,7 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
   final _inputParser = InputParser();
   final _mouseEventController = StreamController<MouseEvent>.broadcast();
   final _mouseTracker = MouseTracker();
+  final _oscEventsController = StreamController<String>.broadcast();
 
   // Event-driven loop support
   final _eventLoopController = StreamController<void>.broadcast();
@@ -63,11 +64,15 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
   /// Stream of parsed mouse events
   Stream<MouseEvent> get mouseEvents => _mouseEventController.stream;
 
+  /// Stream of OSC responses captured from the terminal
+  Stream<String> get oscEvents => _oscEventsController.stream;
+
   /// Initialize the terminal and start the event loop
   void initialize() {
     // Setup terminal
     terminal.enterAlternateScreen();
     terminal.hideCursor();
+    terminal.bindOSCStream(_oscEventsController.stream);
     terminal.clear();
 
     // Enable mouse tracking (SGR mode for better coordinate support)
@@ -119,10 +124,10 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
 
     // Listen for input at the byte level for proper escape sequence handling
     _inputSubscription = inputStream.listen((bytes) {
-      // In shell mode, check for terminal size OSC sequences
-      if (_customInputStream != null) {
-        bytes = _processShellModeBytes(bytes);
-      }
+      // Extract OSC sequences from input stream:
+      // - Normal mode: Terminal emulator responses (color queries, clipboard, etc.)
+      // - Shell mode: Above + custom protocol (e.g., OSC 9999 size updates)
+      bytes = _processOscSequences(bytes);
 
       // Parse the bytes and process ALL events in the buffer
       _inputParser.addBytes(bytes);
@@ -181,44 +186,42 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
 
   /// Process bytes in shell mode to extract terminal size OSC sequences
   /// Returns filtered bytes with OSC sequences removed
-  List<int> _processShellModeBytes(List<int> bytes) {
+  List<int> _processOscSequences(List<int> bytes) {
     final result = <int>[];
     int i = 0;
 
     while (i < bytes.length) {
-      // Check for OSC 9999 sequence: ESC ] 9999 ; <cols> ; <rows> BEL
-      if (i + 6 < bytes.length && bytes[i] == 0x1b && bytes[i + 1] == 0x5d) {
+      // Check for OSC sequence: ESC ] ... BEL or ESC ] ... ST (ESC \)
+      if (i + 2 < bytes.length && bytes[i] == 0x1b && bytes[i + 1] == 0x5d) {
         // Found ESC ]
-        // Look for the BEL terminator
         int end = i + 2;
-        while (end < bytes.length && bytes[end] != 0x07) {
+        bool foundTerminator = false;
+
+        // Look for BEL (0x07) or ST (ESC \ = 0x1b 0x5c) terminator
+        while (end < bytes.length) {
+          if (bytes[end] == 0x07) {
+            // Found BEL terminator
+            foundTerminator = true;
+            break;
+          }
+          if (end + 1 < bytes.length &&
+              bytes[end] == 0x1b &&
+              bytes[end + 1] == 0x5c) {
+            // Found ST terminator
+            foundTerminator = true;
+            end++;
+            break;
+          }
           end++;
         }
 
-        if (end < bytes.length) {
-          // Found complete OSC sequence
-          final oscContent = utf8.decode(bytes.sublist(i + 2, end));
+        if (foundTerminator && end < bytes.length) {
+          // Extract OSC content
+          final oscContent =
+          utf8.decode(bytes.sublist(i + 2, end), allowMalformed: true);
 
-          // Check if it's our terminal size sequence
-          if (oscContent.startsWith('9999;')) {
-            final parts = oscContent.substring(5).split(';');
-            if (parts.length == 2) {
-              try {
-                final cols = int.parse(parts[0]);
-                final rows = int.parse(parts[1]);
-                final newSize = Size(cols.toDouble(), rows.toDouble());
-
-                // Update terminal size
-                terminal.updateSize(newSize);
-                _lastKnownSize = newSize;
-
-                // Trigger a redraw with new size
-                scheduleFrame();
-              } catch (e) {
-                // Invalid size, ignore
-              }
-            }
-          }
+          // Handle OSC sequence based on command number
+          _handleOscSequence(oscContent);
 
           // Skip this OSC sequence
           i = end + 1;
@@ -232,6 +235,62 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
     }
 
     return result;
+  }
+
+  /// Handle a parsed OSC sequence
+  void _handleOscSequence(String oscContent) {
+    // Parse command number (everything before first semicolon)
+    final semicolonIndex = oscContent.indexOf(';');
+    if (semicolonIndex == -1) {
+      // No semicolon, treat entire content as command
+      _oscEventsController.add(oscContent);
+      return;
+    }
+
+    final command = oscContent.substring(0, semicolonIndex);
+    final payload = oscContent.substring(semicolonIndex + 1);
+    final shellMode = _customInputStream != null;
+    switch (command) {
+      // Custom OSC sequences for shell mode
+      case "9999" when shellMode: // Terminal Size
+        _handleTerminalSizeOsc(payload);
+        _oscEventsController.add(oscContent);
+        break;
+      // Standard OSC sequences
+      case "0": // Set icon name and window title
+      case "1": // Set icon name
+      case "2": // Set window title
+      case "4": // Set/query color palette
+      case "10": // Query foreground color response
+      case "11": // Query background color response
+      case "12": // Query cursor color response
+      case "52": // Clipboard operations
+        _oscEventsController.add(oscContent);
+        break;
+      default: // Unknown or unhandled OSC sequence
+        break;
+    }
+  }
+
+  /// Handle terminal size OSC sequence
+  void _handleTerminalSizeOsc(String payload) {
+    final parts = payload.split(';');
+    if (parts.length == 2) {
+      try {
+        final cols = int.parse(parts[0]);
+        final rows = int.parse(parts[1]);
+        final newSize = Size(cols.toDouble(), rows.toDouble());
+
+        // Update terminal size
+        terminal.updateSize(newSize);
+        _lastKnownSize = newSize;
+
+        // Trigger a redraw with new size
+        scheduleFrame();
+      } catch (e) {
+        // Invalid size, ignore
+      }
+    }
   }
 
   void _startResizeHandling() {
@@ -312,6 +371,9 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
     try {
       _eventLoopController.close();
     } catch (_) {}
+    try {
+      _oscEventsController.close();
+    } catch (_) {}
 
     // Stop hot reload if it was initialized
     try {
@@ -325,6 +387,7 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
       terminal.write('\x1B[?1006l'); // Disable SGR mouse mode
       terminal.write('\x1B[?1002l'); // Disable button event tracking
       terminal.write('\x1B[?1000l'); // Disable basic mouse tracking
+      terminal.restoreColors(); // Restore terminal colors
       terminal.flush();
 
       // Restore terminal
