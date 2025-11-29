@@ -36,6 +36,12 @@ class UnicodeWidth {
       return runeWidth(runes[0]);
     }
 
+    // Check for emoji variation selector (FE0F) - requests emoji presentation
+    // When present, the grapheme should render as width 2 (emoji style)
+    if (runes.contains(0xFE0F)) {
+      return 2;
+    }
+
     // For multi-rune graphemes, calculate the base character width
     // and ignore combining marks
     int width = 0;
