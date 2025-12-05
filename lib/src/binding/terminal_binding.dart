@@ -46,6 +46,9 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
   // Event-driven loop support
   final _eventLoopController = StreamController<void>.broadcast();
   Stream<void> get _eventLoopStream => _eventLoopController.stream;
+
+  /// Previous frame's buffer for differential rendering.
+  buf.Buffer? _previousBuffer;
   StreamSubscription? _inputSubscription;
   StreamSubscription? _resizeSubscription;
   StreamSubscription? _shutdownSubscription;
@@ -369,6 +372,8 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
             _lastKnownSize!.height != newSize.height) {
           _lastKnownSize = newSize;
           terminal.updateSize(newSize);
+          // Clear previous buffer to force full redraw on resize
+          _previousBuffer = null;
           scheduleFrame();
         }
       });
@@ -746,6 +751,118 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
     super.handleDrawFrame();
   }
 
+  /// Renders only the cells that changed since the previous frame.
+  void _renderDifferential(buf.Buffer buffer) {
+    final previous = _previousBuffer;
+
+    // First frame or size changed: full redraw
+    if (previous == null ||
+        previous.width != buffer.width ||
+        previous.height != buffer.height) {
+      _renderFull(buffer);
+      return;
+    }
+
+    // Differential render - only update changed cells
+    TextStyle? currentStyle;
+
+    for (int y = 0; y < buffer.height; y++) {
+      for (int x = 0; x < buffer.width; x++) {
+        final cell = buffer.getCell(x, y);
+        final prevCell = previous.getCell(x, y);
+
+        // Skip unchanged cells
+        if (cell == prevCell) {
+          continue;
+        }
+
+        // Cell changed - move cursor and write
+        terminal.moveCursor(x, y);
+
+        // Handle style
+        final hasStyle = cell.style.color != null ||
+            cell.style.backgroundColor != null ||
+            cell.style.fontWeight == FontWeight.bold ||
+            cell.style.fontWeight == FontWeight.dim ||
+            cell.style.fontStyle == FontStyle.italic ||
+            cell.style.decoration?.hasUnderline == true ||
+            cell.style.reverse;
+
+        if (hasStyle) {
+          if (currentStyle != cell.style) {
+            if (currentStyle != null) {
+              terminal.write(TextStyle.reset);
+            }
+            terminal.write(cell.style.toAnsi());
+            currentStyle = cell.style;
+          }
+          terminal.write(cell.char);
+        } else {
+          if (currentStyle != null) {
+            terminal.write(TextStyle.reset);
+            currentStyle = null;
+          }
+          terminal.write(cell.char);
+        }
+      }
+    }
+
+    // Reset style at end of frame
+    if (currentStyle != null) {
+      terminal.write(TextStyle.reset);
+    }
+
+    terminal.flush();
+  }
+
+  /// Full redraw (used for first frame or after resize).
+  void _renderFull(buf.Buffer buffer) {
+    terminal.moveTo(0, 0);
+    TextStyle? currentStyle;
+
+    for (int y = 0; y < buffer.height; y++) {
+      for (int x = 0; x < buffer.width; x++) {
+        final cell = buffer.getCell(x, y);
+
+        // Handle style
+        final hasStyle = cell.style.color != null ||
+            cell.style.backgroundColor != null ||
+            cell.style.fontWeight == FontWeight.bold ||
+            cell.style.fontWeight == FontWeight.dim ||
+            cell.style.fontStyle == FontStyle.italic ||
+            cell.style.decoration?.hasUnderline == true ||
+            cell.style.reverse;
+
+        if (hasStyle) {
+          if (currentStyle != cell.style) {
+            if (currentStyle != null) {
+              terminal.write(TextStyle.reset);
+            }
+            terminal.write(cell.style.toAnsi());
+            currentStyle = cell.style;
+          }
+          terminal.write(cell.char);
+        } else {
+          if (currentStyle != null) {
+            terminal.write(TextStyle.reset);
+            currentStyle = null;
+          }
+          terminal.write(cell.char);
+        }
+      }
+      if (y < buffer.height - 1) {
+        terminal.write('\n');
+      }
+    }
+
+    // Reset style at end
+    if (currentStyle != null) {
+      terminal.write(TextStyle.reset);
+    }
+
+    terminal.flush();
+  }
+
   /// The actual frame drawing logic, registered as a persistent callback.
   void _drawFrameCallback(Duration timeStamp) {
     if (rootElement == null) return;
@@ -793,38 +910,11 @@ class TerminalBinding extends NoctermBinding with SchedulerBinding, HotReloadBin
       renderObject.paintWithContext(canvas, Offset.zero);
     }
 
-    // Render to terminal
-    terminal.moveTo(0, 0);
-    for (int y = 0; y < buffer.height; y++) {
-      for (int x = 0; x < buffer.width; x++) {
-        final cell = buffer.getCell(x, y);
+    // Render to terminal using differential rendering
+    _renderDifferential(buffer);
 
-        // Skip zero-width space markers (used for emoji second column)
-        // Don't write anything - just skip to next cell
-        if (cell.char == '\u200B') {
-          continue;
-        }
-
-        // Apply style if present
-        if (cell.style.color != null ||
-            cell.style.backgroundColor != null ||
-            cell.style.fontWeight == FontWeight.bold ||
-            cell.style.fontWeight == FontWeight.dim ||
-            cell.style.fontStyle == FontStyle.italic ||
-            cell.style.decoration?.hasUnderline == true ||
-            cell.style.reverse) {
-          terminal.write(cell.style.toAnsi());
-          terminal.write(cell.char);
-          terminal.write(TextStyle.reset);
-        } else {
-          terminal.write(cell.char);
-        }
-      }
-      if (y < buffer.height - 1) {
-        terminal.write('\n');
-      }
-    }
-    terminal.flush();
+    // Store buffer for next frame comparison
+    _previousBuffer = buffer;
 
     // Rotate rainbow debug color for next frame
     if (debugRepaintRainbowEnabled) {

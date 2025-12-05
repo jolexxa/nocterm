@@ -15,6 +15,18 @@ class Cell {
       style: style ?? this.style,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    return other is Cell &&
+        other.char == char &&
+        other.style == style;
+  }
+
+  @override
+  int get hashCode => Object.hash(char, style);
 }
 
 class Buffer {
