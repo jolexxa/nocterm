@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:nocterm_cli/commands/shell_command.dart';
 import 'package:nocterm_cli/commands/logs_command.dart';
 import 'package:nocterm_cli/commands/run_command.dart';
+import 'package:nocterm_cli/commands/run_compile_command.dart';
+import 'package:nocterm_cli/commands/run_restore_shell_command.dart';
+import 'package:nocterm_cli/commands/shell_command.dart';
 
 void main(List<String> arguments) async {
   final parser =
@@ -45,7 +47,6 @@ void main(List<String> arguments) async {
           exit(0);
         }
         await runShellCommand();
-        break;
       case 'logs':
         if (command['help'] as bool) {
           print('Usage: nocterm logs');
@@ -55,7 +56,6 @@ void main(List<String> arguments) async {
           exit(0);
         }
         await runLogsCommand();
-        break;
       case 'run':
         if (command['help'] as bool) {
           print('Usage: nocterm run dart <script.dart> [arguments]');
@@ -69,7 +69,18 @@ void main(List<String> arguments) async {
           exit(0);
         }
         await runRunCommand(command.rest);
-        break;
+      case 'compile':
+        if (command['help'] as bool) {
+          print('Usage: nocterm compile');
+          print('');
+          print('Compile a nocterm app into a native executable.');
+          exit(0);
+        }
+
+        final output = command['output'] as String? ?? '.';
+        await runCompileCommand(rawOutputPath: output);
+      case 'restore-shell':
+        await runRestoreShellCommand();
       default:
         _printUsage(parser);
         exit(1);
@@ -91,6 +102,7 @@ void _printUsage(ArgParser parser) {
   print('  shell    Start a nocterm shell server for debugging');
   print('  logs     Stream logs from a running nocterm app');
   print('  run      Run a Dart script with VM service enabled');
+  print('  compile  Compile a nocterm app into a native executable');
   print('');
   print('Run "nocterm <command> --help" for more information about a command.');
 }

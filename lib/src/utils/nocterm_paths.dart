@@ -40,6 +40,11 @@ String getShellSocketPath() {
   return p.join(getNoctermDirectory(), 'shell.sock');
 }
 
+/// Get the path to the exe directory for the current directory.
+String getExePath() {
+  return p.join(getNoctermDirectory(), 'exe');
+}
+
 /// Ensure the nocterm directory exists for the current working directory.
 Future<void> ensureNoctermDirectoryExists() async {
   final dir = Directory(getNoctermDirectory());
