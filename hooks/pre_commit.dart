@@ -5,6 +5,7 @@ Hook main() {
     ReRegisterHooks(),
     ShellTask(
         include: [Glob('**/*.dart')],
+        exclude: [Glob('third_party/**')],
         commands: (files) => ['dart format ${files.join(' ')}'])
   ]);
 }
