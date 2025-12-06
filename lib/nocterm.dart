@@ -69,6 +69,7 @@ export 'src/utils/clipboard.dart';
 export 'src/utils/log_server.dart';
 export 'src/utils/logger.dart';
 export 'src/utils/nocterm_paths.dart';
+export 'src/utils/escape_codes.dart';
 
 // Performance and Debugging
 export 'src/foundation/performance.dart';

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:meta/meta.dart';
 import 'package:nocterm/src/size.dart';
 import 'package:nocterm/src/style.dart';
+import 'package:nocterm/src/utils/escape_codes.dart';
 
 import 'terminal_backend.dart';
 
@@ -29,13 +30,6 @@ class Terminal {
   final StringBuffer writeBuffer = StringBuffer();
 
   // ANSI escape codes for terminal control
-  static const _hideCursor = '\x1b[?25l';
-  static const _showCursor = '\x1b[?25h';
-  static const _clearScreen = '\x1b[2J';
-  static const _clearLine = '\x1b[2K';
-  static const _moveCursorHome = '\x1b[H';
-  static const _alternateBuffer = '\x1b[?1049h';
-  static const _mainBuffer = '\x1b[?1049l';
 
   // Regex pattern to match RGB color responses
   static const _rgbPattern =
@@ -61,7 +55,7 @@ class Terminal {
     if (!altScreenEnabled) {
       // These need immediate effect, so flush any pending writes first
       flush();
-      backend.writeRaw(_alternateBuffer);
+      backend.writeRaw(EscapeCodes.alternateBuffer);
       clear();
       altScreenEnabled = true;
     }
@@ -71,31 +65,31 @@ class Terminal {
     if (altScreenEnabled) {
       // These need immediate effect, so flush any pending writes first
       flush();
-      backend.writeRaw(_mainBuffer);
+      backend.writeRaw(EscapeCodes.mainBuffer);
       altScreenEnabled = false;
     }
   }
 
   void hideCursor() {
     // Buffer this - will be flushed with frame
-    write(_hideCursor);
+    write(EscapeCodes.hideCursor);
   }
 
   void showCursor() {
     // This needs immediate effect when exiting
     flush();
-    backend.writeRaw(_showCursor);
+    backend.writeRaw(EscapeCodes.showCursor);
   }
 
   void clear() {
     // Buffer this - will be flushed with frame
-    write(_clearScreen);
-    write(_moveCursorHome);
+    write(EscapeCodes.clearScreen);
+    write(EscapeCodes.moveCursorHome);
   }
 
   void clearLine() {
     // Buffer this - will be flushed with frame
-    write(_clearLine);
+    write(EscapeCodes.clearLine);
   }
 
   void moveCursor(int x, int y) {
@@ -103,7 +97,7 @@ class Terminal {
   }
 
   void moveToHome() {
-    write(_moveCursorHome);
+    write(EscapeCodes.moveCursorHome);
   }
 
   void moveTo(int x, int y) {

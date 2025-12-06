@@ -3,6 +3,11 @@ import 'dart:io';
 
 import 'package:nocterm/nocterm.dart';
 
+/// A broadcast stream of the stdin stream.
+// ignore: unnecessary_late
+late final Stream<List<int>> _stdinStream = stdin.asBroadcastStream();
+StreamSubscription? _clientSubscription;
+
 Future<void> runShellCommand() async {
   print('Starting nocterm shell server...');
 
@@ -30,11 +35,23 @@ Future<void> runShellCommand() async {
   print('Press Ctrl+C to stop the shell.');
 
   try {
-    await for (final client in server) {
-      print('\nNocterm app connected!');
+    if (stdin.echoMode) stdin.echoMode = false;
+    if (stdin.lineMode) stdin.lineMode = false;
+  } catch (_) {}
+
+  _cleanUpOnQuit();
+
+  try {
+    _clientSubscription = server.listen((client) async {
       await _handleClient(client);
-      print('\nNocterm app disconnected.');
-    }
+
+      // exit alternate screen
+      stdout.write(EscapeCodes.mainBuffer);
+
+      // TODO(mrgnhnt): User is required to ctrl+c twice to exit the program.. why?
+    });
+
+    await _clientSubscription?.asFuture();
   } finally {
     await server.close();
     if (await handleFile.exists()) {
@@ -46,21 +63,57 @@ Future<void> runShellCommand() async {
   }
 }
 
+void _cleanUpOnQuit() {
+  StreamSubscription? sigintSubscription;
+  StreamSubscription? sigtermSubscription;
+
+  void clean() {
+    _clientSubscription?.cancel();
+    sigintSubscription?.cancel();
+    sigtermSubscription?.cancel();
+
+    // IMPORTANT: Disable mouse tracking and bracketed paste BEFORE leaving alternate screen
+    // This ensures the terminal properly processes the disable commands
+    stdout.write(EscapeCodes.disable.motionTracking);
+    stdout.write(EscapeCodes.disable.sgrMouseMode);
+    stdout.write(EscapeCodes.disable.buttonEventTracking);
+    stdout.write(EscapeCodes.disable.basicMouseTracking);
+
+    stdout.write(EscapeCodes.showCursor);
+
+    try {
+      if (!stdin.echoMode) stdin.echoMode = true;
+      if (!stdin.lineMode) stdin.lineMode = true;
+    } catch (_) {}
+  }
+
+  // Forward signals to child process
+  sigintSubscription = ProcessSignal.sigint.watch().listen((_) {
+    clean();
+  });
+
+  if (Platform.isMacOS || Platform.isLinux) {
+    sigtermSubscription = ProcessSignal.sigterm.watch().listen((_) {
+      clean();
+    });
+  }
+}
+
 Future<void> _handleClient(Socket client) async {
   StreamSubscription? stdinSubscription;
   StreamSubscription? sigwinchSubscription;
 
   try {
     // Put terminal in raw mode to pass through all input
-    stdin.echoMode = false;
-    stdin.lineMode = false;
+    if (stdin.echoMode) stdin.echoMode = false;
+    if (stdin.lineMode) stdin.lineMode = false;
 
     // Send initial terminal size to client using a custom OSC sequence
     // Format: ESC ] 9999 ; <cols> ; <rows> BEL
     _sendTerminalSize(client);
 
     // Forward stdin to client app (input events)
-    stdinSubscription = stdin.listen((data) {
+    stdinSubscription = _stdinStream.listen((data) {
       client.add(data);
     });
 
@@ -86,14 +139,6 @@ Future<void> _handleClient(Socket client) async {
   } finally {
     await stdinSubscription?.cancel();
     await sigwinchSubscription?.cancel();
-
-    // Restore terminal mode
-    try {
-      stdin.echoMode = true;
-      stdin.lineMode = true;
-    } catch (_) {
-      // Ignore errors when restoring terminal mode
-    }
   }
 }
 

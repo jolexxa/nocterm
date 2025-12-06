@@ -85,16 +85,16 @@ class TerminalBinding extends NoctermBinding
     // ESC [ ? 1002 h - Use Cell Motion Mouse Tracking
     // ESC [ ? 1003 h - Enable all motion mouse tracking
     // ESC [ ? 1006 h - Enable SGR mouse mode
-    terminal.write('\x1B[?1000h'); // Basic mouse tracking
-    terminal.write('\x1B[?1002h'); // Button event tracking
-    terminal.write('\x1B[?1003h'); // All motion tracking
-    terminal.write('\x1B[?1006h'); // SGR mouse mode
+    terminal.write(EscapeCodes.enable.basicMouseTracking);
+    terminal.write(EscapeCodes.enable.buttonEventTracking);
+    terminal.write(EscapeCodes.enable.motionTracking);
+    terminal.write(EscapeCodes.enable.sgrMouseMode);
 
     // Enable bracketed paste mode
     // ESC [ ? 2004 h - Enables bracketed paste mode
     // When enabled, pasted text is wrapped in ESC[200~ ... ESC[201~
     // This allows applications to distinguish pasted text from typed text
-    terminal.write('\x1B[?2004h'); // Bracketed paste mode
+    terminal.write(EscapeCodes.enable.bracketedPasteMode);
     terminal.flush();
 
     // Store initial size
@@ -694,13 +694,11 @@ class TerminalBinding extends NoctermBinding
     try {
       // IMPORTANT: Disable mouse tracking and bracketed paste BEFORE leaving alternate screen
       // This ensures the terminal properly processes the disable commands
-      terminal.backend
-          .writeRaw('\x1B[?1003l'); // Disable all motion tracking FIRST
-      terminal.backend.writeRaw('\x1B[?1006l'); // Disable SGR mouse mode
-      terminal.backend.writeRaw('\x1B[?1002l'); // Disable button event tracking
-      terminal.backend
-          .writeRaw('\x1B[?1000l'); // Disable basic mouse tracking LAST
-      terminal.backend.writeRaw('\x1B[?2004l'); // Disable bracketed paste mode
+      terminal.backend.writeRaw(EscapeCodes.disable.motionTracking);
+      terminal.backend.writeRaw(EscapeCodes.disable.sgrMouseMode);
+      terminal.backend.writeRaw(EscapeCodes.disable.buttonEventTracking);
+      terminal.backend.writeRaw(EscapeCodes.disable.basicMouseTracking);
+      terminal.backend.writeRaw(EscapeCodes.disable.bracketedPasteMode);
 
       // Restore terminal (this includes leaving alternate screen)
       terminal.showCursor();
@@ -708,15 +706,14 @@ class TerminalBinding extends NoctermBinding
 
       // CRITICAL: Disable mouse tracking again after leaving alternate screen
       // Some terminals restore previous state when switching buffers
-      terminal.backend.writeRaw('\x1B[?1003l'); // Disable all motion tracking
-      terminal.backend.writeRaw('\x1B[?1006l'); // Disable SGR mouse mode
-      terminal.backend.writeRaw('\x1B[?1002l'); // Disable button event tracking
-      terminal.backend.writeRaw('\x1B[?1000l'); // Disable basic mouse tracking
+      terminal.backend.writeRaw(EscapeCodes.disable.motionTracking);
+      terminal.backend.writeRaw(EscapeCodes.disable.sgrMouseMode);
+      terminal.backend.writeRaw(EscapeCodes.disable.buttonEventTracking);
+      terminal.backend.writeRaw(EscapeCodes.disable.basicMouseTracking);
 
       // Send a terminal reset sequence as a final safety measure
       // This helps ensure the terminal is in a clean state
-      terminal.backend
-          .writeRaw('\x1B[c'); // Reset Device Attributes (soft reset)
+      terminal.backend.writeRaw(EscapeCodes.resetDeviceAttributes);
 
       terminal.clear();
 
