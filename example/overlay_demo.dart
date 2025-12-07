@@ -44,7 +44,8 @@ class _OverlayDemoState extends State<OverlayDemo> {
                 const SizedBox(height: 1),
                 Text(
                   'Press ESC to close',
-                  style: TextStyle(color: Colors.yellow, fontStyle: FontStyle.italic),
+                  style: TextStyle(
+                      color: Colors.yellow, fontStyle: FontStyle.italic),
                 ),
               ],
             ),
@@ -64,71 +65,74 @@ class _OverlayDemoState extends State<OverlayDemo> {
   Component build(BuildContext context) {
     return Overlay(
       initialEntries: [
-          OverlayEntry(
-            builder: (context) {
-              // Store the overlay state for later use
-              Future.microtask(() {
-                _overlayState = Overlay.of(context);
-              });
+        OverlayEntry(
+          builder: (context) {
+            // Store the overlay state for later use
+            Future.microtask(() {
+              _overlayState = Overlay.of(context);
+            });
 
-              return KeyboardListener(
-                onKeyEvent: (event) {
-                  if (event == LogicalKey.escape) {
-                    if (_overlayEntry != null) {
-                      _hideOverlay();
-                    } else {
-                      shutdownApp();
-                    }
-                    return true;
-                  } else if (event == LogicalKey.keyO) {
-                    if (_overlayEntry == null) {
-                      _showOverlay();
-                    }
-                    return true;
+            return KeyboardListener(
+              onKeyEvent: (event) {
+                if (event == LogicalKey.escape) {
+                  if (_overlayEntry != null) {
+                    _hideOverlay();
+                  } else {
+                    shutdownApp();
                   }
-                  return false;
-                },
-                child: Container(
-                  color: null, // Terminal default background
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Overlay Demo',
-                          style: TextStyle(
-                            color: Colors.cyan,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  return true;
+                } else if (event == LogicalKey.keyO) {
+                  if (_overlayEntry == null) {
+                    _showOverlay();
+                  }
+                  return true;
+                }
+                return false;
+              },
+              child: Container(
+                color: null, // Terminal default background
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Overlay Demo',
+                        style: TextStyle(
+                          color: Colors.cyan,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 2),
-                        const Text('This demo shows overlays with terminal default background'),
-                        const SizedBox(height: 1),
-                        Text(
-                          'The overlay won\'t have a gray background - it uses terminal\'s default!',
-                          style: TextStyle(color: Colors.green),
+                      ),
+                      const SizedBox(height: 2),
+                      const Text(
+                          'This demo shows overlays with terminal default background'),
+                      const SizedBox(height: 1),
+                      Text(
+                        'The overlay won\'t have a gray background - it uses terminal\'s default!',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                      const SizedBox(height: 2),
+                      Container(
+                        padding: const EdgeInsets.all(1),
+                        decoration: BoxDecoration(
+                          border: BoxBorder.all(color: Colors.yellow),
                         ),
-                        const SizedBox(height: 2),
-                        Container(
-                          padding: const EdgeInsets.all(1),
-                          decoration: BoxDecoration(
-                            border: BoxBorder.all(color: Colors.yellow),
-                          ),
-                          child: Column(
-                            children: [
-                              Text('Press "O" to show overlay', style: TextStyle(color: Colors.yellow)),
-                              Text('Press ESC to close overlay/exit', style: TextStyle(color: Colors.red)),
-                            ],
-                          ),
+                        child: Column(
+                          children: [
+                            Text('Press "O" to show overlay',
+                                style: TextStyle(color: Colors.yellow)),
+                            Text('Press ESC to close overlay/exit',
+                                style: TextStyle(color: Colors.red)),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-            },
-          ),
-        ],
-      );
+              ),
+            );
+          },
+        ),
+      ],
+    );
   }
 }

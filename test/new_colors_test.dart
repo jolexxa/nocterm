@@ -9,14 +9,17 @@ void main() {
         await tester.pumpComponent(
           Column(
             children: [
-              Text('Regular Colors:', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Regular Colors:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: 1),
               Row(children: [
                 Container(
                   width: 10,
                   height: 2,
                   color: Colors.black,
-                  child: Center(child: Text('BLACK', style: TextStyle(color: Colors.white))),
+                  child: Center(
+                      child:
+                          Text('BLACK', style: TextStyle(color: Colors.white))),
                 ),
                 Container(
                   width: 10,
@@ -60,18 +63,23 @@ void main() {
                   width: 10,
                   height: 2,
                   color: Colors.white,
-                  child: Center(child: Text('WHITE', style: TextStyle(color: Colors.black))),
+                  child: Center(
+                      child:
+                          Text('WHITE', style: TextStyle(color: Colors.black))),
                 ),
               ]),
               SizedBox(height: 2),
-              Text('Bright Colors:', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Bright Colors:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: 1),
               Row(children: [
                 Container(
                   width: 10,
                   height: 2,
                   color: Colors.brightBlack,
-                  child: Center(child: Text('BR BLACK', style: TextStyle(color: Colors.white))),
+                  child: Center(
+                      child: Text('BR BLACK',
+                          style: TextStyle(color: Colors.white))),
                 ),
                 Container(
                   width: 10,
@@ -115,11 +123,14 @@ void main() {
                   width: 10,
                   height: 2,
                   color: Colors.brightWhite,
-                  child: Center(child: Text('BR WHITE', style: TextStyle(color: Colors.black))),
+                  child: Center(
+                      child: Text('BR WHITE',
+                          style: TextStyle(color: Colors.black))),
                 ),
               ]),
               SizedBox(height: 2),
-              Text('Sample Text Styles:', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Sample Text Styles:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               Text('Error message', style: TextStyle(color: Colors.red)),
               Text('Success message', style: TextStyle(color: Colors.green)),
               Text('Warning message', style: TextStyle(color: Colors.yellow)),

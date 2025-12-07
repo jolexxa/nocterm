@@ -24,14 +24,14 @@ void main() {
               ),
             ),
           );
-          
+
           print('Container with Column:');
           print(tester.terminalState.getText());
         },
         debugPrintAfterPump: false,
       );
     });
-    
+
     test('container constrains text directly', () async {
       await testNocterm(
         'container text constraints',
@@ -47,7 +47,7 @@ void main() {
               child: const Text('Test', textAlign: TextAlign.center),
             ),
           );
-          
+
           print('Container with Text directly:');
           print(tester.terminalState.getText());
         },

@@ -120,7 +120,8 @@ void main() {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('NoctermApp Demo', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('NoctermApp Demo',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                       Text('Window title: "Demo Application"'),
                       Text('Icon name: "DemoApp"'),
                     ],

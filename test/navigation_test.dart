@@ -228,7 +228,8 @@ void main() {
               events.add('pop:${route.settings.name}');
             },
             onReplace: (newRoute, oldRoute) {
-              events.add('replace:${oldRoute?.settings.name}->${newRoute?.settings.name}');
+              events.add(
+                  'replace:${oldRoute?.settings.name}->${newRoute?.settings.name}');
             },
           );
 

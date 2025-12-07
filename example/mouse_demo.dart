@@ -95,7 +95,9 @@ class _MouseDemoState extends State<MouseDemo> {
                                   ? '→ Item $index (Hovered)'
                                   : '  Item $index',
                           style: TextStyle(
-                            fontWeight: isSelected || isHovered ? FontWeight.bold : null,
+                            fontWeight: isSelected || isHovered
+                                ? FontWeight.bold
+                                : null,
                             color: isSelected
                                 ? const Color(0xFF00FF00)
                                 : isHovered
@@ -168,7 +170,8 @@ class _MouseDemoState extends State<MouseDemo> {
               // MouseRegion demo
               MouseRegion(
                 onEnter: (event) {
-                  _log('MouseRegion.onEnter: (${event.x}, ${event.y}) pressed=${event.pressed}');
+                  _log(
+                      'MouseRegion.onEnter: (${event.x}, ${event.y}) pressed=${event.pressed}');
                   setState(() {
                     _isHovering = true;
                     _mouseX = event.x;
@@ -177,7 +180,8 @@ class _MouseDemoState extends State<MouseDemo> {
                   });
                 },
                 onExit: (event) {
-                  _log('MouseRegion.onExit: (${event.x}, ${event.y}) pressed=${event.pressed}');
+                  _log(
+                      'MouseRegion.onExit: (${event.x}, ${event.y}) pressed=${event.pressed}');
                   setState(() {
                     _isHovering = false;
                     _mouseX = event.x;
@@ -186,7 +190,8 @@ class _MouseDemoState extends State<MouseDemo> {
                   });
                 },
                 onHover: (event) {
-                  _log('MouseRegion.onHover: (${event.x}, ${event.y}) pressed=${event.pressed}');
+                  _log(
+                      'MouseRegion.onHover: (${event.x}, ${event.y}) pressed=${event.pressed}');
                   setState(() {
                     _mouseX = event.x;
                     _mouseY = event.y;
@@ -228,14 +233,16 @@ class _MouseDemoState extends State<MouseDemo> {
                   });
                 },
                 onTapDown: (details) {
-                  _log('GestureDetector.onTapDown: local=(${details.localPosition.dx}, ${details.localPosition.dy})');
+                  _log(
+                      'GestureDetector.onTapDown: local=(${details.localPosition.dx}, ${details.localPosition.dy})');
                   setState(() {
                     _isPressing = true;
                     _lastEvent = 'Tap down';
                   });
                 },
                 onTapUp: (details) {
-                  _log('GestureDetector.onTapUp: local=(${details.localPosition.dx}, ${details.localPosition.dy})');
+                  _log(
+                      'GestureDetector.onTapUp: local=(${details.localPosition.dx}, ${details.localPosition.dy})');
                   setState(() {
                     _isPressing = false;
                   });
@@ -390,7 +397,9 @@ class _MouseDemoState extends State<MouseDemo> {
                                       ? '→ Item $index (Hovered)'
                                       : '  Item $index',
                               style: TextStyle(
-                                fontWeight: isSelected || isHovered ? FontWeight.bold : null,
+                                fontWeight: isSelected || isHovered
+                                    ? FontWeight.bold
+                                    : null,
                                 color: isSelected
                                     ? const Color(0xFF00FF00)
                                     : isHovered

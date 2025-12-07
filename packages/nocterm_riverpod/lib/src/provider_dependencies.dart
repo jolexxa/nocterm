@@ -48,7 +48,8 @@ class ProviderDependencies {
           provider,
           (previous, next) {
             // Only trigger rebuild if this subscription is still active
-            if (_watchers.containsKey(provider) || _oldWatchers.containsKey(provider)) {
+            if (_watchers.containsKey(provider) ||
+                _oldWatchers.containsKey(provider)) {
               if (dependent.mounted) {
                 dependent.markNeedsBuild();
               }

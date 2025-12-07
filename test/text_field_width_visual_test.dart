@@ -6,7 +6,8 @@ void main() {
     await testNocterm(
       'visual width test',
       (tester) async {
-        final controller = TextEditingController(text: 'Hello World! This is a long text that should scroll.');
+        final controller = TextEditingController(
+            text: 'Hello World! This is a long text that should scroll.');
 
         await tester.pumpComponent(
           Column(
@@ -42,7 +43,8 @@ void main() {
         );
 
         // Move cursor to end to test scrolling
-        controller.selection = TextSelection.collapsed(offset: controller.text.length);
+        controller.selection =
+            TextSelection.collapsed(offset: controller.text.length);
         await tester.pump();
 
         print('Terminal output:');

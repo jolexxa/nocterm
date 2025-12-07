@@ -59,7 +59,8 @@ class _CursorStylesDemoState extends State<CursorStylesDemo> {
   void _cycleCursorColor() {
     setState(() {
       final currentIndex = _availableColors.indexOf(_cursorColor);
-      _cursorColor = _availableColors[(currentIndex + 1) % _availableColors.length];
+      _cursorColor =
+          _availableColors[(currentIndex + 1) % _availableColors.length];
     });
   }
 
@@ -76,7 +77,8 @@ class _CursorStylesDemoState extends State<CursorStylesDemo> {
   void _handleTabNavigation({bool reverse = false}) {
     setState(() {
       if (reverse) {
-        _focusedFieldIndex = (_focusedFieldIndex - 1 + _totalFields) % _totalFields;
+        _focusedFieldIndex =
+            (_focusedFieldIndex - 1 + _totalFields) % _totalFields;
       } else {
         _focusedFieldIndex = (_focusedFieldIndex + 1) % _totalFields;
       }
@@ -131,7 +133,9 @@ class _CursorStylesDemoState extends State<CursorStylesDemo> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Controls:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.yellow)),
+                  Text('Controls:',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.yellow)),
                   Text('• Tab/Shift+Tab: Navigate fields'),
                   Text('• Ctrl+S: Change cursor style'),
                   Text('• Ctrl+C: Change cursor color'),
@@ -181,7 +185,9 @@ class _CursorStylesDemoState extends State<CursorStylesDemo> {
             const SizedBox(height: 2),
 
             // Demo fields showing all styles
-            Text('All Cursor Styles:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.yellow)),
+            Text('All Cursor Styles:',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Colors.yellow)),
             const SizedBox(height: 1),
 
             // Block cursor
@@ -212,7 +218,8 @@ class _CursorStylesDemoState extends State<CursorStylesDemo> {
               children: [
                 SizedBox(
                   width: 15,
-                  child: Text('Underline:', style: TextStyle(color: Colors.gray)),
+                  child:
+                      Text('Underline:', style: TextStyle(color: Colors.gray)),
                 ),
                 TextField(
                   controller: TextEditingController(text: 'Underline cursor'),
@@ -229,7 +236,6 @@ class _CursorStylesDemoState extends State<CursorStylesDemo> {
               ],
             ),
             const SizedBox(height: 1),
-
 
             // Block outline cursor
             Row(

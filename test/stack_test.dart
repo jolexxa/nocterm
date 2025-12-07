@@ -41,7 +41,7 @@ void main() {
               ),
             ),
           );
-          
+
           print('Stack with Positioned.fill background:');
           print('Expected: 40x10 container with border filling entire area');
           print('Actual output:');
@@ -69,9 +69,9 @@ void main() {
               ),
             ),
           );
-          
+
           await tester.pump();
-          
+
           print('\n=== Test 2: Stack with Positioned.fill ===');
           await tester.pumpComponent(
             Container(
@@ -91,9 +91,9 @@ void main() {
               ),
             ),
           );
-          
+
           await tester.pump();
-          
+
           print('\n=== Test 3: Stack with mixed children ===');
           await tester.pumpComponent(
             Container(
@@ -132,7 +132,7 @@ void main() {
         'positioned fill constraints',
         (tester) async {
           print('\n=== Testing Positioned.fill constraints ===');
-          
+
           await tester.pumpComponent(
             Container(
               width: 25,
@@ -163,7 +163,7 @@ void main() {
               ),
             ),
           );
-          
+
           print('\nThe filled container should occupy the entire 25x6 space');
         },
         debugPrintAfterPump: true,

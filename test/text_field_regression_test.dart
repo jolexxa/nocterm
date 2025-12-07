@@ -43,7 +43,8 @@ void main() {
       await testNocterm(
         'explicit newlines',
         (tester) async {
-          final controller = TextEditingController(text: 'Line 1\nLine 2\nLine 3');
+          final controller =
+              TextEditingController(text: 'Line 1\nLine 2\nLine 3');
 
           await tester.pumpComponent(
             TextField(
@@ -64,7 +65,8 @@ void main() {
           expect(tester.terminalState, containsText('Line 3'));
 
           // Move cursor to end of Line 2
-          controller.selection = TextSelection.collapsed(offset: 13); // After "Line 2"
+          controller.selection =
+              TextSelection.collapsed(offset: 13); // After "Line 2"
           await tester.pump();
 
           // Cursor should be at the end of line 2

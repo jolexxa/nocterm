@@ -86,8 +86,11 @@ class _ClipboardDemoAppState extends State<ClipboardDemoApp> {
             Text(
               'Field 1: ${_focusedField == 0 ? '← FOCUSED' : ''}',
               style: TextStyle(
-                color: _focusedField == 0 ? const Color.fromRGB(100, 255, 100) : const Color.fromRGB(150, 150, 150),
-                fontWeight: _focusedField == 0 ? FontWeight.bold : FontWeight.normal,
+                color: _focusedField == 0
+                    ? const Color.fromRGB(100, 255, 100)
+                    : const Color.fromRGB(150, 150, 150),
+                fontWeight:
+                    _focusedField == 0 ? FontWeight.bold : FontWeight.normal,
               ),
             ),
             const SizedBox(height: 0.5),
@@ -96,7 +99,9 @@ class _ClipboardDemoAppState extends State<ClipboardDemoApp> {
               focused: _focusedField == 0,
               decoration: InputDecoration(
                 border: BoxBorder.all(
-                  color: _focusedField == 0 ? const Color.fromRGB(100, 255, 100) : const Color.fromRGB(100, 100, 100),
+                  color: _focusedField == 0
+                      ? const Color.fromRGB(100, 255, 100)
+                      : const Color.fromRGB(100, 100, 100),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 1),
               ),
@@ -107,8 +112,11 @@ class _ClipboardDemoAppState extends State<ClipboardDemoApp> {
             Text(
               'Field 2: ${_focusedField == 1 ? '← FOCUSED' : ''}',
               style: TextStyle(
-                color: _focusedField == 1 ? const Color.fromRGB(100, 255, 100) : const Color.fromRGB(150, 150, 150),
-                fontWeight: _focusedField == 1 ? FontWeight.bold : FontWeight.normal,
+                color: _focusedField == 1
+                    ? const Color.fromRGB(100, 255, 100)
+                    : const Color.fromRGB(150, 150, 150),
+                fontWeight:
+                    _focusedField == 1 ? FontWeight.bold : FontWeight.normal,
               ),
             ),
             const SizedBox(height: 0.5),
@@ -117,7 +125,9 @@ class _ClipboardDemoAppState extends State<ClipboardDemoApp> {
               focused: _focusedField == 1,
               decoration: InputDecoration(
                 border: BoxBorder.all(
-                  color: _focusedField == 1 ? const Color.fromRGB(100, 255, 100) : const Color.fromRGB(100, 100, 100),
+                  color: _focusedField == 1
+                      ? const Color.fromRGB(100, 255, 100)
+                      : const Color.fromRGB(100, 100, 100),
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 1),
               ),
@@ -134,7 +144,9 @@ class _ClipboardDemoAppState extends State<ClipboardDemoApp> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
-              ClipboardManager.hasContent() ? '✓ Has content: "${ClipboardManager.paste()}"' : '✗ Empty',
+              ClipboardManager.hasContent()
+                  ? '✓ Has content: "${ClipboardManager.paste()}"'
+                  : '✗ Empty',
               style: TextStyle(
                 color: ClipboardManager.hasContent()
                     ? const Color.fromRGB(100, 255, 100)
@@ -147,8 +159,9 @@ class _ClipboardDemoAppState extends State<ClipboardDemoApp> {
             Text(
               'OSC 52 Support: ${Clipboard.isSupported() ? '✓ Likely supported' : '✗ Not detected'}',
               style: TextStyle(
-                color:
-                    Clipboard.isSupported() ? const Color.fromRGB(100, 255, 100) : const Color.fromRGB(255, 200, 100),
+                color: Clipboard.isSupported()
+                    ? const Color.fromRGB(100, 255, 100)
+                    : const Color.fromRGB(255, 200, 100),
               ),
             ),
 

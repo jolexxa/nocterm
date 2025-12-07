@@ -19,7 +19,8 @@ void main() {
           );
 
           // Verify all text is rendered
-          expect(tester.terminalState, containsText('This is a test 🎉 with emoji'));
+          expect(tester.terminalState,
+              containsText('This is a test 🎉 with emoji'));
           expect(tester.terminalState, containsText('Second line ✨ more text'));
           expect(tester.terminalState, containsText('🔥 Start with emoji'));
         },

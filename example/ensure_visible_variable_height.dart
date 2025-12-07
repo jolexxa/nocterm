@@ -98,7 +98,9 @@ class _VariableHeightListDemoState extends State<VariableHeightListDemo> {
                         child: Text(
                           (i == selectedIndex ? '▶ ' : '  ') + items[i].$1,
                           style: TextStyle(
-                            color: i == selectedIndex ? Colors.black : Colors.white,
+                            color: i == selectedIndex
+                                ? Colors.black
+                                : Colors.white,
                           ),
                         ),
                       ),

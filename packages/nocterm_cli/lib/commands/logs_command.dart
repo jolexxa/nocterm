@@ -11,7 +11,9 @@ Future<void> runLogsCommand() async {
     final portFile = File(getLogPortPath());
 
     if (!await portFile.exists()) {
-      stderr.writeln('Error: No nocterm app is running (log_port file not found)');
+      stderr.writeln(
+        'Error: No nocterm app is running (log_port file not found)',
+      );
       stderr.writeln('Make sure a nocterm app is running in this directory.');
       exit(1);
     }

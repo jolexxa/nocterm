@@ -117,7 +117,8 @@ void main() {
         expect(
           code,
           equals(expectedCode),
-          reason: 'Emoji $emoji should have code U+${expectedCode.toRadixString(16).toUpperCase()}',
+          reason:
+              'Emoji $emoji should have code U+${expectedCode.toRadixString(16).toUpperCase()}',
         );
       }
     });

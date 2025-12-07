@@ -80,13 +80,15 @@ void main() {
                         width: 15,
                         height: 2,
                         color: Colors.green,
-                        child: Text('Mid1', style: TextStyle(color: Colors.white)),
+                        child:
+                            Text('Mid1', style: TextStyle(color: Colors.white)),
                       ),
                       Container(
                         width: 15,
                         height: 2,
                         color: Colors.yellow,
-                        child: Text('Mid2', style: TextStyle(color: Colors.black)),
+                        child:
+                            Text('Mid2', style: TextStyle(color: Colors.black)),
                       ),
                     ],
                   ),
@@ -123,7 +125,8 @@ void main() {
                     width: 25,
                     height: 3,
                     color: Colors.red,
-                    child: Text('Header', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Header', style: TextStyle(color: Colors.white)),
                   ),
                   Row(
                     children: [
@@ -151,7 +154,8 @@ void main() {
                     width: 25,
                     height: 3,
                     color: Colors.magenta,
-                    child: Text('Footer', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Footer', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -188,19 +192,22 @@ void main() {
                         width: 15,
                         height: 3,
                         color: Colors.green,
-                        child: Text('Top', style: TextStyle(color: Colors.white)),
+                        child:
+                            Text('Top', style: TextStyle(color: Colors.white)),
                       ),
                       Container(
                         width: 15,
                         height: 3,
                         color: Colors.yellow,
-                        child: Text('Mid', style: TextStyle(color: Colors.black)),
+                        child:
+                            Text('Mid', style: TextStyle(color: Colors.black)),
                       ),
                       Container(
                         width: 15,
                         height: 3,
                         color: Colors.cyan,
-                        child: Text('Bot', style: TextStyle(color: Colors.white)),
+                        child:
+                            Text('Bot', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -246,21 +253,24 @@ void main() {
                           child: Container(
                             height: 8,
                             color: Colors.green,
-                            child: Text('Exp1', style: TextStyle(color: Colors.white)),
+                            child: Text('Exp1',
+                                style: TextStyle(color: Colors.white)),
                           ),
                         ),
                         Container(
                           width: 10,
                           height: 8,
                           color: Colors.yellow,
-                          child: Text('Fix2', style: TextStyle(color: Colors.black)),
+                          child: Text('Fix2',
+                              style: TextStyle(color: Colors.black)),
                         ),
                         Expanded(
                           flex: 2,
                           child: Container(
                             height: 8,
                             color: Colors.cyan,
-                            child: Text('Exp2', style: TextStyle(color: Colors.white)),
+                            child: Text('Exp2',
+                                style: TextStyle(color: Colors.white)),
                           ),
                         ),
                       ],
@@ -298,7 +308,8 @@ void main() {
                   Container(
                     height: 3,
                     color: Colors.red,
-                    child: Text('Level 1', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Level 1', style: TextStyle(color: Colors.white)),
                   ),
                   Expanded(
                     child: Row(
@@ -306,7 +317,8 @@ void main() {
                         Container(
                           width: 8,
                           color: Colors.green,
-                          child: Text('L2', style: TextStyle(color: Colors.white)),
+                          child:
+                              Text('L2', style: TextStyle(color: Colors.white)),
                         ),
                         Expanded(
                           child: Column(
@@ -314,20 +326,23 @@ void main() {
                               Container(
                                 height: 2,
                                 color: Colors.yellow,
-                                child: Text('L3-T', style: TextStyle(color: Colors.black)),
+                                child: Text('L3-T',
+                                    style: TextStyle(color: Colors.black)),
                               ),
                               Expanded(
                                 child: Container(
                                   color: Colors.cyan,
                                   child: Center(
-                                    child: Text('L3-C', style: TextStyle(color: Colors.white)),
+                                    child: Text('L3-C',
+                                        style: TextStyle(color: Colors.white)),
                                   ),
                                 ),
                               ),
                               Container(
                                 height: 2,
                                 color: Colors.magenta,
-                                child: Text('L3-B', style: TextStyle(color: Colors.white)),
+                                child: Text('L3-B',
+                                    style: TextStyle(color: Colors.white)),
                               ),
                             ],
                           ),
@@ -335,7 +350,8 @@ void main() {
                         Container(
                           width: 8,
                           color: Colors.blue,
-                          child: Text('L2', style: TextStyle(color: Colors.white)),
+                          child:
+                              Text('L2', style: TextStyle(color: Colors.white)),
                         ),
                       ],
                     ),
@@ -343,7 +359,8 @@ void main() {
                   Container(
                     height: 3,
                     color: Colors.grey,
-                    child: Text('Level 1', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Level 1', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -373,7 +390,8 @@ void main() {
                     width: 40,
                     height: 3,
                     color: Colors.red,
-                    child: Text('Full width', style: TextStyle(color: Colors.white)),
+                    child: Text('Full width',
+                        style: TextStyle(color: Colors.white)),
                   ),
                   Row(
                     mainAxisSize: MainAxisSize.min,
@@ -396,7 +414,8 @@ void main() {
                     width: 40,
                     height: 3,
                     color: Colors.magenta,
-                    child: Text('Full width', style: TextStyle(color: Colors.white)),
+                    child: Text('Full width',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -425,7 +444,8 @@ void main() {
                   Container(
                     width: 10,
                     color: Colors.red,
-                    child: Text('Stretch', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Stretch', style: TextStyle(color: Colors.white)),
                   ),
                   Column(
                     mainAxisSize: MainAxisSize.max,
@@ -435,26 +455,30 @@ void main() {
                         width: 15,
                         height: 3,
                         color: Colors.green,
-                        child: Text('Top', style: TextStyle(color: Colors.white)),
+                        child:
+                            Text('Top', style: TextStyle(color: Colors.white)),
                       ),
                       Container(
                         width: 20,
                         height: 3,
                         color: Colors.yellow,
-                        child: Text('Middle', style: TextStyle(color: Colors.black)),
+                        child: Text('Middle',
+                            style: TextStyle(color: Colors.black)),
                       ),
                       Container(
                         width: 10,
                         height: 3,
                         color: Colors.cyan,
-                        child: Text('Bot', style: TextStyle(color: Colors.white)),
+                        child:
+                            Text('Bot', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
                   Container(
                     width: 10,
                     color: Colors.magenta,
-                    child: Text('Stretch', style: TextStyle(color: Colors.white)),
+                    child:
+                        Text('Stretch', style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),

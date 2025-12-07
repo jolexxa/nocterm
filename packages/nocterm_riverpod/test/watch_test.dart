@@ -45,7 +45,7 @@ void main() {
           // Increment counter - should trigger rebuild
           await tester.sendKey(LogicalKey.arrowUp);
           await tester.pump();
-          
+
           expect(buildCount, 2);
           expect(tester.terminalState, containsText('Count: 1'));
           expect(tester.terminalState, containsText('Builds: 2'));
@@ -53,7 +53,7 @@ void main() {
           // Increment again
           await tester.sendKey(LogicalKey.arrowUp);
           await tester.pump();
-          
+
           expect(buildCount, 3);
           expect(tester.terminalState, containsText('Count: 2'));
           expect(tester.terminalState, containsText('Builds: 3'));
@@ -76,7 +76,7 @@ void main() {
                   buildCount++;
                   final name = context.watch(nameProvider);
                   final age = context.watch(ageProvider);
-                  
+
                   return Column(
                     children: [
                       Text('$name is $age years old'),
@@ -106,14 +106,14 @@ void main() {
           // Change age
           await tester.sendKey(LogicalKey.arrowUp);
           await tester.pump();
-          
+
           expect(buildCount, 2);
           expect(tester.terminalState, containsText('Alice is 31 years old'));
 
           // Change name
           await tester.sendKey(LogicalKey.arrowRight);
           await tester.pump();
-          
+
           expect(buildCount, 3);
           expect(tester.terminalState, containsText('Bob is 31 years old'));
         },
@@ -126,7 +126,7 @@ void main() {
         final count = ref.watch(counterProvider);
         return count * 2;
       });
-      
+
       int buildCount = 0;
 
       await testNocterm(
@@ -138,7 +138,7 @@ void main() {
                 builder: (context) {
                   buildCount++;
                   final doubled = context.watch(doubledProvider);
-                  
+
                   return Column(
                     children: [
                       Text('Doubled: $doubled'),
@@ -166,7 +166,7 @@ void main() {
           // Increment base counter
           await tester.sendKey(LogicalKey.arrowUp);
           await tester.pump();
-          
+
           expect(buildCount, 2);
           expect(tester.terminalState, containsText('Doubled: 22'));
         },
@@ -175,7 +175,7 @@ void main() {
 
     test('nested ProviderScopes with watch', () async {
       final colorProvider = StateProvider<String>((ref) => 'blue');
-      
+
       await testNocterm(
         'nested scopes',
         (tester) async {
@@ -236,10 +236,10 @@ void main() {
                   // Watch counter (track how many times watch is called)
                   watchCallCount++;
                   final count = context.watch(counterProvider);
-                  
+
                   // Also watch another provider to trigger rebuilds
                   context.watch(rebuildTrigger);
-                  
+
                   return Column(
                     children: [
                       Text('Count: $count'),
@@ -269,14 +269,14 @@ void main() {
           // Trigger rebuild without changing counter
           await tester.sendKey(LogicalKey.arrowRight);
           await tester.pump();
-          
+
           // Watch was called again but shouldn't create duplicate subscription
           expect(watchCallCount, 2);
 
           // Now change the counter
           await tester.sendKey(LogicalKey.arrowUp);
           await tester.pump();
-          
+
           // Should only rebuild once despite multiple watch calls
           expect(watchCallCount, 3);
           expect(tester.terminalState, containsText('Count: 1'));
@@ -288,7 +288,7 @@ void main() {
   group('context.listen', () {
     test('listen receives updates without rebuilding', () async {
       final counterProvider = StateProvider<int>((ref) => 0);
-      
+
       await testNocterm(
         'listen without rebuild',
         (tester) async {
@@ -305,7 +305,7 @@ void main() {
           // Increment counter
           await tester.sendKey(LogicalKey.arrowUp);
           await tester.pump();
-          
+
           // Value updated but build count stays the same
           expect(tester.terminalState, containsText('Last value: 1'));
           expect(tester.terminalState, containsText('Build count: 1'));
@@ -313,7 +313,7 @@ void main() {
           // Increment again
           await tester.sendKey(LogicalKey.arrowUp);
           await tester.pump();
-          
+
           expect(tester.terminalState, containsText('Last value: 2'));
           expect(tester.terminalState, containsText('Build count: 1'));
         },
@@ -325,9 +325,9 @@ void main() {
 // Test component that uses watch
 class _WatchTestComponent extends StatelessComponent {
   const _WatchTestComponent({required this.builder});
-  
+
   final ComponentBuilder builder;
-  
+
   @override
   Component build(BuildContext context) {
     return builder(context);
@@ -337,9 +337,9 @@ class _WatchTestComponent extends StatelessComponent {
 // Test component that uses listen
 class _ListenTestComponent extends StatefulComponent {
   const _ListenTestComponent({required this.counterProvider});
-  
+
   final StateProvider<int> counterProvider;
-  
+
   @override
   State<_ListenTestComponent> createState() => _ListenTestComponentState();
 }
@@ -347,12 +347,12 @@ class _ListenTestComponent extends StatefulComponent {
 class _ListenTestComponentState extends State<_ListenTestComponent> {
   int lastValue = 0;
   int buildCount = 0;
-  
+
   @override
   void initState() {
     super.initState();
     lastValue = context.read(component.counterProvider);
-    
+
     // Listen to changes without rebuilding
     context.listen<int>(component.counterProvider, (previous, next) {
       setState(() {
@@ -360,11 +360,11 @@ class _ListenTestComponentState extends State<_ListenTestComponent> {
       });
     });
   }
-  
+
   @override
   Component build(BuildContext context) {
     buildCount++;
-    
+
     return Column(
       children: [
         Text('Last value: $lastValue'),

@@ -11,7 +11,8 @@ void main() {
             Center(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                  border: BoxBorder.all(
+                      color: Color.fromRGB(255, 255, 255), width: 1),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -30,10 +31,14 @@ void main() {
           );
 
           // Verify all text is rendered
-          expect(tester.terminalState, containsText('Regular text: Hello World'));
-          expect(tester.terminalState, containsText('With emoji: Hello 🌍 World'));
-          expect(tester.terminalState, containsText('Multiple emojis: 🚀 ✨ 🎉 🔥'));
-          expect(tester.terminalState, containsText('Mixed: Code 💻 + Coffee ☕ = 🎯'));
+          expect(
+              tester.terminalState, containsText('Regular text: Hello World'));
+          expect(
+              tester.terminalState, containsText('With emoji: Hello 🌍 World'));
+          expect(tester.terminalState,
+              containsText('Multiple emojis: 🚀 ✨ 🎉 🔥'));
+          expect(tester.terminalState,
+              containsText('Mixed: Code 💻 + Coffee ☕ = 🎯'));
           // Flag emojis might render differently across terminals
           expect(tester.terminalState, containsText('Flags:'));
           // Complex emojis with ZWJ might render differently
@@ -52,7 +57,8 @@ void main() {
             Center(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                  border: BoxBorder.all(
+                      color: Color.fromRGB(255, 255, 255), width: 1),
                 ),
                 child: SizedBox(
                   width: 45,
@@ -78,8 +84,10 @@ void main() {
 
           // Verify the content is rendered
           expect(tester.terminalState, containsText('✨ Features:'));
-          expect(tester.terminalState, containsText('Component-based architecture'));
-          expect(tester.terminalState, containsText('Constraint-based layout system'));
+          expect(tester.terminalState,
+              containsText('Component-based architecture'));
+          expect(tester.terminalState,
+              containsText('Constraint-based layout system'));
           expect(tester.terminalState, containsText('Built with Dart'));
         },
       );
@@ -154,7 +162,8 @@ void main() {
                   // Box to test width calculation
                   DecoratedBox(
                     decoration: BoxDecoration(
-                      border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                      border: BoxBorder.all(
+                          color: Color.fromRGB(255, 255, 255), width: 1),
                     ),
                     child: const Text('✨'),
                   ),
@@ -162,7 +171,8 @@ void main() {
                   // Test with multiple sparkles
                   DecoratedBox(
                     decoration: BoxDecoration(
-                      border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                      border: BoxBorder.all(
+                          color: Color.fromRGB(255, 255, 255), width: 1),
                     ),
                     child: const Text('✨✨✨'),
                   ),
@@ -170,7 +180,8 @@ void main() {
                   // Test mixed with text
                   DecoratedBox(
                     decoration: BoxDecoration(
-                      border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                      border: BoxBorder.all(
+                          color: Color.fromRGB(255, 255, 255), width: 1),
                     ),
                     child: const Text('Text ✨ More'),
                   ),
@@ -228,7 +239,8 @@ void main() {
     });
 
     // Visual test for manual inspection
-    test('emoji visual test', skip: 'Run with debugPrintAfterPump for visual inspection', () async {
+    test('emoji visual test',
+        skip: 'Run with debugPrintAfterPump for visual inspection', () async {
       await testNocterm(
         'emoji visual',
         (tester) async {
@@ -243,7 +255,8 @@ void main() {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: const [
-                      Text('Emoji Width Test:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text('Emoji Width Test:',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                       SizedBox(height: 1),
                       Text('Single: ✨'),
                       Text('Double: ✨✨'),

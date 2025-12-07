@@ -33,7 +33,8 @@ void main() {
         expect(controller.selection.end, controller.text.length);
         expect(controller.selection.isCollapsed, false);
 
-        print('Selected text: "${controller.text.substring(controller.selection.start, controller.selection.end)}"');
+        print(
+            'Selected text: "${controller.text.substring(controller.selection.start, controller.selection.end)}"');
       },
       debugPrintAfterPump: true,
     );

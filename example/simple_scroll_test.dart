@@ -30,7 +30,8 @@ class _SimpleScrollTestState extends State<SimpleScrollTest> {
               controller: scrollController,
               child: Column(
                 children: [
-                  for (int i = 0; i < 50; i++) Text('Line $i: This is scrollable content'),
+                  for (int i = 0; i < 50; i++)
+                    Text('Line $i: This is scrollable content'),
                 ],
               ),
             )),

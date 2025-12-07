@@ -10,7 +10,7 @@ void main() {
       final name = ref.watch(nameProvider);
       return 'Hello, $name!';
     });
-    
+
     await testNocterm(
       'riverpod basic functionality',
       (tester) async {
@@ -25,9 +25,9 @@ void main() {
             ),
           ),
         );
-        
+
         expect(tester.terminalState, containsText('Hello, Nocterm!'));
-        
+
         // Test 2: Provider overrides
         await tester.pumpComponent(
           ProviderScope(
@@ -42,15 +42,15 @@ void main() {
             ),
           ),
         );
-        
+
         expect(tester.terminalState, containsText('Hello, Riverpod!'));
       },
     );
   });
-  
+
   test('Riverpod integration - nested scopes', () async {
     final colorProvider = Provider<String>((ref) => 'blue');
-    
+
     await testNocterm(
       'nested provider scopes',
       (tester) async {
@@ -79,13 +79,13 @@ void main() {
             ),
           ),
         );
-        
+
         expect(tester.terminalState, containsText('Outer: blue'));
         expect(tester.terminalState, containsText('Inner: red'));
       },
     );
   });
-  
+
   test('Riverpod integration - multiple providers', () async {
     final userProvider = Provider<String>((ref) => 'Alice');
     final ageProvider = Provider<int>((ref) => 30);
@@ -94,7 +94,7 @@ void main() {
       final age = ref.watch(ageProvider);
       return '$user is $age years old';
     });
-    
+
     await testNocterm(
       'multiple providers',
       (tester) async {
@@ -108,7 +108,7 @@ void main() {
             ),
           ),
         );
-        
+
         expect(tester.terminalState, containsText('Alice is 30 years old'));
       },
     );
@@ -118,9 +118,9 @@ void main() {
 // Helper component
 class _SimpleBuilder extends StatelessComponent {
   const _SimpleBuilder({required this.builder});
-  
+
   final ComponentBuilder builder;
-  
+
   @override
   Component build(BuildContext context) {
     return builder(context);

@@ -21,7 +21,8 @@ void main() {
         currentOffset: 10,
         direction: 1,
       );
-      expect(offset, 11); // Space before emoji -> emoji (emoji is 1 grapheme cluster)
+      expect(offset,
+          11); // Space before emoji -> emoji (emoji is 1 grapheme cluster)
     });
 
     test('handles wrapped lines in vertical movement', () {

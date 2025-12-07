@@ -83,7 +83,9 @@ class _SubmitDemoState extends State<SubmitDemo> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  for (int i = _submittedValues.length - 1; i >= 0 && i >= _submittedValues.length - 5; i--)
+                  for (int i = _submittedValues.length - 1;
+                      i >= 0 && i >= _submittedValues.length - 5;
+                      i--)
                     Text(
                       '${i + 1}. ${_submittedValues[i]}',
                       style: TextStyle(color: Colors.white),

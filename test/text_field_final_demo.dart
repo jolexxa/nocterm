@@ -7,19 +7,17 @@ void main() {
       'final demo',
       (tester) async {
         final multiLineController = TextEditingController(
-          text: 'Hello this is a cool thing to do is typing a cool long string that can be enough to show wrapping'
-        );
+            text:
+                'Hello this is a cool thing to do is typing a cool long string that can be enough to show wrapping');
 
         final singleLineController = TextEditingController(
-          text: 'This text will scroll horizontally when it gets too long'
-        );
+            text: 'This text will scroll horizontally when it gets too long');
 
         await tester.pumpComponent(
           Column(
             children: [
               const Text('✅ FIXED: Cursor now stays within field boundaries'),
               const SizedBox(height: 2),
-
               const Text('Multi-line TextField (wraps properly):'),
               TextField(
                 controller: multiLineController,
@@ -35,7 +33,6 @@ void main() {
                 cursorStyle: CursorStyle.block,
                 cursorColor: Colors.cyan,
               ),
-
               const SizedBox(height: 2),
               const Text('Single-line TextField (scrolls horizontally):'),
               TextField(
@@ -49,7 +46,6 @@ void main() {
                 cursorBlinkRate: null,
                 cursorStyle: CursorStyle.block,
               ),
-
               const SizedBox(height: 2),
               const Text('Key improvements:'),
               const Text('• Cursor position syncs with wrapped lines'),
@@ -60,8 +56,10 @@ void main() {
         );
 
         // Position cursors at the end
-        multiLineController.selection = TextSelection.collapsed(offset: multiLineController.text.length);
-        singleLineController.selection = TextSelection.collapsed(offset: singleLineController.text.length);
+        multiLineController.selection =
+            TextSelection.collapsed(offset: multiLineController.text.length);
+        singleLineController.selection =
+            TextSelection.collapsed(offset: singleLineController.text.length);
         await tester.pump();
       },
       debugPrintAfterPump: true,

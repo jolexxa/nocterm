@@ -31,28 +31,29 @@ void main() {
               ),
             ),
           );
-          
+
           print('With CrossAxisAlignment.stretch:');
           final output = tester.terminalState.getText();
           print(output);
-          
+
           // Verify alignment
           final lines = output.split('\n');
-          
+
           // Left aligned text should be at the left (after border and padding)
           expect(lines[1], matches(RegExp(r'│ Left\s+')));
-          
+
           // Center aligned text should be roughly centered
           expect(lines[2], contains('Center'));
-          expect(lines[2].indexOf('Center'), greaterThan(10)); // Should not be at the left
-          
+          expect(lines[2].indexOf('Center'),
+              greaterThan(10)); // Should not be at the left
+
           // Right aligned text should be at the right
           expect(lines[3], matches(RegExp(r'\s+Right\s*│')));
         },
         debugPrintAfterPump: true,
       );
     });
-    
+
     test('text alignment with SizedBox wrapper', () async {
       await testNocterm(
         'sized box alignment',
@@ -83,14 +84,14 @@ void main() {
               ),
             ),
           );
-          
+
           print('With SizedBox wrappers:');
           print(tester.terminalState.getText());
         },
         debugPrintAfterPump: true,
       );
     });
-    
+
     test('text alignment with Expanded', () async {
       await testNocterm(
         'expanded alignment',
@@ -117,7 +118,7 @@ void main() {
               ),
             ),
           );
-          
+
           print('With Expanded wrappers:');
           print(tester.terminalState.getText());
         },

@@ -40,12 +40,14 @@ void main() {
           await tester.tap(10, 2);
 
           // Verify that the tap was received by the GestureDetector
-          expect(tapReceived, true, reason: 'GestureDetector should receive tap event');
+          expect(tapReceived, true,
+              reason: 'GestureDetector should receive tap event');
         },
       );
     });
 
-    test('MouseRegion receives hover events while child receives taps', () async {
+    test('MouseRegion receives hover events while child receives taps',
+        () async {
       await testNocterm(
         'both mouse region and gesture detector work',
         (tester) async {
@@ -79,11 +81,13 @@ void main() {
 
           // Simulate mouse enter
           await tester.hover(10, 2);
-          expect(mouseEntered, true, reason: 'MouseRegion should receive enter event');
+          expect(mouseEntered, true,
+              reason: 'MouseRegion should receive enter event');
 
           // Simulate tap - This is the key test for the bug fix
           await tester.tap(10, 2);
-          expect(tapReceived, true, reason: 'GestureDetector should receive tap event');
+          expect(tapReceived, true,
+              reason: 'GestureDetector should receive tap event');
         },
       );
     });
@@ -100,7 +104,8 @@ void main() {
               width: 80,
               height: 24,
               child: MouseRegion(
-                opaque: true, // This is the key property that was causing issues
+                opaque:
+                    true, // This is the key property that was causing issues
                 onEnter: (event) {
                   mouseEntered = true;
                 },
@@ -123,12 +128,14 @@ void main() {
 
           // Hover first
           await tester.hover(10, 2);
-          expect(mouseEntered, true, reason: 'MouseRegion should receive enter event');
+          expect(mouseEntered, true,
+              reason: 'MouseRegion should receive enter event');
 
           // Tap - the critical test for the bug fix
           await tester.tap(10, 2);
           expect(tapReceived, true,
-              reason: 'GestureDetector should receive tap even when MouseRegion is opaque');
+              reason:
+                  'GestureDetector should receive tap even when MouseRegion is opaque');
         },
       );
     });

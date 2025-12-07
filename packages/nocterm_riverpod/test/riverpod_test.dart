@@ -99,9 +99,9 @@ class _ListenerComponentState extends State<ListenerComponent> {
 // Builder-like component for nocterm
 class SimpleBuilder extends StatelessComponent {
   const SimpleBuilder({super.key, required this.builder});
-  
+
   final ComponentBuilder builder;
-  
+
   @override
   Component build(BuildContext context) {
     return builder(context);
@@ -237,7 +237,8 @@ void main() {
                     builder: (context) {
                       return KeyboardListener(
                         onKeyEvent: (key) {
-                          final notifier = context.read(counterNotifierProvider.notifier);
+                          final notifier =
+                              context.read(counterNotifierProvider.notifier);
                           if (key == LogicalKey.arrowUp) {
                             notifier.increment();
                           } else if (key == LogicalKey.arrowDown) {

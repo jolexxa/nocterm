@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   test('Basic watch functionality', () async {
     final counterProvider = StateProvider<int>((ref) => 0);
-    
+
     await testNocterm(
       'basic watch',
       (tester) async {
@@ -14,10 +14,10 @@ void main() {
             child: _SimpleWatchWidget(counterProvider: counterProvider),
           ),
         );
-        
+
         // Initial state
         expect(tester.terminalState, containsText('Count: 0'));
-        
+
         // Manually trigger state change and rebuild
         // For now, we'll need manual setState since automatic rebuild isn't working yet
       },
@@ -28,9 +28,9 @@ void main() {
 
 class _SimpleWatchWidget extends StatefulComponent {
   const _SimpleWatchWidget({required this.counterProvider});
-  
+
   final StateProvider<int> counterProvider;
-  
+
   @override
   State<_SimpleWatchWidget> createState() => _SimpleWatchWidgetState();
 }
@@ -40,7 +40,7 @@ class _SimpleWatchWidgetState extends State<_SimpleWatchWidget> {
   Component build(BuildContext context) {
     // Try to use watch
     final count = context.watch(component.counterProvider);
-    
+
     return Column(
       children: [
         Text('Count: $count'),

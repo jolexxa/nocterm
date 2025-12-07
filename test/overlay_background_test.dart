@@ -49,7 +49,8 @@ void main() {
       );
     });
 
-    test('opaque overlay entries also use terminal default background', () async {
+    test('opaque overlay entries also use terminal default background',
+        () async {
       await testNocterm(
         'opaque overlay test',
         (tester) async {
@@ -69,7 +70,7 @@ void main() {
                   ),
                 ),
                 OverlayEntry(
-                  opaque: true,  // Marked as opaque
+                  opaque: true, // Marked as opaque
                   builder: (context) => Container(
                     width: 20,
                     height: 5,
@@ -100,7 +101,7 @@ void main() {
             Container(
               width: 20,
               height: 5,
-              color: Colors.blue,  // Explicit color
+              color: Colors.blue, // Explicit color
               child: Center(
                 child: Text(
                   'Blue Background',

@@ -72,7 +72,9 @@ void main() {
           print('Line count after 14 tabs: $lineCount2');
 
           // The bug would manifest as increased counts
-          if (itemCount2 > itemCount1 || rowCount2 > rowCount1 || lineCount2 > lineCount1) {
+          if (itemCount2 > itemCount1 ||
+              rowCount2 > rowCount1 ||
+              lineCount2 > lineCount1) {
             print('\n🐛 BUG REPRODUCED: Content is accumulating!');
             print('Items increased by: ${itemCount2 - itemCount1}');
             print('Rows increased by: ${rowCount2 - rowCount1}');
@@ -112,7 +114,8 @@ void main() {
               final rowCount = 'Row'.allMatches(state).length;
               final lineCount = 'Line'.allMatches(state).length;
 
-              print('Tab $tab - Items: $itemCount, Rows: $rowCount, Lines: $lineCount');
+              print(
+                  'Tab $tab - Items: $itemCount, Rows: $rowCount, Lines: $lineCount');
             }
           }
 
@@ -141,7 +144,9 @@ void main() {
               print(
                   '  Lines: $firstLineCount -> $lastLineCount (${lastLineCount - firstLineCount > 0 ? "INCREASED!" : "stable"})');
 
-              if (lastItemCount > firstItemCount || lastRowCount > firstRowCount || lastLineCount > firstLineCount) {
+              if (lastItemCount > firstItemCount ||
+                  lastRowCount > firstRowCount ||
+                  lastLineCount > firstLineCount) {
                 print('  ⚠️ CONTENT ACCUMULATION DETECTED!');
               }
             }

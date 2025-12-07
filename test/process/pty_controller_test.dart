@@ -54,7 +54,8 @@ void main() {
 
       // Wait for output and exit
       await outputCompleter.future.timeout(const Duration(seconds: 5));
-      final exitCode = await exitCompleter.future.timeout(const Duration(seconds: 5));
+      final exitCode =
+          await exitCompleter.future.timeout(const Duration(seconds: 5));
 
       expect(output.join(), contains('test output'));
       expect(exitCode, equals(0));

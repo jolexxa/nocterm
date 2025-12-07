@@ -109,7 +109,9 @@ class _ChatDemoReverseState extends State<ChatDemoReverse> {
                       final isUser = message.startsWith('You:');
 
                       return Container(
-                        alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: isUser
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         margin: EdgeInsets.only(bottom: 1),
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 1),
@@ -142,7 +144,9 @@ class _ChatDemoReverseState extends State<ChatDemoReverse> {
                   Text(
                     scrollController.isAutoScrollEnabled ? 'ON' : 'OFF',
                     style: TextStyle(
-                      color: scrollController.isAutoScrollEnabled ? Colors.green : Colors.yellow,
+                      color: scrollController.isAutoScrollEnabled
+                          ? Colors.green
+                          : Colors.yellow,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

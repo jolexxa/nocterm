@@ -32,7 +32,9 @@ class _InteractiveCounterState extends State<InteractiveCounter> {
               Text(
                 '$_count',
                 style: TextStyle(
-                  color: _count > 0 ? Colors.green : (_count < 0 ? Colors.red : Colors.white),
+                  color: _count > 0
+                      ? Colors.green
+                      : (_count < 0 ? Colors.red : Colors.white),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -48,13 +50,16 @@ class _InteractiveCounterState extends State<InteractiveCounter> {
             padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
             child: Column(
               children: [
-                Text('Controls:', style: TextStyle(decoration: TextDecoration.underline)),
+                Text('Controls:',
+                    style: TextStyle(decoration: TextDecoration.underline)),
                 const SizedBox(height: 1),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('[+] Increment  ', style: TextStyle(color: Colors.green)),
-                    Text('[−] Decrement  ', style: TextStyle(color: Colors.red)),
+                    Text('[+] Increment  ',
+                        style: TextStyle(color: Colors.green)),
+                    Text('[−] Decrement  ',
+                        style: TextStyle(color: Colors.red)),
                     Text('[R] Reset', style: TextStyle(color: Colors.blue)),
                   ],
                 ),
@@ -147,7 +152,8 @@ void main() {
             ),
           );
 
-          print('\n✅ Test completed - debug output was only shown for the second pump');
+          print(
+              '\n✅ Test completed - debug output was only shown for the second pump');
         },
         debugPrintAfterPump: false, // Start with debug printing disabled
       );
@@ -179,23 +185,27 @@ void main() {
                   ),
                   const SizedBox(height: 1),
                   Center(
-                    child: Text('── Center Line ──', style: TextStyle(fontWeight: FontWeight.dim)),
+                    child: Text('── Center Line ──',
+                        style: TextStyle(fontWeight: FontWeight.dim)),
                   ),
                   const SizedBox(height: 1),
                   Row(
                     children: [
                       Expanded(
-                        child: Text('Left aligned', style: TextStyle(color: Colors.red)),
+                        child: Text('Left aligned',
+                            style: TextStyle(color: Colors.red)),
                       ),
                       Expanded(
                         child: Center(
-                          child: Text('Centered', style: TextStyle(color: Colors.green)),
+                          child: Text('Centered',
+                              style: TextStyle(color: Colors.green)),
                         ),
                       ),
                       Expanded(
                         child: Align(
                           alignment: Alignment.centerRight,
-                          child: Text('Right aligned', style: TextStyle(color: Colors.blue)),
+                          child: Text('Right aligned',
+                              style: TextStyle(color: Colors.blue)),
                         ),
                       ),
                     ],

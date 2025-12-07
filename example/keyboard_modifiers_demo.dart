@@ -41,7 +41,8 @@ class _KeyboardModifiersDemoState extends State<KeyboardModifiersDemo> {
         _handleKeyEvent(event);
 
         // Exit on Escape or Ctrl+C using the new modifier system
-        if (event.logicalKey == LogicalKey.escape || event.matches(LogicalKey.keyC, ctrl: true)) {
+        if (event.logicalKey == LogicalKey.escape ||
+            event.matches(LogicalKey.keyC, ctrl: true)) {
           // Signal to close the app
           return false; // Let the binding handle the exit
         }
@@ -61,25 +62,31 @@ class _KeyboardModifiersDemoState extends State<KeyboardModifiersDemo> {
             children: [
               Text(
                 'Keyboard Modifiers Demo',
-                style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 1),
-              Text('Last Key: $_lastKey', style: TextStyle(color: Colors.white)),
-              Text('Modifiers: $_modifiers', style: TextStyle(color: Colors.yellow)),
-              Text('Character: $_character', style: TextStyle(color: Colors.green)),
+              Text('Last Key: $_lastKey',
+                  style: TextStyle(color: Colors.white)),
+              Text('Modifiers: $_modifiers',
+                  style: TextStyle(color: Colors.yellow)),
+              Text('Character: $_character',
+                  style: TextStyle(color: Colors.green)),
               const SizedBox(height: 1),
               const Text('History:', style: TextStyle(color: Colors.gray)),
-              ..._history
-                  .take(8)
-                  .map((entry) => Text('  $entry', style: TextStyle(color: Colors.gray, fontWeight: FontWeight.dim))),
+              ..._history.take(8).map((entry) => Text('  $entry',
+                  style: TextStyle(
+                      color: Colors.gray, fontWeight: FontWeight.dim))),
               const Spacer(),
               const Text(
                 'Try: Ctrl+A, Shift+Tab, Alt+X, Arrows',
-                style: TextStyle(color: Colors.gray, fontWeight: FontWeight.dim),
+                style:
+                    TextStyle(color: Colors.gray, fontWeight: FontWeight.dim),
               ),
               const Text(
                 'Press Escape or Ctrl+C to exit',
-                style: TextStyle(color: Colors.gray, fontWeight: FontWeight.dim),
+                style:
+                    TextStyle(color: Colors.gray, fontWeight: FontWeight.dim),
               ),
             ],
           ),

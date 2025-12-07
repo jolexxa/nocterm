@@ -6,7 +6,7 @@ void main() async {
 
 class MultipleScrollablesTest extends StatelessComponent {
   const MultipleScrollablesTest({super.key});
-  
+
   @override
   Component build(BuildContext context) {
     return Column(
@@ -25,7 +25,7 @@ class MultipleScrollablesTest extends StatelessComponent {
             ),
           ),
         ),
-        
+
         // Main content area with side-by-side scrollables
         Expanded(
           child: Row(
@@ -43,7 +43,8 @@ class MultipleScrollablesTest extends StatelessComponent {
                         padding: EdgeInsets.symmetric(horizontal: 1),
                         child: Text(
                           'Left Panel (Green)',
-                          style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.green, fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
@@ -57,7 +58,9 @@ class MultipleScrollablesTest extends StatelessComponent {
                                   child: Text(
                                     'Left ${i.toString().padLeft(2, '0')}: Item in left panel',
                                     style: TextStyle(
-                                      color: i % 3 == 0 ? Colors.green : Colors.white,
+                                      color: i % 3 == 0
+                                          ? Colors.green
+                                          : Colors.white,
                                     ),
                                   ),
                                 ),
@@ -69,7 +72,7 @@ class MultipleScrollablesTest extends StatelessComponent {
                   ),
                 ),
               ),
-              
+
               // Middle scrollable area
               Expanded(
                 child: Container(
@@ -83,7 +86,8 @@ class MultipleScrollablesTest extends StatelessComponent {
                         padding: EdgeInsets.symmetric(horizontal: 1),
                         child: Text(
                           'Middle Panel (Blue)',
-                          style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
@@ -97,7 +101,9 @@ class MultipleScrollablesTest extends StatelessComponent {
                                   child: Text(
                                     'Mid ${i.toString().padLeft(2, '0')}: Content in middle',
                                     style: TextStyle(
-                                      color: i % 4 == 0 ? Colors.blue : Colors.white,
+                                      color: i % 4 == 0
+                                          ? Colors.blue
+                                          : Colors.white,
                                     ),
                                   ),
                                 ),
@@ -109,7 +115,7 @@ class MultipleScrollablesTest extends StatelessComponent {
                   ),
                 ),
               ),
-              
+
               // Right scrollable area
               Expanded(
                 child: Container(
@@ -123,7 +129,9 @@ class MultipleScrollablesTest extends StatelessComponent {
                         padding: EdgeInsets.symmetric(horizontal: 1),
                         child: Text(
                           'Right Panel (Magenta)',
-                          style: TextStyle(color: Colors.magenta, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.magenta,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
@@ -137,7 +145,9 @@ class MultipleScrollablesTest extends StatelessComponent {
                                   child: Text(
                                     'Right ${i.toString().padLeft(2, '0')}: Right panel text',
                                     style: TextStyle(
-                                      color: i % 5 == 0 ? Colors.magenta : Colors.white,
+                                      color: i % 5 == 0
+                                          ? Colors.magenta
+                                          : Colors.white,
                                     ),
                                   ),
                                 ),
@@ -152,7 +162,7 @@ class MultipleScrollablesTest extends StatelessComponent {
             ],
           ),
         ),
-        
+
         // Bottom area with horizontal scrollable
         Container(
           height: 8,
@@ -165,7 +175,8 @@ class MultipleScrollablesTest extends StatelessComponent {
                 padding: EdgeInsets.symmetric(horizontal: 1),
                 child: Text(
                   'Bottom Panel (Yellow) - Also scrollable',
-                  style: TextStyle(color: Colors.yellow, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.yellow, fontWeight: FontWeight.bold),
                 ),
               ),
               Expanded(
@@ -190,7 +201,7 @@ class MultipleScrollablesTest extends StatelessComponent {
             ],
           ),
         ),
-        
+
         // Status bar
         Container(
           height: 2,

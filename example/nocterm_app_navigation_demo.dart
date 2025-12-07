@@ -82,8 +82,10 @@ class HomeScreen extends StatelessComponent {
                 Text(''),
                 const Divider(),
                 Text(''),
-                Text('This demo shows NoctermApp with built-in Navigator support.'),
-                Text('You can navigate between different screens using routes.'),
+                Text(
+                    'This demo shows NoctermApp with built-in Navigator support.'),
+                Text(
+                    'You can navigate between different screens using routes.'),
                 Text(''),
                 const Divider(),
                 Text(''),
@@ -182,8 +184,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(''),
                 Text('Configure your application settings:'),
                 Text(''),
-                Text('[1] Dark Mode: ${_darkMode ? "✓ Enabled" : "✗ Disabled"}'),
-                Text('[2] Notifications: ${_notifications ? "✓ Enabled" : "✗ Disabled"}'),
+                Text(
+                    '[1] Dark Mode: ${_darkMode ? "✓ Enabled" : "✗ Disabled"}'),
+                Text(
+                    '[2] Notifications: ${_notifications ? "✓ Enabled" : "✗ Disabled"}'),
                 Text(''),
                 const Divider(),
                 Text(''),

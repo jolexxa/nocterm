@@ -20,7 +20,7 @@ class _ChatDemoState extends State<ChatDemo> {
   bool inputHasFocus = false;
   Timer? autoMessageTimer;
   int messageCounter = 1;
-  
+
   // Sample auto messages for demo
   final List<String> autoMessages = [
     'Welcome to the chat demo!',
@@ -39,8 +39,11 @@ class _ChatDemoState extends State<ChatDemo> {
   void initState() {
     super.initState();
     // Add initial messages
-    _addMessage('System', 'Chat demo started. Press "a" to toggle auto messages, "c" to clear.', isSystem: true);
-    _addMessage('System', 'Type a message and press Enter to send.', isSystem: true);
+    _addMessage('System',
+        'Chat demo started. Press "a" to toggle auto messages, "c" to clear.',
+        isSystem: true);
+    _addMessage('System', 'Type a message and press Enter to send.',
+        isSystem: true);
   }
 
   @override
@@ -67,7 +70,7 @@ class _ChatDemoState extends State<ChatDemo> {
     if (text.isNotEmpty) {
       _addMessage('You', text);
       textController.clear();
-      
+
       // Simulate a response after a delay
       Future.delayed(Duration(milliseconds: 500 + Random().nextInt(1000)), () {
         if (mounted) {
@@ -159,7 +162,7 @@ class _ChatDemoState extends State<ChatDemo> {
               ],
             ),
           ),
-          
+
           // Chat messages area
           Expanded(
             child: Container(
@@ -188,7 +191,7 @@ class _ChatDemoState extends State<ChatDemo> {
                     ),
             ),
           ),
-          
+
           // Input area
           Container(
             padding: EdgeInsets.all(1),
@@ -215,7 +218,7 @@ class _ChatDemoState extends State<ChatDemo> {
               ],
             ),
           ),
-          
+
           // Status bar
           Container(
             padding: EdgeInsets.symmetric(horizontal: 2, vertical: 1),
@@ -226,7 +229,8 @@ class _ChatDemoState extends State<ChatDemo> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('[a] Toggle auto messages | ', style: TextStyle(color: Colors.gray)),
+                Text('[a] Toggle auto messages | ',
+                    style: TextStyle(color: Colors.gray)),
                 Text('[c] Clear chat | ', style: TextStyle(color: Colors.gray)),
                 Text('[↑↓] Scroll | ', style: TextStyle(color: Colors.gray)),
                 Text('[Enter] Send', style: TextStyle(color: Colors.gray)),
@@ -241,15 +245,15 @@ class _ChatDemoState extends State<ChatDemo> {
 
 class _MessageWidget extends StatelessComponent {
   final ChatMessage message;
-  
+
   const _MessageWidget({required this.message});
-  
+
   @override
   Component build(BuildContext context) {
     final timeStr = '${message.timestamp.hour.toString().padLeft(2, '0')}:'
-                    '${message.timestamp.minute.toString().padLeft(2, '0')}:'
-                    '${message.timestamp.second.toString().padLeft(2, '0')}';
-    
+        '${message.timestamp.minute.toString().padLeft(2, '0')}:'
+        '${message.timestamp.second.toString().padLeft(2, '0')}';
+
     Color senderColor;
     if (message.isSystem) {
       senderColor = Colors.yellow;
@@ -258,7 +262,7 @@ class _MessageWidget extends StatelessComponent {
     } else {
       senderColor = Colors.cyan;
     }
-    
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 1, vertical: 0),
       decoration: BoxDecoration(
@@ -276,7 +280,8 @@ class _MessageWidget extends StatelessComponent {
             message.sender + ':',
             style: TextStyle(
               color: senderColor,
-              fontWeight: message.isSystem ? FontWeight.bold : FontWeight.normal,
+              fontWeight:
+                  message.isSystem ? FontWeight.bold : FontWeight.normal,
             ),
           ),
           SizedBox(width: 1),
@@ -299,7 +304,7 @@ class ChatMessage {
   final String text;
   final DateTime timestamp;
   final bool isSystem;
-  
+
   ChatMessage({
     required this.sender,
     required this.text,

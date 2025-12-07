@@ -3,7 +3,8 @@ import 'package:nocterm/nocterm.dart';
 void main() async {
   // Run with: dart run --enable-vm-service example/hot_reload_simple.dart
   print('Starting Hot Reload Simple Demo...');
-  print('Run with: dart run --enable-vm-service example/hot_reload_simple.dart');
+  print(
+      'Run with: dart run --enable-vm-service example/hot_reload_simple.dart');
   await runApp(const SimpleHotReloadApp());
 }
 

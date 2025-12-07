@@ -22,10 +22,10 @@ void main() {
               ),
             ),
           );
-          
+
           print('Direct in container:');
           print(tester.terminalState.getText());
-          
+
           // Text in Column in Container
           await tester.pumpComponent(
             Container(
@@ -44,10 +44,10 @@ void main() {
               ),
             ),
           );
-          
+
           print('\nIn Column:');
           print(tester.terminalState.getText());
-          
+
           // Text in Column with crossAxisAlignment
           await tester.pumpComponent(
             Container(
@@ -67,7 +67,7 @@ void main() {
               ),
             ),
           );
-          
+
           print('\nWith CrossAxisAlignment.stretch:');
           print(tester.terminalState.getText());
         },

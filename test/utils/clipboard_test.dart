@@ -76,7 +76,8 @@ void main() {
     test('handles empty string', () {
       ClipboardManager.copy('');
       expect(ClipboardManager.paste(), equals(''));
-      expect(ClipboardManager.hasContent(), isFalse); // Empty string = no content
+      expect(
+          ClipboardManager.hasContent(), isFalse); // Empty string = no content
     });
 
     test('handles Unicode text', () {

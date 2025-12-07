@@ -43,12 +43,24 @@ void main() {
           await tester.pumpComponent(
             Column(
               children: const [
-                Text('White on red', style: TextStyle(color: Colors.white, backgroundColor: Colors.red)),
-                Text('Black on green', style: TextStyle(color: Colors.black, backgroundColor: Colors.green)),
-                Text('Yellow on blue', style: TextStyle(color: Colors.yellow, backgroundColor: Colors.blue)),
-                Text('Cyan on magenta', style: TextStyle(color: Colors.cyan, backgroundColor: Colors.magenta)),
-                Text('Magenta on cyan', style: TextStyle(color: Colors.magenta, backgroundColor: Colors.cyan)),
-                Text('Blue on yellow', style: TextStyle(color: Colors.blue, backgroundColor: Colors.yellow)),
+                Text('White on red',
+                    style: TextStyle(
+                        color: Colors.white, backgroundColor: Colors.red)),
+                Text('Black on green',
+                    style: TextStyle(
+                        color: Colors.black, backgroundColor: Colors.green)),
+                Text('Yellow on blue',
+                    style: TextStyle(
+                        color: Colors.yellow, backgroundColor: Colors.blue)),
+                Text('Cyan on magenta',
+                    style: TextStyle(
+                        color: Colors.cyan, backgroundColor: Colors.magenta)),
+                Text('Magenta on cyan',
+                    style: TextStyle(
+                        color: Colors.magenta, backgroundColor: Colors.cyan)),
+                Text('Blue on yellow',
+                    style: TextStyle(
+                        color: Colors.blue, backgroundColor: Colors.yellow)),
               ],
             ),
           );
@@ -70,13 +82,23 @@ void main() {
           await tester.pumpComponent(
             Column(
               children: const [
-                Text('Bold text', style: TextStyle(fontWeight: FontWeight.bold)),
-                Text('Italic text', style: TextStyle(fontStyle: FontStyle.italic)),
-                Text('Underlined text', style: TextStyle(decoration: TextDecoration.underline)),
+                Text('Bold text',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Italic text',
+                    style: TextStyle(fontStyle: FontStyle.italic)),
+                Text('Underlined text',
+                    style: TextStyle(decoration: TextDecoration.underline)),
                 Text('Dim text', style: TextStyle(fontWeight: FontWeight.dim)),
-                Text('Bold and red', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
-                Text('Italic and blue', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.blue)),
-                Text('Underlined green', style: TextStyle(decoration: TextDecoration.underline, color: Colors.green)),
+                Text('Bold and red',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.red)),
+                Text('Italic and blue',
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic, color: Colors.blue)),
+                Text('Underlined green',
+                    style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.green)),
               ],
             ),
           );
@@ -96,7 +118,8 @@ void main() {
           );
           expect(
             tester.terminalState,
-            hasStyledText('Italic text', TextStyle(fontStyle: FontStyle.italic)),
+            hasStyledText(
+                'Italic text', TextStyle(fontStyle: FontStyle.italic)),
           );
         },
       );
@@ -109,12 +132,18 @@ void main() {
           await tester.pumpComponent(
             Column(
               children: [
-                Text('Orange (255,128,0)', style: TextStyle(color: Color.fromRGB(255, 128, 0))),
-                Text('Purple (128,0,255)', style: TextStyle(color: Color.fromRGB(128, 0, 255))),
-                Text('Teal (0,128,128)', style: TextStyle(color: Color.fromRGB(0, 128, 128))),
-                Text('Pink (255,192,203)', style: TextStyle(color: Color.fromRGB(255, 192, 203))),
-                Text('Brown (139,69,19)', style: TextStyle(color: Color.fromRGB(139, 69, 19))),
-                Text('Lime (0,255,0)', style: TextStyle(color: Color.fromRGB(0, 255, 0))),
+                Text('Orange (255,128,0)',
+                    style: TextStyle(color: Color.fromRGB(255, 128, 0))),
+                Text('Purple (128,0,255)',
+                    style: TextStyle(color: Color.fromRGB(128, 0, 255))),
+                Text('Teal (0,128,128)',
+                    style: TextStyle(color: Color.fromRGB(0, 128, 128))),
+                Text('Pink (255,192,203)',
+                    style: TextStyle(color: Color.fromRGB(255, 192, 203))),
+                Text('Brown (139,69,19)',
+                    style: TextStyle(color: Color.fromRGB(139, 69, 19))),
+                Text('Lime (0,255,0)',
+                    style: TextStyle(color: Color.fromRGB(0, 255, 0))),
               ],
             ),
           );
@@ -138,20 +167,31 @@ void main() {
               children: const [
                 Text(
                   'Bold red on yellow',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red, backgroundColor: Colors.yellow),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                      backgroundColor: Colors.yellow),
                 ),
                 Text(
                   'Italic underlined blue',
-                  style:
-                      TextStyle(fontStyle: FontStyle.italic, decoration: TextDecoration.underline, color: Colors.blue),
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      decoration: TextDecoration.underline,
+                      color: Colors.blue),
                 ),
                 Text(
                   'Dim green on black',
-                  style: TextStyle(fontWeight: FontWeight.dim, color: Colors.green, backgroundColor: Colors.black),
+                  style: TextStyle(
+                      fontWeight: FontWeight.dim,
+                      color: Colors.green,
+                      backgroundColor: Colors.black),
                 ),
                 Text(
                   'Bold italic magenta',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontStyle: FontStyle.italic, color: Colors.magenta),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.magenta),
                 ),
               ],
             ),
@@ -200,7 +240,8 @@ void main() {
                   padding: const EdgeInsets.all(1),
                   child: Text(
                     'Green double border',
-                    style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.green, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -208,14 +249,16 @@ void main() {
           );
 
           expect(tester.terminalState, containsText('White text on dark blue'));
-          expect(tester.terminalState, containsText('Yellow text in red border'));
+          expect(
+              tester.terminalState, containsText('Yellow text in red border'));
           expect(tester.terminalState, containsText('Green double border'));
         },
       );
     });
 
     // Visual test for manual inspection
-    test('colors visual test', skip: 'Run with debugPrintAfterPump for visual inspection', () async {
+    test('colors visual test',
+        skip: 'Run with debugPrintAfterPump for visual inspection', () async {
       await testNocterm(
         'colors visual',
         (tester) async {
@@ -225,10 +268,12 @@ void main() {
               children: [
                 const Text(
                   '=== TUI Colors Test ===',
-                  style: TextStyle(color: Colors.cyan, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.cyan, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 1),
-                const Text('Basic Colors:', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Basic Colors:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Row(
                   children: const [
                     Text('█', style: TextStyle(color: Colors.red)),
@@ -238,33 +283,61 @@ void main() {
                     Text('█', style: TextStyle(color: Colors.magenta)),
                     Text('█', style: TextStyle(color: Colors.cyan)),
                     Text('█', style: TextStyle(color: Colors.white)),
-                    Text('█', style: TextStyle(color: Colors.black, backgroundColor: Colors.white)),
+                    Text('█',
+                        style: TextStyle(
+                            color: Colors.black,
+                            backgroundColor: Colors.white)),
                   ],
                 ),
                 const SizedBox(height: 1),
-                const Text('Backgrounds:', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Backgrounds:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Row(
                   children: const [
-                    Text(' R ', style: TextStyle(color: Colors.white, backgroundColor: Colors.red)),
-                    Text(' G ', style: TextStyle(color: Colors.black, backgroundColor: Colors.green)),
-                    Text(' B ', style: TextStyle(color: Colors.white, backgroundColor: Colors.blue)),
-                    Text(' Y ', style: TextStyle(color: Colors.black, backgroundColor: Colors.yellow)),
-                    Text(' M ', style: TextStyle(color: Colors.white, backgroundColor: Colors.magenta)),
-                    Text(' C ', style: TextStyle(color: Colors.black, backgroundColor: Colors.cyan)),
+                    Text(' R ',
+                        style: TextStyle(
+                            color: Colors.white, backgroundColor: Colors.red)),
+                    Text(' G ',
+                        style: TextStyle(
+                            color: Colors.black,
+                            backgroundColor: Colors.green)),
+                    Text(' B ',
+                        style: TextStyle(
+                            color: Colors.white, backgroundColor: Colors.blue)),
+                    Text(' Y ',
+                        style: TextStyle(
+                            color: Colors.black,
+                            backgroundColor: Colors.yellow)),
+                    Text(' M ',
+                        style: TextStyle(
+                            color: Colors.white,
+                            backgroundColor: Colors.magenta)),
+                    Text(' C ',
+                        style: TextStyle(
+                            color: Colors.black, backgroundColor: Colors.cyan)),
                   ],
                 ),
                 const SizedBox(height: 1),
-                const Text('Styles:', style: TextStyle(fontWeight: FontWeight.bold)),
-                const Text('Bold', style: TextStyle(fontWeight: FontWeight.bold)),
-                const Text('Italic', style: TextStyle(fontStyle: FontStyle.italic)),
-                const Text('Underline', style: TextStyle(decoration: TextDecoration.underline)),
+                const Text('Styles:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Bold',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Italic',
+                    style: TextStyle(fontStyle: FontStyle.italic)),
+                const Text('Underline',
+                    style: TextStyle(decoration: TextDecoration.underline)),
                 const Text('Dim', style: TextStyle(fontWeight: FontWeight.dim)),
                 const SizedBox(height: 1),
-                const Text('RGB Colors:', style: TextStyle(fontWeight: FontWeight.bold)),
-                Text('Orange', style: TextStyle(color: Color.fromRGB(255, 165, 0))),
-                Text('Pink', style: TextStyle(color: Color.fromRGB(255, 192, 203))),
-                Text('Purple', style: TextStyle(color: Color.fromRGB(128, 0, 128))),
-                Text('Teal', style: TextStyle(color: Color.fromRGB(0, 128, 128))),
+                const Text('RGB Colors:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Orange',
+                    style: TextStyle(color: Color.fromRGB(255, 165, 0))),
+                Text('Pink',
+                    style: TextStyle(color: Color.fromRGB(255, 192, 203))),
+                Text('Purple',
+                    style: TextStyle(color: Color.fromRGB(128, 0, 128))),
+                Text('Teal',
+                    style: TextStyle(color: Color.fromRGB(0, 128, 128))),
               ],
             ),
           );

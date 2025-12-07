@@ -171,7 +171,8 @@ void main() {
 
           await tester.pumpComponent(
             _TestPositionComponent(
-              onTapDownCallback: (details) => tapPosition = details.localPosition,
+              onTapDownCallback: (details) =>
+                  tapPosition = details.localPosition,
             ),
           );
 
@@ -232,7 +233,8 @@ class _TestDoubleTapComponent extends StatefulComponent {
   final VoidCallback onDoubleTapCallback;
 
   @override
-  State<_TestDoubleTapComponent> createState() => _TestDoubleTapComponentState();
+  State<_TestDoubleTapComponent> createState() =>
+      _TestDoubleTapComponentState();
 }
 
 class _TestDoubleTapComponentState extends State<_TestDoubleTapComponent> {

@@ -64,7 +64,7 @@ class CounterDisplay extends StatelessComponent {
   Component build(BuildContext context) {
     // This will automatically rebuild when counterProvider changes
     final count = context.watch(counterProvider);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
       decoration: BoxDecoration(
@@ -86,7 +86,7 @@ class DoubledDisplay extends StatelessComponent {
   Component build(BuildContext context) {
     // Watches the computed provider which depends on counterProvider
     final doubled = context.watch(doubledProvider);
-    
+
     return Text(
       'Doubled: $doubled',
       style: const TextStyle(color: Colors.green),
@@ -101,7 +101,7 @@ class MessageDisplay extends StatelessComponent {
   @override
   Component build(BuildContext context) {
     final message = context.watch(messageProvider);
-    
+
     return Text(
       message,
       style: const TextStyle(color: Colors.yellow),
@@ -153,7 +153,7 @@ class Instructions extends StatelessComponent {
           Text('Instructions:', style: TextStyle(fontWeight: FontWeight.bold)),
           Text('• Use keyboard shortcuts to control the counter'),
           Text('• Press + to increment'),
-          Text('• Press - to decrement'),  
+          Text('• Press - to decrement'),
           Text('• Press r to reset'),
           Text(''),
           Text('Notice how all displays update automatically!'),

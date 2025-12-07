@@ -9,8 +9,9 @@ void main() {
         (tester) async {
           print('\n=== Column in Column - Constraint Flow ===');
           print('Outer Column has finite height from Container (20)');
-          print('Inner Column should receive infinite height during measurement');
-          
+          print(
+              'Inner Column should receive infinite height during measurement');
+
           await tester.pumpComponent(
             Container(
               width: 30,
@@ -63,8 +64,9 @@ void main() {
         'column with intrinsic height',
         (tester) async {
           print('\n=== Column in Column with IntrinsicHeight ===');
-          print('IntrinsicHeight should measure children first, then provide finite constraint');
-          
+          print(
+              'IntrinsicHeight should measure children first, then provide finite constraint');
+
           await tester.pumpComponent(
             Container(
               width: 30,
@@ -90,13 +92,15 @@ void main() {
                           width: 25,
                           height: 2,
                           color: Colors.green,
-                          child: Text('A', style: TextStyle(color: Colors.white)),
+                          child:
+                              Text('A', style: TextStyle(color: Colors.white)),
                         ),
                         Container(
                           width: 25,
                           height: 2,
                           color: Colors.yellow,
-                          child: Text('B', style: TextStyle(color: Colors.black)),
+                          child:
+                              Text('B', style: TextStyle(color: Colors.black)),
                         ),
                       ],
                     ),
@@ -122,7 +126,7 @@ void main() {
         (tester) async {
           print('\n=== Column in Column with Expanded ===');
           print('Expanded should give finite constraints to inner Column');
-          
+
           await tester.pumpComponent(
             Container(
               width: 30,
@@ -146,20 +150,23 @@ void main() {
                           width: 25,
                           height: 2,
                           color: Colors.green,
-                          child: Text('A', style: TextStyle(color: Colors.white)),
+                          child:
+                              Text('A', style: TextStyle(color: Colors.white)),
                         ),
                         Container(
                           width: 25,
                           height: 2,
                           color: Colors.yellow,
-                          child: Text('B', style: TextStyle(color: Colors.black)),
+                          child:
+                              Text('B', style: TextStyle(color: Colors.black)),
                         ),
                         // This will expand to fill remaining space
                         Expanded(
                           child: Container(
                             width: 25,
                             color: Colors.cyan,
-                            child: Text('Fill', style: TextStyle(color: Colors.white)),
+                            child: Text('Fill',
+                                style: TextStyle(color: Colors.white)),
                           ),
                         ),
                       ],
@@ -186,7 +193,7 @@ void main() {
         (tester) async {
           print('\n=== Column in Column with Flexible ===');
           print('Flexible should give bounded constraints to inner Column');
-          
+
           await tester.pumpComponent(
             Container(
               width: 30,
@@ -211,13 +218,15 @@ void main() {
                           width: 25,
                           height: 2,
                           color: Colors.green,
-                          child: Text('A', style: TextStyle(color: Colors.white)),
+                          child:
+                              Text('A', style: TextStyle(color: Colors.white)),
                         ),
                         Container(
                           width: 25,
                           height: 2,
                           color: Colors.yellow,
-                          child: Text('B', style: TextStyle(color: Colors.black)),
+                          child:
+                              Text('B', style: TextStyle(color: Colors.black)),
                         ),
                       ],
                     ),
@@ -244,7 +253,7 @@ void main() {
           print('\n=== MainAxisSize.max vs MainAxisSize.min ===');
           print('MainAxisSize.min should size Column to its content');
           print('MainAxisSize.max should expand to available space');
-          
+
           await tester.pumpComponent(
             Row(
               children: [
@@ -262,13 +271,15 @@ void main() {
                         width: 20,
                         height: 3,
                         color: Colors.red,
-                        child: Text('MAX', style: TextStyle(color: Colors.white)),
+                        child:
+                            Text('MAX', style: TextStyle(color: Colors.white)),
                       ),
                       Container(
                         width: 20,
                         height: 3,
                         color: Colors.green,
-                        child: Text('Size', style: TextStyle(color: Colors.white)),
+                        child:
+                            Text('Size', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -288,13 +299,15 @@ void main() {
                         width: 20,
                         height: 3,
                         color: Colors.yellow,
-                        child: Text('MIN', style: TextStyle(color: Colors.black)),
+                        child:
+                            Text('MIN', style: TextStyle(color: Colors.black)),
                       ),
                       Container(
                         width: 20,
                         height: 3,
                         color: Colors.magenta,
-                        child: Text('Size', style: TextStyle(color: Colors.white)),
+                        child:
+                            Text('Size', style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),

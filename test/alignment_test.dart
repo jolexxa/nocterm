@@ -10,7 +10,8 @@ void main() {
           await tester.pumpComponent(
             DecoratedBox(
               decoration: BoxDecoration(
-                border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                border: BoxBorder.all(
+                    color: Color.fromRGB(255, 255, 255), width: 1),
               ),
               child: SizedBox(
                 width: 50,
@@ -44,7 +45,8 @@ void main() {
           await tester.pumpComponent(
             DecoratedBox(
               decoration: BoxDecoration(
-                border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                border: BoxBorder.all(
+                    color: Color.fromRGB(255, 255, 255), width: 1),
               ),
               child: SizedBox(
                 width: 50,
@@ -74,7 +76,8 @@ void main() {
           await tester.pumpComponent(
             DecoratedBox(
               decoration: BoxDecoration(
-                border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                border: BoxBorder.all(
+                    color: Color.fromRGB(255, 255, 255), width: 1),
               ),
               child: SizedBox(
                 width: 50,

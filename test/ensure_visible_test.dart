@@ -80,7 +80,8 @@ void main() {
 
       // Navigate back up to item 8 (still visible)
       controller.ensureVisible(itemOffset: 8, itemExtent: 1);
-      expect(controller.offset, equals(6)); // No scroll needed, item 8 is visible
+      expect(
+          controller.offset, equals(6)); // No scroll needed, item 8 is visible
 
       // Navigate to item 0 (way above)
       controller.ensureVisible(itemOffset: 0, itemExtent: 1);

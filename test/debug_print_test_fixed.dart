@@ -28,23 +28,27 @@ void main() {
                 ),
                 const SizedBox(height: 1),
                 Center(
-                  child: Text('── Center Line ──', style: TextStyle(fontWeight: FontWeight.dim)),
+                  child: Text('── Center Line ──',
+                      style: TextStyle(fontWeight: FontWeight.dim)),
                 ),
                 const SizedBox(height: 1),
                 Row(
                   children: [
                     Expanded(
-                      child: Text('Left aligned', style: TextStyle(color: Colors.red)),
+                      child: Text('Left aligned',
+                          style: TextStyle(color: Colors.red)),
                     ),
                     Expanded(
                       child: Center(
-                        child: Text('Centered', style: TextStyle(color: Colors.green)),
+                        child: Text('Centered',
+                            style: TextStyle(color: Colors.green)),
                       ),
                     ),
                     Expanded(
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: Text('Right aligned', style: TextStyle(color: Colors.blue)),
+                        child: Text('Right aligned',
+                            style: TextStyle(color: Colors.blue)),
                       ),
                     ),
                   ],
@@ -56,15 +60,16 @@ void main() {
 
         print('Terminal content:');
         print(tester.terminalState.getText());
-        
+
         // Check what's actually rendered
         expect(tester.terminalState, containsText('Left aligned'));
-        
+
         // Try to find A or B
         final content = tester.terminalState.getText();
         print('\nSearching for "A": ${content.contains('A')}');
         print('Searching for "B": ${content.contains('B')}');
-        print('Searching for "Center Line": ${content.contains('Center Line')}');
+        print(
+            'Searching for "Center Line": ${content.contains('Center Line')}');
       },
       debugPrintAfterPump: true,
       size: const Size(60, 30), // Larger size to avoid overflow

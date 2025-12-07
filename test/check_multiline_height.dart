@@ -9,36 +9,37 @@ void main() {
         // Count the actual lines needed
         final boxText = '╔═══╗\n║ A ║\n╚═══╝';
         print('Box text lines: ${boxText.split('\n').length}'); // Should be 3
-        
+
         // Test with Container padding
         final containerPadding = 1;
         print('Container padding top/bottom: $containerPadding each');
-        
+
         // First row with boxes
         print('\nFirst Row needs:');
         print('- Container padding top: 1');
-        print('- Box height: 3 lines');  
+        print('- Box height: 3 lines');
         print('- Container padding bottom: 1');
         print('Total: 5 lines');
-        
+
         // SizedBox
         print('\nSizedBox: 1 line');
-        
+
         // Center line
         print('\nCenter line: 1 line');
-        
+
         // Another SizedBox
         print('\nSizedBox: 1 line');
-        
+
         // Bottom row
         print('\nBottom Row: 1 line');
-        
+
         // Outer container padding
         print('\nOuter container padding: 2 lines (1 top + 1 bottom)');
-        
+
         print('\n=== TOTAL NEEDED ===');
-        print('5 (first row) + 1 (space) + 1 (center) + 1 (space) + 1 (bottom row) + 2 (padding) = 11 lines');
-        
+        print(
+            '5 (first row) + 1 (space) + 1 (center) + 1 (space) + 1 (bottom row) + 2 (padding) = 11 lines');
+
         // Now test the actual component with sufficient height
         await tester.pumpComponent(
           Container(
@@ -67,17 +68,20 @@ void main() {
                   children: [
                     Expanded(child: Text('Left')),
                     Expanded(child: Center(child: Text('Center'))),
-                    Expanded(child: Align(alignment: Alignment.centerRight, child: Text('Right'))),
+                    Expanded(
+                        child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text('Right'))),
                   ],
                 ),
               ],
             ),
           ),
         );
-        
+
         print('\nActual render:');
         print(tester.terminalState.getText());
-        
+
         // Check if everything is visible
         expect(tester.terminalState.getText(), contains('A'));
         expect(tester.terminalState.getText(), contains('B'));

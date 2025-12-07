@@ -86,7 +86,8 @@ void main() {
             Container(
               width: 20,
               height: 5,
-              color: Color.defaultColor,  // This should clear the blue background
+              color:
+                  Color.defaultColor, // This should clear the blue background
               child: const Center(
                 child: Text('Default BG'),
               ),
@@ -114,7 +115,8 @@ void main() {
                     height: 10,
                     color: Colors.blue,
                     child: const Center(
-                      child: Text('Base Layer', style: TextStyle(color: Colors.white)),
+                      child: Text('Base Layer',
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ),
                 ),
@@ -127,7 +129,8 @@ void main() {
                         border: BoxBorder.all(color: Colors.yellow),
                       ),
                       child: const Center(
-                        child: Text('Overlay', style: TextStyle(color: Colors.green)),
+                        child: Text('Overlay',
+                            style: TextStyle(color: Colors.green)),
                       ),
                     ),
                   ),

@@ -22,7 +22,8 @@ class TextWrapDemo extends StatelessComponent {
         children: [
           Text(
             'Text Wrapping Demo',
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGB(0, 255, 0)),
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, color: Color.fromRGB(0, 255, 0)),
           ),
           const SizedBox(height: 1),
 
@@ -105,7 +106,8 @@ class TextWrapDemo extends StatelessComponent {
               border: BoxBorder.all(style: BoxBorderStyle.solid),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch, // This is crucial for alignment!
+              crossAxisAlignment:
+                  CrossAxisAlignment.stretch, // This is crucial for alignment!
               children: [
                 const Text(
                   'Text Alignment:',

@@ -62,12 +62,14 @@ void main() {
         expect(
           width,
           equals(1),
-          reason: '$name ($symbol) without FE0F should have width 1, got $width',
+          reason:
+              '$name ($symbol) without FE0F should have width 1, got $width',
         );
       }
     });
 
-    test('symbols that are already emoji (no FE0F needed) should have width 2', () {
+    test('symbols that are already emoji (no FE0F needed) should have width 2',
+        () {
       // These symbols are emoji by default and don't need FE0F
       final defaultEmoji = {
         "⭐": "Star",

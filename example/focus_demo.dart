@@ -23,7 +23,13 @@ class _FocusDemoState extends State<FocusDemo> {
   int sidebarIndex = 0;
   int mainTabIndex = 0;
   String lastKeyPressed = 'None';
-  final List<String> sidebarItems = ['Dashboard', 'Settings', 'Profile', 'Help', 'About'];
+  final List<String> sidebarItems = [
+    'Dashboard',
+    'Settings',
+    'Profile',
+    'Help',
+    'About'
+  ];
   final List<String> mainTabs = ['Overview', 'Details', 'Analytics'];
 
   void _updateLastKey(String key) {
@@ -71,11 +77,15 @@ class _FocusDemoState extends State<FocusDemo> {
                   } else if (event.logicalKey == LogicalKey.arrowDown) {
                     _updateLastKey('Arrow Down');
                     setState(() {
-                      if (sidebarIndex < sidebarItems.length - 1) sidebarIndex++;
+                      if (sidebarIndex < sidebarItems.length - 1)
+                        sidebarIndex++;
                     });
                     return true;
-                  } else if (event.logicalKey == LogicalKey.arrowRight || event.logicalKey == LogicalKey.tab) {
-                    _updateLastKey(event.logicalKey == LogicalKey.tab ? 'Tab' : 'Arrow Right');
+                  } else if (event.logicalKey == LogicalKey.arrowRight ||
+                      event.logicalKey == LogicalKey.tab) {
+                    _updateLastKey(event.logicalKey == LogicalKey.tab
+                        ? 'Tab'
+                        : 'Arrow Right');
                     setState(() {
                       focusedArea = FocusArea.main;
                     });
@@ -87,7 +97,9 @@ class _FocusDemoState extends State<FocusDemo> {
                   width: 20,
                   decoration: BoxDecoration(
                     border: BoxBorder.all(
-                      color: focusedArea == FocusArea.sidebar ? Colors.green : Colors.gray,
+                      color: focusedArea == FocusArea.sidebar
+                          ? Colors.green
+                          : Colors.gray,
                     ),
                   ),
                   child: Column(
@@ -99,7 +111,9 @@ class _FocusDemoState extends State<FocusDemo> {
                           'Sidebar',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: focusedArea == FocusArea.sidebar ? Colors.green : Colors.white,
+                            color: focusedArea == FocusArea.sidebar
+                                ? Colors.green
+                                : Colors.white,
                           ),
                         ),
                       ),
@@ -109,11 +123,13 @@ class _FocusDemoState extends State<FocusDemo> {
                           children: [
                             for (int i = 0; i < sidebarItems.length; i++)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 1),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 1),
                                 child: Text(
                                   ' ${i == sidebarIndex && focusedArea == FocusArea.sidebar ? '>' : ' '} ${sidebarItems[i]}',
                                   style: TextStyle(
-                                    color: i == sidebarIndex && focusedArea == FocusArea.sidebar
+                                    color: i == sidebarIndex &&
+                                            focusedArea == FocusArea.sidebar
                                         ? Colors.white
                                         : Colors.gray,
                                   ),
@@ -162,7 +178,8 @@ class _FocusDemoState extends State<FocusDemo> {
                         focusedArea = FocusArea.footer;
                       });
                       return true;
-                    } else if (event.logicalKey == LogicalKey.tab && event.isShiftPressed) {
+                    } else if (event.logicalKey == LogicalKey.tab &&
+                        event.isShiftPressed) {
                       _updateLastKey('Shift+Tab');
                       setState(() {
                         focusedArea = FocusArea.sidebar;
@@ -174,7 +191,9 @@ class _FocusDemoState extends State<FocusDemo> {
                   child: Container(
                     decoration: BoxDecoration(
                       border: BoxBorder.all(
-                        color: focusedArea == FocusArea.main ? Colors.green : Colors.gray,
+                        color: focusedArea == FocusArea.main
+                            ? Colors.green
+                            : Colors.gray,
                       ),
                     ),
                     child: Column(
@@ -187,28 +206,35 @@ class _FocusDemoState extends State<FocusDemo> {
                             children: [
                               for (int i = 0; i < mainTabs.length; i++) ...[
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 2),
-                                  decoration: i == mainTabIndex && focusedArea == FocusArea.main
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 2),
+                                  decoration: i == mainTabIndex &&
+                                          focusedArea == FocusArea.main
                                       ? BoxDecoration(
                                           color: Colors.blue,
-                                          border: BoxBorder.all(color: Colors.cyan),
+                                          border:
+                                              BoxBorder.all(color: Colors.cyan),
                                         )
                                       : BoxDecoration(
-                                          border: BoxBorder.all(color: Colors.gray),
+                                          border:
+                                              BoxBorder.all(color: Colors.gray),
                                         ),
                                   child: Text(
                                     mainTabs[i],
                                     style: TextStyle(
-                                      color: i == mainTabIndex && focusedArea == FocusArea.main
+                                      color: i == mainTabIndex &&
+                                              focusedArea == FocusArea.main
                                           ? Colors.white
                                           : Colors.gray,
-                                      fontWeight: i == mainTabIndex && focusedArea == FocusArea.main
+                                      fontWeight: i == mainTabIndex &&
+                                              focusedArea == FocusArea.main
                                           ? FontWeight.bold
                                           : FontWeight.normal,
                                     ),
                                   ),
                                 ),
-                                if (i < mainTabs.length - 1) const SizedBox(width: 1),
+                                if (i < mainTabs.length - 1)
+                                  const SizedBox(width: 1),
                               ],
                             ],
                           ),
@@ -225,16 +251,22 @@ class _FocusDemoState extends State<FocusDemo> {
                                   'Main Content Area',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: focusedArea == FocusArea.main ? Colors.green : Colors.white,
+                                    color: focusedArea == FocusArea.main
+                                        ? Colors.green
+                                        : Colors.white,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text('Selected Tab: ${mainTabs[mainTabIndex]}'),
-                                Text('Selected Sidebar: ${sidebarItems[sidebarIndex]}'),
+                                Text(
+                                    'Selected Sidebar: ${sidebarItems[sidebarIndex]}'),
                                 const SizedBox(height: 2),
-                                Text('Last Key Pressed: $lastKeyPressed', style: TextStyle(color: Colors.yellow)),
+                                Text('Last Key Pressed: $lastKeyPressed',
+                                    style: TextStyle(color: Colors.yellow)),
                                 const SizedBox(height: 2),
-                                Text('Controls:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text('Controls:',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
                                 Text('• Arrow Keys: Navigate within area'),
                                 Text('• Tab: Move to next area'),
                                 Text('• Shift+Tab: Move to previous area'),
@@ -268,7 +300,8 @@ class _FocusDemoState extends State<FocusDemo> {
                 focusedArea = FocusArea.sidebar;
               });
               return true;
-            } else if (event.logicalKey == LogicalKey.tab && event.isShiftPressed) {
+            } else if (event.logicalKey == LogicalKey.tab &&
+                event.isShiftPressed) {
               _updateLastKey('Shift+Tab');
               setState(() {
                 focusedArea = FocusArea.main;
@@ -287,9 +320,13 @@ class _FocusDemoState extends State<FocusDemo> {
             height: 3,
             decoration: BoxDecoration(
               border: BoxBorder.all(
-                color: focusedArea == FocusArea.footer ? Colors.green : Colors.gray,
+                color: focusedArea == FocusArea.footer
+                    ? Colors.green
+                    : Colors.gray,
               ),
-              color: focusedArea == FocusArea.footer ? Color.fromRGB(0, 0, 64) : null,
+              color: focusedArea == FocusArea.footer
+                  ? Color.fromRGB(0, 0, 64)
+                  : null,
             ),
             child: Center(
               child: Text(
@@ -297,7 +334,9 @@ class _FocusDemoState extends State<FocusDemo> {
                     ? 'Footer (Focused) - Press Q to quit, Arrow Up to go back'
                     : 'Footer - Tab here to focus',
                 style: TextStyle(
-                  color: focusedArea == FocusArea.footer ? Colors.white : Colors.gray,
+                  color: focusedArea == FocusArea.footer
+                      ? Colors.white
+                      : Colors.gray,
                 ),
               ),
             ),

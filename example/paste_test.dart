@@ -64,7 +64,6 @@ class _PasteTestAppState extends State<PasteTestApp> {
             const SizedBox(height: 1),
             const Divider(),
             const SizedBox(height: 1),
-
             TextField(
               controller: _controller,
               focused: true,
@@ -78,7 +77,6 @@ class _PasteTestAppState extends State<PasteTestApp> {
                 _logEvent('Text changed: length=${text.length}');
               },
             ),
-
             const SizedBox(height: 1),
             Text(
               'Current text: "${_controller.text}"',
@@ -88,15 +86,15 @@ class _PasteTestAppState extends State<PasteTestApp> {
               'Length: ${_controller.text.length} characters',
               style: const TextStyle(color: Color.fromRGB(200, 200, 200)),
             ),
-
             const SizedBox(height: 1),
             const Divider(),
             const SizedBox(height: 1),
-            const Text('Recent events:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('Recent events:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             ..._events.map((e) => Text(
-              '  $e',
-              style: const TextStyle(color: Color.fromRGB(150, 150, 150)),
-            )),
+                  '  $e',
+                  style: const TextStyle(color: Color.fromRGB(150, 150, 150)),
+                )),
           ],
         ),
       ),

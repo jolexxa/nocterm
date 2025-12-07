@@ -131,14 +131,16 @@ class _GestureDemoAppState extends State<GestureDemoApp> {
         });
       },
       onTapDown: (details) {
-        _addEvent('Tap down at (${details.localPosition.dx.toInt()}, ${details.localPosition.dy.toInt()})');
+        _addEvent(
+            'Tap down at (${details.localPosition.dx.toInt()}, ${details.localPosition.dy.toInt()})');
         setState(() {
           _isTapDown = true;
           _lastTapPosition = details.localPosition;
         });
       },
       onTapUp: (details) {
-        _addEvent('Tap up at (${details.localPosition.dx.toInt()}, ${details.localPosition.dy.toInt()})');
+        _addEvent(
+            'Tap up at (${details.localPosition.dx.toInt()}, ${details.localPosition.dy.toInt()})');
         setState(() {
           _isTapDown = false;
         });
@@ -169,7 +171,8 @@ class _GestureDemoAppState extends State<GestureDemoApp> {
             const SizedBox(height: 1),
             Text('Count: $_tapCount'),
             if (_lastTapPosition != null)
-              Text('Last: (${_lastTapPosition!.dx.toInt()},${_lastTapPosition!.dy.toInt()})'),
+              Text(
+                  'Last: (${_lastTapPosition!.dx.toInt()},${_lastTapPosition!.dy.toInt()})'),
           ],
         ),
       ),
@@ -212,14 +215,16 @@ class _GestureDemoAppState extends State<GestureDemoApp> {
         });
       },
       onLongPressStart: (details) {
-        _addEvent('Long press started at (${details.localPosition.dx.toInt()}, ${details.localPosition.dy.toInt()})');
+        _addEvent(
+            'Long press started at (${details.localPosition.dx.toInt()}, ${details.localPosition.dy.toInt()})');
         setState(() {
           _isLongPressing = true;
           _lastLongPressPosition = details.localPosition;
         });
       },
       onLongPressEnd: (details) {
-        _addEvent('Long press ended at (${details.localPosition.dx.toInt()}, ${details.localPosition.dy.toInt()})');
+        _addEvent(
+            'Long press ended at (${details.localPosition.dx.toInt()}, ${details.localPosition.dy.toInt()})');
         setState(() {
           _isLongPressing = false;
         });
@@ -321,7 +326,8 @@ class _GestureDemoAppState extends State<GestureDemoApp> {
           Future.delayed(const Duration(milliseconds: 300), () {
             if (mounted) {
               setState(() {
-                _combinedGestureState = _isCombinedHovering ? 'Hovering' : 'Idle';
+                _combinedGestureState =
+                    _isCombinedHovering ? 'Hovering' : 'Idle';
               });
             }
           });
@@ -334,7 +340,8 @@ class _GestureDemoAppState extends State<GestureDemoApp> {
           Future.delayed(const Duration(milliseconds: 300), () {
             if (mounted) {
               setState(() {
-                _combinedGestureState = _isCombinedHovering ? 'Hovering' : 'Idle';
+                _combinedGestureState =
+                    _isCombinedHovering ? 'Hovering' : 'Idle';
               });
             }
           });
@@ -347,7 +354,8 @@ class _GestureDemoAppState extends State<GestureDemoApp> {
           Future.delayed(const Duration(milliseconds: 300), () {
             if (mounted) {
               setState(() {
-                _combinedGestureState = _isCombinedHovering ? 'Hovering' : 'Idle';
+                _combinedGestureState =
+                    _isCombinedHovering ? 'Hovering' : 'Idle';
               });
             }
           });
@@ -362,12 +370,16 @@ class _GestureDemoAppState extends State<GestureDemoApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('COMBINED: All Gestures (Tap, Double-Tap, Long-Press, Hover)'),
+              const Text(
+                  'COMBINED: All Gestures (Tap, Double-Tap, Long-Press, Hover)'),
               Text(
                 'State: $_combinedGestureState',
                 style: TextStyle(
-                  fontWeight: _combinedGestureState != 'Idle' ? FontWeight.bold : null,
-                  color: _combinedGestureState != 'Idle' ? const Color(0xFFFF00FF) : null,
+                  fontWeight:
+                      _combinedGestureState != 'Idle' ? FontWeight.bold : null,
+                  color: _combinedGestureState != 'Idle'
+                      ? const Color(0xFFFF00FF)
+                      : null,
                 ),
               ),
             ],
@@ -398,7 +410,8 @@ class _GestureDemoAppState extends State<GestureDemoApp> {
           child: _events.isEmpty
               ? const Padding(
                   padding: EdgeInsets.all(1),
-                  child: Text('No events yet - try interacting with the zones above!'),
+                  child: Text(
+                      'No events yet - try interacting with the zones above!'),
                 )
               : ListView(
                   children: _events.map((event) {

@@ -30,10 +30,12 @@ void main() {
       expect(controller.text, 'Line one\nLine two\nLine three');
 
       // Test selection at different positions
-      controller.selection = const TextSelection.collapsed(offset: 9); // After newline
+      controller.selection =
+          const TextSelection.collapsed(offset: 9); // After newline
       expect(controller.selection.extentOffset, 9);
 
-      controller.selection = const TextSelection.collapsed(offset: 18); // After second newline
+      controller.selection =
+          const TextSelection.collapsed(offset: 18); // After second newline
       expect(controller.selection.extentOffset, 18);
 
       controller.dispose();
@@ -47,10 +49,12 @@ void main() {
       expect(controller.text, 'Hello 😀 World 👍');
 
       // Emoji handling - emojis are single grapheme clusters
-      controller.selection = const TextSelection.collapsed(offset: 6); // Before emoji
+      controller.selection =
+          const TextSelection.collapsed(offset: 6); // Before emoji
       expect(controller.selection.extentOffset, 6);
 
-      controller.selection = const TextSelection.collapsed(offset: 8); // After emoji
+      controller.selection =
+          const TextSelection.collapsed(offset: 8); // After emoji
       expect(controller.selection.extentOffset, 8);
 
       controller.dispose();
@@ -85,7 +89,8 @@ void main() {
       expect(controller.text, 'Short');
 
       controller.text = 'This is a much longer text that might exceed limits';
-      expect(controller.text, 'This is a much longer text that might exceed limits');
+      expect(controller.text,
+          'This is a much longer text that might exceed limits');
 
       // Clear text
       controller.clear();

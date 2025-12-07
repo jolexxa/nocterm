@@ -10,7 +10,8 @@ void main() {
     //
     // The fix: input_parser.dart now discards unparseable mouse events instead
     // of converting them to 'unknown' keyboard events.
-    test('unknown keyboard events should not be sent to focusable nodes', () async {
+    test('unknown keyboard events should not be sent to focusable nodes',
+        () async {
       await testNocterm(
         'unknown key test',
         (tester) async {
@@ -54,7 +55,8 @@ void main() {
 
           // Simulate what happens when unparseable mouse events get converted to 'unknown' keyboard events
           // This mimics the bug in input_parser.dart lines 77-84
-          print('Simulating unknown keyboard events (as would happen from unparseable mouse events)...');
+          print(
+              'Simulating unknown keyboard events (as would happen from unparseable mouse events)...');
 
           // Send several 'unknown' keyboard events (simulating mouse movement)
           for (int i = 0; i < 5; i++) {
@@ -67,11 +69,14 @@ void main() {
           }
 
           // Check that 'unknown' keyboard events were received (this is the bug we're testing)
-          final unknownEvents = receivedEvents.where((e) => e.contains('unknown')).toList();
+          final unknownEvents =
+              receivedEvents.where((e) => e.contains('unknown')).toList();
 
           if (unknownEvents.isNotEmpty) {
-            print('\n❌ CURRENT BEHAVIOR: Found ${unknownEvents.length} unknown keyboard events!');
-            print('This demonstrates the issue where mouse events are converted to keyboard events.');
+            print(
+                '\n❌ CURRENT BEHAVIOR: Found ${unknownEvents.length} unknown keyboard events!');
+            print(
+                'This demonstrates the issue where mouse events are converted to keyboard events.');
           } else {
             print('\n✓ FIXED: No unknown keyboard events received');
           }
@@ -80,7 +85,8 @@ void main() {
           // they WILL reach focusable nodes. The fix prevents mouse events from
           // being converted to 'unknown' keyboard events in the first place.
           expect(unknownEvents.length, greaterThan(0),
-              reason: 'This test shows that unknown events (if sent) reach focusable nodes. '
+              reason:
+                  'This test shows that unknown events (if sent) reach focusable nodes. '
                   'The fix prevents mouse events from generating these unknown events.');
         },
         debugPrintAfterPump: true,

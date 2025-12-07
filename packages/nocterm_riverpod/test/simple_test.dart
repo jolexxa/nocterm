@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 void main() {
   test('Basic Riverpod integration works', () async {
     final provider = Provider<String>((ref) => 'Hello from Riverpod!');
-    
+
     await testNocterm(
       'basic provider read',
       (tester) async {
@@ -21,15 +21,15 @@ void main() {
             ),
           ),
         );
-        
+
         expect(tester.terminalState, containsText('Hello from Riverpod!'));
       },
     );
   });
-  
+
   test('StateProvider can be modified', () async {
     final counterProvider = StateProvider<int>((ref) => 0);
-    
+
     await testNocterm(
       'state provider modification',
       (tester) async {
@@ -39,7 +39,7 @@ void main() {
               builder: (context, setState) {
                 // Re-read the provider on each build
                 final count = context.read(counterProvider);
-                
+
                 return Column(
                   children: [
                     Text('Count: $count'),
@@ -47,7 +47,7 @@ void main() {
                       onKeyEvent: (key) {
                         if (key == LogicalKey.arrowUp) {
                           context.read(counterProvider.notifier).state++;
-                          setState(() {});  // Manually trigger rebuild
+                          setState(() {}); // Manually trigger rebuild
                         }
                         return false;
                       },
@@ -59,10 +59,10 @@ void main() {
             ),
           ),
         );
-        
+
         // Initial state
         expect(tester.terminalState, containsText('Count: 0'));
-        
+
         // Increment
         await tester.sendKey(LogicalKey.arrowUp);
         await tester.pump();
@@ -70,10 +70,10 @@ void main() {
       },
     );
   });
-  
+
   test('Provider overrides work', () async {
     final greetingProvider = Provider<String>((ref) => 'Default');
-    
+
     await testNocterm(
       'provider override',
       (tester) async {
@@ -90,7 +90,7 @@ void main() {
             ),
           ),
         );
-        
+
         expect(tester.terminalState, containsText('Overridden!'));
       },
     );
@@ -100,9 +100,9 @@ void main() {
 // Helper components
 class StatelessBuilder extends StatelessComponent {
   const StatelessBuilder({super.key, required this.builder});
-  
+
   final ComponentBuilder builder;
-  
+
   @override
   Component build(BuildContext context) {
     return builder(context);
@@ -111,9 +111,9 @@ class StatelessBuilder extends StatelessComponent {
 
 class StatefulBuilder extends StatefulComponent {
   const StatefulBuilder({super.key, required this.builder});
-  
+
   final Component Function(BuildContext, StateSetter) builder;
-  
+
   @override
   State<StatefulBuilder> createState() => _StatefulBuilderState();
 }

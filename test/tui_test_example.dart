@@ -94,7 +94,8 @@ void main() {
         // Check for styled text
         expect(
           tester.terminalState,
-          hasStyledText('Styled Text', TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          hasStyledText('Styled Text',
+              TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
         );
       });
     });

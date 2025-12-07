@@ -98,7 +98,9 @@ void main() {
           print('After tap with isMotion=true, count: $tapCount');
 
           // This should now pass with the fix!
-          expect(tapCount, 1, reason: 'Fix: clicks with isMotion=true now work via state tracking');
+          expect(tapCount, 1,
+              reason:
+                  'Fix: clicks with isMotion=true now work via state tracking');
         },
         debugPrintAfterPump: true,
       );
@@ -172,7 +174,8 @@ void main() {
           await tester.pump();
 
           print('After isMotion=true click, count: $tapCount');
-          expect(tapCount, 2, reason: 'Fix: second click with isMotion=true now works');
+          expect(tapCount, 2,
+              reason: 'Fix: second click with isMotion=true now works');
         },
         debugPrintAfterPump: true,
       );
@@ -229,7 +232,8 @@ void main() {
 
           // Step 2: User clicks while hovering (this is where the bug manifests)
           // In a real terminal with mode 1003, this might come as isMotion=true
-          print('\n2. User clicks while hovering (isMotion=true - BUG CONDITION)');
+          print(
+              '\n2. User clicks while hovering (isMotion=true - BUG CONDITION)');
           await tester.sendMouseEvent(MouseEvent(
             button: MouseButton.left,
             x: 10,
@@ -250,10 +254,12 @@ void main() {
 
           print('Tap count after click: $tapCount');
           print('Expected: 1 (fix works!)');
-          expect(tapCount, 1, reason: 'Fix works: clicks with isMotion=true are detected');
+          expect(tapCount, 1,
+              reason: 'Fix works: clicks with isMotion=true are detected');
 
           // Step 3: Try again with isMotion=false (should also still work)
-          print('\n3. User clicks with isMotion=false (baseline - should still work)');
+          print(
+              '\n3. User clicks with isMotion=false (baseline - should still work)');
           await tester.tap(10, 2);
           print('Tap count after test click: $tapCount');
           expect(tapCount, 2, reason: 'Baseline clicks still work as before');

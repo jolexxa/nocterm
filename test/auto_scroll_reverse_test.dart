@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('AutoScrollController with reverse ListView', () {
-    test('reverse ListView with AutoScrollController initial position', () async {
+    test('reverse ListView with AutoScrollController initial position',
+        () async {
       await testNocterm(
         'reverse auto-scroll initial',
         (tester) async {
@@ -152,7 +153,8 @@ void main() {
 
           // In reverse mode, scrolling "up" visually means increasing offset
           // because the content is flipped
-          scrollController.scrollDown(10); // This scrolls visually "up" in reverse mode
+          scrollController
+              .scrollDown(10); // This scrolls visually "up" in reverse mode
 
           print('\nAfter scrolling:');
           print('Offset: ${scrollController.offset}');

@@ -41,7 +41,8 @@ void main() {
       );
     });
 
-    test('renders items from right to left when reverse is true and horizontal', () async {
+    test('renders items from right to left when reverse is true and horizontal',
+        () async {
       await testNocterm(
         'reverse horizontal ListView',
         (tester) async {

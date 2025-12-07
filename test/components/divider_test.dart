@@ -151,7 +151,7 @@ void main() {
               ),
             ),
           );
-          
+
           expect(tester.terminalState, containsText('Top'));
           expect(tester.terminalState, containsText('─'));
           expect(tester.terminalState, containsText('Bottom'));
@@ -176,7 +176,7 @@ void main() {
               ),
             ),
           );
-          
+
           expect(tester.terminalState, containsText('Left'));
           expect(tester.terminalState, containsText('│'));
           expect(tester.terminalState, containsText('Right'));
@@ -195,7 +195,7 @@ void main() {
               child: Divider(indent: 5, endIndent: 5),
             ),
           );
-          
+
           expect(tester.terminalState, containsText('─'));
         },
       );
@@ -212,7 +212,7 @@ void main() {
               child: Divider(style: DividerStyle.double),
             ),
           );
-          
+
           expect(tester.terminalState, containsText('═'));
         },
       );
@@ -227,7 +227,7 @@ void main() {
               child: Divider(style: DividerStyle.ascii),
             ),
           );
-          
+
           expect(tester.terminalState, containsText('-'));
         },
       );
@@ -244,7 +244,7 @@ void main() {
               child: Divider(color: Colors.red),
             ),
           );
-          
+
           expect(tester.terminalState, containsText('─'));
         },
       );

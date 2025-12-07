@@ -309,7 +309,8 @@ void main() {
             ),
           );
 
-          expect(tester.terminalState, containsText('Checkmark/Status Emojis:'));
+          expect(
+              tester.terminalState, containsText('Checkmark/Status Emojis:'));
           expect(tester.terminalState, containsText('✅'));
           expect(tester.terminalState, containsText('🔴'));
         },
@@ -677,7 +678,8 @@ void main() {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
-                    Text('STRESS TEST - Many Emojis:', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('STRESS TEST - Many Emojis:',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     Text(''),
                     Text('😀😃😄😁😅😂🤣😊😇🙂😉😌😍🥰😘😗😙😚😋😛😜😝'),
                     Text('👋🤚🖐️✋🖖👌🤌🤏✌️🤞🤟🤘🤙👈👉👆👇☝️👍👎✊👊'),
@@ -716,7 +718,8 @@ void main() {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Complex Emojis Test', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text('Complex Emojis Test',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 1),
                     // Flags in nested border
                     Container(
@@ -871,7 +874,8 @@ void main() {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
-                    Text('Double Border Test:', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Double Border Test:',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     Text(''),
                     Text('😀 😃 😄 😁 😅 😂 🤣'),
                     Text('✅ ❌ ⚠️ 🔴 🟢 🔵'),
@@ -909,7 +913,8 @@ void main() {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('╔══ COMPREHENSIVE EMOJI BORDER TEST ══╗', style: TextStyle(fontWeight: FontWeight.bold)),
+                    const Text('╔══ COMPREHENSIVE EMOJI BORDER TEST ══╗',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
                     const Text(''),
 
                     // Row 1: Faces and Hands
@@ -1179,7 +1184,8 @@ void main() {
           );
 
           // Verify the most important sections that will definitely be visible
-          expect(tester.terminalState, containsText('COMPREHENSIVE EMOJI BORDER TEST'));
+          expect(tester.terminalState,
+              containsText('COMPREHENSIVE EMOJI BORDER TEST'));
           expect(tester.terminalState, containsText('FACES'));
           expect(tester.terminalState, containsText('HANDS'));
           expect(tester.terminalState, containsText('HEARTS'));

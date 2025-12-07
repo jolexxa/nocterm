@@ -20,7 +20,8 @@ class InfiniteHoverableListDemo extends StatefulComponent {
   const InfiniteHoverableListDemo({super.key});
 
   @override
-  State<InfiniteHoverableListDemo> createState() => _InfiniteHoverableListDemoState();
+  State<InfiniteHoverableListDemo> createState() =>
+      _InfiniteHoverableListDemoState();
 }
 
 class _InfiniteHoverableListDemoState extends State<InfiniteHoverableListDemo> {
@@ -189,9 +190,8 @@ class _InfiniteHoverableListDemoState extends State<InfiniteHoverableListDemo> {
                     color: isSelected || isHovered
                         ? const Color(0xFFFFFFFF)
                         : null,
-                    fontWeight: isSelected || isHovered
-                        ? FontWeight.bold
-                        : null,
+                    fontWeight:
+                        isSelected || isHovered ? FontWeight.bold : null,
                   ),
                 ),
               ),
@@ -220,7 +220,16 @@ class _InfiniteHoverableListDemoState extends State<InfiniteHoverableListDemo> {
   }
 
   String _getItemType(int index) {
-    final types = ['file', 'folder', 'image', 'video', 'audio', 'code', 'document', 'archive'];
+    final types = [
+      'file',
+      'folder',
+      'image',
+      'video',
+      'audio',
+      'code',
+      'document',
+      'archive'
+    ];
     return types[index % types.length];
   }
 

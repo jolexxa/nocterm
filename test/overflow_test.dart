@@ -114,7 +114,8 @@ void main() {
             ),
           );
 
-          expect(tester.terminalState, containsText('Horizontal Overflow Test:'));
+          expect(
+              tester.terminalState, containsText('Horizontal Overflow Test:'));
           expect(tester.terminalState, containsText('Vertical Overflow Test:'));
         },
       );
@@ -202,7 +203,8 @@ void main() {
       );
     });
 
-    test('overflow visual test', skip: 'Run with debugPrintAfterPump for visual inspection', () async {
+    test('overflow visual test',
+        skip: 'Run with debugPrintAfterPump for visual inspection', () async {
       await testNocterm(
         'overflow visual',
         (tester) async {
@@ -211,7 +213,8 @@ void main() {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('=== Overflow Test Cases ===', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('=== Overflow Test Cases ===',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 1),
 
                   // Small box with overflow

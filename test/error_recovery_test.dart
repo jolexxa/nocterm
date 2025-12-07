@@ -152,7 +152,8 @@ class _TestRecoverableWidget extends SingleChildRenderObjectComponent {
   }
 
   @override
-  void updateRenderObject(BuildContext context, _RenderRecoverable renderObject) {
+  void updateRenderObject(
+      BuildContext context, _RenderRecoverable renderObject) {
     renderObject.shouldThrow = _shouldThrow;
   }
 }

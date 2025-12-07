@@ -98,9 +98,7 @@ class _SelectableListDemoState extends State<SelectableListDemo> {
                       color: isSelected ? Colors.cyan : null,
                     ),
                     child: Text(
-                      isSelected
-                          ? '▶ Item $index (selected)'
-                          : '  Item $index',
+                      isSelected ? '▶ Item $index (selected)' : '  Item $index',
                       style: TextStyle(
                         color: isSelected ? Colors.black : Colors.white,
                       ),

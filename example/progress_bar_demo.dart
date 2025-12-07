@@ -67,12 +67,15 @@ class _ProgressBarDemoState extends State<ProgressBarDemo> {
                 children: [
                   Text(
                     'Progress Bar Demo',
-                    style: TextStyle(color: Colors.cyan, decoration: TextDecoration.underline),
+                    style: TextStyle(
+                        color: Colors.cyan,
+                        decoration: TextDecoration.underline),
                   ),
                   SizedBox(height: 2),
 
                   // Basic progress bars
-                  Text('Basic Progress Bars:', style: TextStyle(color: Colors.yellow)),
+                  Text('Basic Progress Bars:',
+                      style: TextStyle(color: Colors.yellow)),
                   SizedBox(height: 1),
 
                   Text('Download: ${(downloadProgress * 100).toInt()}%'),
@@ -102,7 +105,8 @@ class _ProgressBarDemoState extends State<ProgressBarDemo> {
                   SizedBox(height: 2),
 
                   // Progress bar with border and percentage
-                  Text('With Border and Percentage:', style: TextStyle(color: Colors.yellow)),
+                  Text('With Border and Percentage:',
+                      style: TextStyle(color: Colors.yellow)),
                   SizedBox(height: 1),
                   SizedBox(
                     width: 50,
@@ -118,7 +122,8 @@ class _ProgressBarDemoState extends State<ProgressBarDemo> {
                   SizedBox(height: 2),
 
                   // Progress bar with custom label
-                  Text('With Custom Label:', style: TextStyle(color: Colors.yellow)),
+                  Text('With Custom Label:',
+                      style: TextStyle(color: Colors.yellow)),
                   SizedBox(height: 1),
                   SizedBox(
                     width: 50,
@@ -134,7 +139,8 @@ class _ProgressBarDemoState extends State<ProgressBarDemo> {
                   SizedBox(height: 2),
 
                   // Indeterminate progress
-                  Text('Indeterminate Progress:', style: TextStyle(color: Colors.yellow)),
+                  Text('Indeterminate Progress:',
+                      style: TextStyle(color: Colors.yellow)),
                   SizedBox(height: 1),
                   SizedBox(
                     width: 50,
@@ -159,7 +165,8 @@ class _ProgressBarDemoState extends State<ProgressBarDemo> {
                   SizedBox(height: 2),
 
                   // Different styles showcase
-                  Text('Different Styles:', style: TextStyle(color: Colors.yellow)),
+                  Text('Different Styles:',
+                      style: TextStyle(color: Colors.yellow)),
                   SizedBox(height: 1),
 
                   Row(
@@ -168,7 +175,8 @@ class _ProgressBarDemoState extends State<ProgressBarDemo> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('ASCII:', style: TextStyle(color: Colors.white)),
+                            Text('ASCII:',
+                                style: TextStyle(color: Colors.white)),
                             SizedBox(
                               height: 3,
                               child: ProgressBar(
@@ -186,7 +194,8 @@ class _ProgressBarDemoState extends State<ProgressBarDemo> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Bold:', style: TextStyle(color: Colors.white)),
+                            Text('Bold:',
+                                style: TextStyle(color: Colors.white)),
                             SizedBox(
                               height: 3,
                               child: ProgressBar(
@@ -204,7 +213,8 @@ class _ProgressBarDemoState extends State<ProgressBarDemo> {
                   SizedBox(height: 2),
 
                   // Custom characters showcase
-                  Text('Custom Characters:', style: TextStyle(color: Colors.yellow)),
+                  Text('Custom Characters:',
+                      style: TextStyle(color: Colors.yellow)),
                   SizedBox(height: 1),
 
                   Text('Blocks: ▓░'),

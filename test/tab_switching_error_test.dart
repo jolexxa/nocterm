@@ -33,7 +33,10 @@ void main() {
           expect(output, contains('Before error widget'));
           expect(output, contains('After error widget'));
           // Should show the error box (when layout fails, widget still shows "No Error")
-          expect(output, contains('No Error')); // ErrorThrowingWidget shows this after layout error
+          expect(
+              output,
+              contains(
+                  'No Error')); // ErrorThrowingWidget shows this after layout error
 
           print('After switching to Page 2:');
           print(output);
@@ -60,7 +63,8 @@ void main() {
 
           output = tester.terminalState.getText();
           expect(output, contains('Page 2: Error Page'));
-          expect(output, contains('No Error')); // The error widget still renders
+          expect(
+              output, contains('No Error')); // The error widget still renders
 
           print('After switching to Page 2 again:');
           print(output);
@@ -142,8 +146,10 @@ class _TabbedPageWidgetState extends State<_TabbedPageWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header that's always visible
-            Text('Tab Navigation Test', style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text('Press TAB to switch pages. Current: Page ${_currentPage + 1}'),
+            Text('Tab Navigation Test',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+                'Press TAB to switch pages. Current: Page ${_currentPage + 1}'),
             Text('─' * 40),
             const SizedBox(height: 1),
 
@@ -184,7 +190,8 @@ class _TabbedPageWithPaintError extends StatefulComponent {
   const _TabbedPageWithPaintError();
 
   @override
-  State<_TabbedPageWithPaintError> createState() => _TabbedPageWithPaintErrorState();
+  State<_TabbedPageWithPaintError> createState() =>
+      _TabbedPageWithPaintErrorState();
 }
 
 class _TabbedPageWithPaintErrorState extends State<_TabbedPageWithPaintError> {
@@ -213,7 +220,8 @@ class _TabbedPageWithPaintErrorState extends State<_TabbedPageWithPaintError> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            Text('Tab Navigation Test (Paint Error)', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text('Tab Navigation Test (Paint Error)',
+                style: const TextStyle(fontWeight: FontWeight.bold)),
             Text('Press TAB to switch. Current: Page ${_currentPage + 1}'),
             Text('─' * 40),
             const SizedBox(height: 1),

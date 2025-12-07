@@ -284,7 +284,9 @@ class _HoverButtonState extends State<HoverButton> {
           child: Text(
             '$prefix ${component.label}',
             style: TextStyle(
-              color: component.style == ButtonStyle.outlined ? color : const Color(0xFFFFFFFF),
+              color: component.style == ButtonStyle.outlined
+                  ? color
+                  : const Color(0xFFFFFFFF),
               fontWeight: _isHovering ? FontWeight.bold : null,
             ),
           ),
@@ -336,7 +338,9 @@ class _HoverCardState extends State<HoverCard> {
         child: Container(
           decoration: BoxDecoration(
             border: BoxBorder.all(
-              color: _isHovering ? const Color(0xFF00FFFF) : const Color(0xFF444444),
+              color: _isHovering
+                  ? const Color(0xFF00FFFF)
+                  : const Color(0xFF444444),
             ),
             color: _isHovering ? const Color(0xFF333333) : null,
           ),
@@ -447,7 +451,9 @@ class _HoverMenuListState extends State<HoverMenuList> {
                       : isHovered
                           ? const Color(0xFF444444)
                           : null,
-                  border: index < _items.length - 1 ? const BoxBorder(bottom: BorderSide()) : null,
+                  border: index < _items.length - 1
+                      ? const BoxBorder(bottom: BorderSide())
+                      : null,
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
                 child: Row(
@@ -455,7 +461,9 @@ class _HoverMenuListState extends State<HoverMenuList> {
                     Text(
                       item.icon,
                       style: TextStyle(
-                        color: isSelected || isHovered ? const Color(0xFFFFFFFF) : null,
+                        color: isSelected || isHovered
+                            ? const Color(0xFFFFFFFF)
+                            : null,
                       ),
                     ),
                     const SizedBox(width: 2),
@@ -463,10 +471,11 @@ class _HoverMenuListState extends State<HoverMenuList> {
                       child: Text(
                         item.label,
                         style: TextStyle(
-                          color: isSelected || isHovered ? const Color(0xFFFFFFFF) : null,
-                          fontWeight: isSelected || isHovered
-                              ? FontWeight.bold
+                          color: isSelected || isHovered
+                              ? const Color(0xFFFFFFFF)
                               : null,
+                          fontWeight:
+                              isSelected || isHovered ? FontWeight.bold : null,
                         ),
                       ),
                     ),
@@ -537,11 +546,14 @@ class _HoverToggleState extends State<HoverToggle> {
           setState(() {
             _isEnabled = !_isEnabled;
           });
-          _log('Toggle "${component.label}" - TOGGLED to ${_isEnabled ? "ON" : "OFF"}');
+          _log(
+              'Toggle "${component.label}" - TOGGLED to ${_isEnabled ? "ON" : "OFF"}');
         },
         child: Container(
           decoration: BoxDecoration(
-            border: _isHovering ? BoxBorder.all(color: const Color(0xFF00FFFF)) : null,
+            border: _isHovering
+                ? BoxBorder.all(color: const Color(0xFF00FFFF))
+                : null,
             color: _isHovering ? const Color(0xFF222222) : null,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
@@ -549,14 +561,18 @@ class _HoverToggleState extends State<HoverToggle> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  color: _isEnabled ? const Color(0xFF00AA00) : const Color(0xFF444444),
+                  color: _isEnabled
+                      ? const Color(0xFF00AA00)
+                      : const Color(0xFF444444),
                   border: BoxBorder.all(),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 1),
                 child: Text(
                   _isEnabled ? '●' : '○',
                   style: TextStyle(
-                    color: _isEnabled ? const Color(0xFFFFFFFF) : const Color(0xFF888888),
+                    color: _isEnabled
+                        ? const Color(0xFFFFFFFF)
+                        : const Color(0xFF888888),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -574,7 +590,9 @@ class _HoverToggleState extends State<HoverToggle> {
               Text(
                 _isEnabled ? 'ON ' : 'OFF',
                 style: TextStyle(
-                  color: _isEnabled ? const Color(0xFF00AA00) : const Color(0xFF888888),
+                  color: _isEnabled
+                      ? const Color(0xFF00AA00)
+                      : const Color(0xFF888888),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -643,14 +661,18 @@ class _HoverTabBarState extends State<HoverTabBar> {
                             : isHovered
                                 ? const Color(0xFF444444)
                                 : null,
-                        border: index < _tabs.length - 1 ? const BoxBorder(right: BorderSide()) : null,
+                        border: index < _tabs.length - 1
+                            ? const BoxBorder(right: BorderSide())
+                            : null,
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 1),
                       alignment: Alignment.center,
                       child: Text(
                         _tabs[index],
                         style: TextStyle(
-                          color: isSelected || isHovered ? const Color(0xFFFFFFFF) : null,
+                          color: isSelected || isHovered
+                              ? const Color(0xFFFFFFFF)
+                              : null,
                           fontWeight: isSelected ? FontWeight.bold : null,
                         ),
                       ),

@@ -26,8 +26,10 @@ void main() {
 
           // Width = 30, minus 2 for border, minus 2 for padding = 26 available
           // Add text that will wrap
-          controller.text = 'This is a long line that will definitely wrap to the next line';
-          controller.selection = TextSelection.collapsed(offset: controller.text.length);
+          controller.text =
+              'This is a long line that will definitely wrap to the next line';
+          controller.selection =
+              TextSelection.collapsed(offset: controller.text.length);
           await tester.pump();
 
           // The cursor should be at the end of the wrapped text
@@ -106,9 +108,11 @@ void main() {
           );
 
           // Simulate typing a long text
-          String longText = 'Hello this is a cool thing to do is typing a cool long string that can be enough';
+          String longText =
+              'Hello this is a cool thing to do is typing a cool long string that can be enough';
           controller.text = longText;
-          controller.selection = TextSelection.collapsed(offset: longText.length);
+          controller.selection =
+              TextSelection.collapsed(offset: longText.length);
           await tester.pump();
 
           print('\nTyped long text - cursor should be visible at the end:');

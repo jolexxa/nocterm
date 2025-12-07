@@ -6,10 +6,20 @@ import 'package:nocterm_cli/commands/logs_command.dart';
 import 'package:nocterm_cli/commands/run_command.dart';
 
 void main(List<String> arguments) async {
-  final parser = ArgParser()
-    ..addCommand('shell', ArgParser()..addFlag('help', abbr: 'h', help: 'Show help'))
-    ..addCommand('logs', ArgParser()..addFlag('help', abbr: 'h', help: 'Show help'))
-    ..addCommand('run', ArgParser()..addFlag('help', abbr: 'h', help: 'Show help'));
+  final parser =
+      ArgParser()
+        ..addCommand(
+          'shell',
+          ArgParser()..addFlag('help', abbr: 'h', help: 'Show help'),
+        )
+        ..addCommand(
+          'logs',
+          ArgParser()..addFlag('help', abbr: 'h', help: 'Show help'),
+        )
+        ..addCommand(
+          'run',
+          ArgParser()..addFlag('help', abbr: 'h', help: 'Show help'),
+        );
 
   try {
     final results = parser.parse(arguments);
@@ -26,8 +36,12 @@ void main(List<String> arguments) async {
         if (command['help'] as bool) {
           print('Usage: nocterm shell');
           print('');
-          print('Start a nocterm shell server that nocterm apps can render into.');
-          print('This allows running nocterm apps from IDEs with debugger support.');
+          print(
+            'Start a nocterm shell server that nocterm apps can render into.',
+          );
+          print(
+            'This allows running nocterm apps from IDEs with debugger support.',
+          );
           exit(0);
         }
         await runShellCommand();
@@ -46,7 +60,9 @@ void main(List<String> arguments) async {
         if (command['help'] as bool) {
           print('Usage: nocterm run dart <script.dart> [arguments]');
           print('');
-          print('Run a Dart script with --enable-vm-service automatically added.');
+          print(
+            'Run a Dart script with --enable-vm-service automatically added.',
+          );
           print('This enables VM service for debugging and profiling.');
           print('');
           print('Example: nocterm run dart lib/main.dart');

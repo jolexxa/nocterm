@@ -63,7 +63,8 @@ void main() {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      Text('This is a very long text that needs scrolling to see completely'),
+                      Text(
+                          'This is a very long text that needs scrolling to see completely'),
                     ],
                   ),
                 ),

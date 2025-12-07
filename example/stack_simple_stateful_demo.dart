@@ -8,7 +8,8 @@ class StackSimpleStatefulDemo extends StatefulComponent {
   const StackSimpleStatefulDemo({super.key});
 
   @override
-  State<StackSimpleStatefulDemo> createState() => _StackSimpleStatefulDemoState();
+  State<StackSimpleStatefulDemo> createState() =>
+      _StackSimpleStatefulDemoState();
 }
 
 class _StackSimpleStatefulDemoState extends State<StackSimpleStatefulDemo> {
@@ -92,7 +93,8 @@ class _StackSimpleStatefulDemoState extends State<StackSimpleStatefulDemo> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
                     decoration: BoxDecoration(
                       border: BoxBorder.all(),
                       color: selectedColor == 'blue' ? Colors.blue : null,
@@ -101,7 +103,8 @@ class _StackSimpleStatefulDemoState extends State<StackSimpleStatefulDemo> {
                   ),
                   const SizedBox(width: 2),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
                     decoration: BoxDecoration(
                       border: BoxBorder.all(),
                       color: selectedColor == 'green' ? Colors.green : null,
@@ -110,7 +113,8 @@ class _StackSimpleStatefulDemoState extends State<StackSimpleStatefulDemo> {
                   ),
                   const SizedBox(width: 2),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
                     decoration: BoxDecoration(
                       border: BoxBorder.all(),
                       color: selectedColor == 'red' ? Colors.red : null,
@@ -151,7 +155,8 @@ class _StackSimpleStatefulDemoState extends State<StackSimpleStatefulDemo> {
             child: Container(
               padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
-                border: BoxBorder.all(style: BoxBorderStyle.double, color: Colors.yellow),
+                border: BoxBorder.all(
+                    style: BoxBorderStyle.double, color: Colors.yellow),
                 color: const Color.fromRGB(50, 50, 0),
               ),
               child: Column(
@@ -164,10 +169,13 @@ class _StackSimpleStatefulDemoState extends State<StackSimpleStatefulDemo> {
                     ),
                   ),
                   const SizedBox(height: 1),
-                  Text('Counter: $counter', style: const TextStyle(color: Colors.white)),
-                  Text('Color: $selectedColor', style: const TextStyle(color: Colors.white)),
+                  Text('Counter: $counter',
+                      style: const TextStyle(color: Colors.white)),
+                  Text('Color: $selectedColor',
+                      style: const TextStyle(color: Colors.white)),
                   const SizedBox(height: 1),
-                  const Text('Will hide in 3s', style: TextStyle(color: Colors.gray)),
+                  const Text('Will hide in 3s',
+                      style: TextStyle(color: Colors.gray)),
                 ],
               ),
             ),

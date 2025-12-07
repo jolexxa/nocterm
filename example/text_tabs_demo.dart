@@ -39,7 +39,8 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
             child: Center(
               child: Text(
                 'Text Components Demo',
-                style: TextStyle(color: Colors.brightCyan, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Colors.brightCyan, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -123,7 +124,8 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
       padding: EdgeInsets.all(1),
       child: Column(
         children: [
-          Text('Basic Text Demo', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('Basic Text Demo',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 1),
           Expanded(
             child: Container(
@@ -156,7 +158,8 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
       padding: EdgeInsets.all(1),
       child: Column(
         children: [
-          Text('Styled Text Demo', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('Styled Text Demo',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 1),
           Expanded(
             child: Container(
@@ -169,17 +172,23 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
                 children: [
                   Text('Regular text without any styling'),
                   SizedBox(height: 1),
-                  Text('Bold text example', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Bold text example',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 1),
-                  Text('Dim text example', style: TextStyle(fontWeight: FontWeight.dim)),
+                  Text('Dim text example',
+                      style: TextStyle(fontWeight: FontWeight.dim)),
                   SizedBox(height: 1),
-                  Text('Italic text example', style: TextStyle(fontStyle: FontStyle.italic)),
+                  Text('Italic text example',
+                      style: TextStyle(fontStyle: FontStyle.italic)),
                   SizedBox(height: 1),
-                  Text('Underlined text', style: TextStyle(decoration: TextDecoration.underline)),
+                  Text('Underlined text',
+                      style: TextStyle(decoration: TextDecoration.underline)),
                   SizedBox(height: 1),
-                  Text('Strikethrough text', style: TextStyle(decoration: TextDecoration.lineThrough)),
+                  Text('Strikethrough text',
+                      style: TextStyle(decoration: TextDecoration.lineThrough)),
                   SizedBox(height: 1),
-                  Text('Combined styling', 
+                  Text(
+                    'Combined styling',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontStyle: FontStyle.italic,
@@ -200,7 +209,8 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
       padding: EdgeInsets.all(1),
       child: Column(
         children: [
-          Text('Layout Text Demo', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('Layout Text Demo',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 1),
           Expanded(
             child: Row(
@@ -215,7 +225,8 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Left Column', style: TextStyle(color: Colors.yellow)),
+                        Text('Left Column',
+                            style: TextStyle(color: Colors.yellow)),
                         SizedBox(height: 1),
                         Text('Text aligned to start'),
                         Text('Multiple lines'),
@@ -237,7 +248,8 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
                     child: Column(
                       children: [
                         Center(
-                          child: Text('Center Column', style: TextStyle(color: Colors.blue)),
+                          child: Text('Center Column',
+                              style: TextStyle(color: Colors.blue)),
                         ),
                         SizedBox(height: 1),
                         Center(child: Text('Centered text')),
@@ -260,7 +272,8 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Text('Right Column', style: TextStyle(color: Colors.red)),
+                        Text('Right Column',
+                            style: TextStyle(color: Colors.red)),
                         SizedBox(height: 1),
                         Text('Text aligned to end'),
                         Text('Right side'),
@@ -282,7 +295,8 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
       padding: EdgeInsets.all(1),
       child: Column(
         children: [
-          Text('Color Text Demo', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('Color Text Demo',
+              style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 1),
           Expanded(
             child: Container(
@@ -293,7 +307,8 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Standard Colors:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Standard Colors:',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 1),
                   Text('Red text', style: TextStyle(color: Colors.red)),
                   Text('Green text', style: TextStyle(color: Colors.green)),
@@ -304,22 +319,30 @@ class _TextTabsDemoState extends State<TextTabsDemo> {
                   Text('White text', style: TextStyle(color: Colors.white)),
                   Text('Gray text', style: TextStyle(color: Colors.gray)),
                   SizedBox(height: 2),
-                  Text('Bright Colors:', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Bright Colors:',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 1),
                   Text('Bright Red', style: TextStyle(color: Colors.brightRed)),
-                  Text('Bright Green', style: TextStyle(color: Colors.brightGreen)),
-                  Text('Bright Blue', style: TextStyle(color: Colors.brightBlue)),
-                  Text('Bright Yellow', style: TextStyle(color: Colors.brightYellow)),
-                  Text('Bright Magenta', style: TextStyle(color: Colors.brightMagenta)),
-                  Text('Bright Cyan', style: TextStyle(color: Colors.brightCyan)),
-                  Text('Bright White', style: TextStyle(color: Colors.brightWhite)),
+                  Text('Bright Green',
+                      style: TextStyle(color: Colors.brightGreen)),
+                  Text('Bright Blue',
+                      style: TextStyle(color: Colors.brightBlue)),
+                  Text('Bright Yellow',
+                      style: TextStyle(color: Colors.brightYellow)),
+                  Text('Bright Magenta',
+                      style: TextStyle(color: Colors.brightMagenta)),
+                  Text('Bright Cyan',
+                      style: TextStyle(color: Colors.brightCyan)),
+                  Text('Bright White',
+                      style: TextStyle(color: Colors.brightWhite)),
                   SizedBox(height: 2),
                   Container(
                     padding: EdgeInsets.all(1),
                     decoration: BoxDecoration(
                       color: Colors.blue,
                     ),
-                    child: Text('Text with background color', style: TextStyle(color: Colors.brightWhite)),
+                    child: Text('Text with background color',
+                        style: TextStyle(color: Colors.brightWhite)),
                   ),
                 ],
               ),

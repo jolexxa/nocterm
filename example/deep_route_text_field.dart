@@ -50,7 +50,8 @@ class _MyAppWithNavigationState extends State<MyAppWithNavigation> {
       onKeyEvent: (event) {
         if (event.logicalKey == LogicalKey.tab) {
           Navigator.of(context).push(PageRoute(
-              builder: (context) => MyAppWithNavigation(depth: component.depth + 1),
+              builder: (context) =>
+                  MyAppWithNavigation(depth: component.depth + 1),
               settings: RouteSettings(name: 'depth_${component.depth}')));
           return true;
         }

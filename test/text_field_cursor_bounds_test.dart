@@ -43,7 +43,8 @@ void main() {
           controller.selection = TextSelection.collapsed(offset: 25);
           await tester.pump();
 
-          print('25 characters with cursor at end - should be visible within border:');
+          print(
+              '25 characters with cursor at end - should be visible within border:');
           expect(tester.terminalState, containsText('A' * 25));
 
           // Add one more character - should wrap to next line
@@ -89,8 +90,8 @@ void main() {
 
           // Text that fills multiple lines exactly
           controller.text = 'ABCDEFGHIJKLMNO' + // 15 chars - line 1
-                           'PQRSTUVWXYZ1234' + // 15 chars - line 2
-                           '567890';            // 6 chars - line 3
+              'PQRSTUVWXYZ1234' + // 15 chars - line 2
+              '567890'; // 6 chars - line 3
 
           // Position cursor at end of first line
           controller.selection = TextSelection.collapsed(offset: 15);
@@ -155,10 +156,12 @@ void main() {
           print('\n13 characters - should scroll to show end:');
           expect(tester.terminalState, containsText('C'));
           // Should see the end portion (scrolled)
-          expect(tester.terminalState, anyOf(
-            containsText('4567890ABC'),
-            containsText('567890ABC'),
-          ));
+          expect(
+              tester.terminalState,
+              anyOf(
+                containsText('4567890ABC'),
+                containsText('567890ABC'),
+              ));
         },
         debugPrintAfterPump: true,
       );

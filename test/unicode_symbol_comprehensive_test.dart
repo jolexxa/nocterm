@@ -42,8 +42,9 @@ void main() {
       textSymbols.forEach((symbol, name) {
         final width = UnicodeWidth.stringWidth(symbol);
         final code = symbol.runes.first;
-        print('$symbol U+${code.toRadixString(16).toUpperCase().padLeft(4, '0')} '
-              'width=$width $name');
+        print(
+            '$symbol U+${code.toRadixString(16).toUpperCase().padLeft(4, '0')} '
+            'width=$width $name');
         expect(width, equals(1), reason: '$name should be width 1');
       });
 
@@ -51,8 +52,9 @@ void main() {
       emojiSymbols.forEach((symbol, name) {
         final width = UnicodeWidth.stringWidth(symbol);
         final code = symbol.runes.first;
-        print('$symbol U+${code.toRadixString(16).toUpperCase().padLeft(4, '0')} '
-              'width=$width $name');
+        print(
+            '$symbol U+${code.toRadixString(16).toUpperCase().padLeft(4, '0')} '
+            'width=$width $name');
         expect(width, equals(2), reason: '$name should be width 2');
       });
     });

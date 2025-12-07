@@ -37,7 +37,8 @@ class _SimpleTextFieldDemoState extends State<SimpleTextFieldDemo> {
   void _handleTabNavigation({bool reverse = false}) {
     setState(() {
       if (reverse) {
-        _focusedFieldIndex = (_focusedFieldIndex - 1 + _totalFields) % _totalFields;
+        _focusedFieldIndex =
+            (_focusedFieldIndex - 1 + _totalFields) % _totalFields;
       } else {
         _focusedFieldIndex = (_focusedFieldIndex + 1) % _totalFields;
       }

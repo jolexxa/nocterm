@@ -241,7 +241,8 @@ void main() {
           );
 
           final initialBuildCount = buildCount;
-          expect(tester.terminalState, containsText('Build: $initialBuildCount'));
+          expect(
+              tester.terminalState, containsText('Build: $initialBuildCount'));
 
           // Mark entry as needing rebuild
           entry.markNeedsBuild();

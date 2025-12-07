@@ -111,7 +111,8 @@ class _TodoAppState extends State<TodoApp> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    for (int i = 0; i < todos.length; i++) _buildTodoItem(todos[i], i == selectedIndex),
+                    for (int i = 0; i < todos.length; i++)
+                      _buildTodoItem(todos[i], i == selectedIndex),
                     if (addingNew) ...[
                       const SizedBox(height: 1),
                       _buildNewTodoInput(),
@@ -192,7 +193,8 @@ class _TodoAppState extends State<TodoApp> {
         children: [
           Text(
             '+ ',
-            style: TextStyle(color: Colors.brightGreen, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                color: Colors.brightGreen, fontWeight: FontWeight.bold),
           ),
           Expanded(
             child: TextField(

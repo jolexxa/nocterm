@@ -154,7 +154,8 @@ void main() {
     });
 
     // Visual test for manual inspection
-    test('replacement visual test', skip: 'Run with debugPrintAfterPump for visual inspection', () async {
+    test('replacement visual test',
+        skip: 'Run with debugPrintAfterPump for visual inspection', () async {
       await testNocterm(
         'replacement visual',
         (tester) async {
@@ -222,7 +223,8 @@ class StatefulReplacementTest extends StatefulComponent {
   const StatefulReplacementTest({super.key});
 
   @override
-  State<StatefulReplacementTest> createState() => _StatefulReplacementTestState();
+  State<StatefulReplacementTest> createState() =>
+      _StatefulReplacementTestState();
 }
 
 class _StatefulReplacementTestState extends State<StatefulReplacementTest> {

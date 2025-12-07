@@ -286,7 +286,8 @@ void main() {
               height: 3,
               decoration: BoxDecoration(
                 border: BoxBorder(
-                  top: BorderSide(color: Colors.cyan, style: BoxBorderStyle.rounded),
+                  top: BorderSide(
+                      color: Colors.cyan, style: BoxBorderStyle.rounded),
                 ),
                 title: BorderTitle(text: 'Top Only'),
               ),
@@ -297,8 +298,10 @@ void main() {
           // Should have title but NO corner characters (╭ or ╮)
           expect(tester.terminalState, containsText('Top Only'));
           final snapshot = tester.toSnapshot();
-          expect(snapshot.contains('╭'), isFalse, reason: 'Should not have top-left corner');
-          expect(snapshot.contains('╮'), isFalse, reason: 'Should not have top-right corner');
+          expect(snapshot.contains('╭'), isFalse,
+              reason: 'Should not have top-left corner');
+          expect(snapshot.contains('╮'), isFalse,
+              reason: 'Should not have top-right corner');
         },
         // debugPrintAfterPump: true,
       );
@@ -314,8 +317,10 @@ void main() {
               height: 3,
               decoration: BoxDecoration(
                 border: BoxBorder(
-                  top: BorderSide(color: Colors.green, style: BoxBorderStyle.rounded),
-                  bottom: BorderSide(color: Colors.green, style: BoxBorderStyle.rounded),
+                  top: BorderSide(
+                      color: Colors.green, style: BoxBorderStyle.rounded),
+                  bottom: BorderSide(
+                      color: Colors.green, style: BoxBorderStyle.rounded),
                 ),
                 title: BorderTitle(text: 'No Sides'),
               ),
@@ -344,7 +349,8 @@ void main() {
               width: 25,
               height: 3,
               decoration: BoxDecoration(
-                border: BoxBorder.all(color: Colors.magenta, style: BoxBorderStyle.rounded),
+                border: BoxBorder.all(
+                    color: Colors.magenta, style: BoxBorderStyle.rounded),
                 title: BorderTitle(text: 'Full'),
               ),
               child: Text('Content'),
@@ -354,10 +360,14 @@ void main() {
           expect(tester.terminalState, containsText('Full'));
           final snapshot = tester.toSnapshot();
           // Full border SHOULD have corner characters
-          expect(snapshot.contains('╭'), isTrue, reason: 'Should have top-left corner');
-          expect(snapshot.contains('╮'), isTrue, reason: 'Should have top-right corner');
-          expect(snapshot.contains('╰'), isTrue, reason: 'Should have bottom-left corner');
-          expect(snapshot.contains('╯'), isTrue, reason: 'Should have bottom-right corner');
+          expect(snapshot.contains('╭'), isTrue,
+              reason: 'Should have top-left corner');
+          expect(snapshot.contains('╮'), isTrue,
+              reason: 'Should have top-right corner');
+          expect(snapshot.contains('╰'), isTrue,
+              reason: 'Should have bottom-left corner');
+          expect(snapshot.contains('╯'), isTrue,
+              reason: 'Should have bottom-right corner');
         },
         // debugPrintAfterPump: true,
       );
@@ -373,8 +383,10 @@ void main() {
               height: 3,
               decoration: BoxDecoration(
                 border: BoxBorder(
-                  left: BorderSide(color: Colors.yellow, style: BoxBorderStyle.rounded),
-                  right: BorderSide(color: Colors.yellow, style: BoxBorderStyle.rounded),
+                  left: BorderSide(
+                      color: Colors.yellow, style: BoxBorderStyle.rounded),
+                  right: BorderSide(
+                      color: Colors.yellow, style: BoxBorderStyle.rounded),
                 ),
               ),
               child: Text('Content'),
@@ -383,7 +395,8 @@ void main() {
 
           final snapshot = tester.toSnapshot();
           // Should have vertical lines but no corners
-          expect(snapshot.contains('│'), isTrue, reason: 'Should have vertical lines');
+          expect(snapshot.contains('│'), isTrue,
+              reason: 'Should have vertical lines');
           expect(snapshot.contains('╭'), isFalse);
           expect(snapshot.contains('╮'), isFalse);
         },

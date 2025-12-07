@@ -15,7 +15,13 @@ class ShowcaseApp extends StatefulComponent {
 
 class _ShowcaseAppState extends State<ShowcaseApp> {
   int _selectedTab = 0;
-  final List<String> _tabs = ['Dashboard', 'Forms', 'Charts', 'Colors', 'About'];
+  final List<String> _tabs = [
+    'Dashboard',
+    'Forms',
+    'Charts',
+    'Colors',
+    'About'
+  ];
   Timer? _clockTimer;
   String _currentTime = '';
 
@@ -150,7 +156,9 @@ class _ShowcaseAppState extends State<ShowcaseApp> {
                   child: Text(
                     _tabs[i],
                     style: TextStyle(
-                      color: i == _selectedTab ? Color(0xFF7AA2F7) : Color(0xFF565869),
+                      color: i == _selectedTab
+                          ? Color(0xFF7AA2F7)
+                          : Color(0xFF565869),
                       fontWeight: i == _selectedTab ? FontWeight.bold : null,
                     ),
                   ),
@@ -264,13 +272,16 @@ class _DashboardTabState extends State<DashboardTab> {
         children: [
           Row(
             children: [
-              Expanded(child: _buildStatCard('Active Users', '1,234', Colors.green)),
+              Expanded(
+                  child: _buildStatCard('Active Users', '1,234', Colors.green)),
               SizedBox(width: 2),
-              Expanded(child: _buildStatCard('Revenue', '\$45.2K', Colors.cyan)),
+              Expanded(
+                  child: _buildStatCard('Revenue', '\$45.2K', Colors.cyan)),
               SizedBox(width: 2),
               Expanded(child: _buildStatCard('Orders', '567', Colors.yellow)),
               SizedBox(width: 2),
-              Expanded(child: _buildStatCard('Growth', '+12.5%', Colors.magenta)),
+              Expanded(
+                  child: _buildStatCard('Growth', '+12.5%', Colors.magenta)),
             ],
           ),
           SizedBox(height: 2),
@@ -582,7 +593,8 @@ class _FormsTabState extends State<FormsTab> {
     );
   }
 
-  Component _buildFormField(String label, String value, {bool isPassword = false}) {
+  Component _buildFormField(String label, String value,
+      {bool isPassword = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -698,7 +710,8 @@ class _ChartsTabState extends State<ChartsTab> {
                                     (item.$2 / 10).round(),
                                     (index) => Text(
                                       '█',
-                                      style: TextStyle(color: Color(0xFF7AA2F7)),
+                                      style:
+                                          TextStyle(color: Color(0xFF7AA2F7)),
                                     ),
                                   ),
                                 ),
@@ -811,7 +824,8 @@ class ColorsTab extends StatelessComponent {
                 Expanded(
                   child: Column(
                     children: [
-                      for (int i = 0; i < colors.length ~/ 2; i++) _buildColorRow(colors[i].$1, colors[i].$2),
+                      for (int i = 0; i < colors.length ~/ 2; i++)
+                        _buildColorRow(colors[i].$1, colors[i].$2),
                     ],
                   ),
                 ),

@@ -16,7 +16,12 @@ class TaskManagerApp extends StatefulComponent {
 
 class _TaskManagerAppState extends State<TaskManagerApp> {
   int _selectedTab = 0;
-  final List<String> _tabs = ['Dashboard', 'Processes', 'Performance', 'Network'];
+  final List<String> _tabs = [
+    'Dashboard',
+    'Processes',
+    'Performance',
+    'Network'
+  ];
   Timer? _updateTimer;
 
   // Mock data
@@ -59,9 +64,12 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
     // Generate mock network connections
     _connections = [
       NetworkConnection('TCP', '127.0.0.1:8080', '0.0.0.0:*', 'LISTEN', 'dart'),
-      NetworkConnection('TCP', '192.168.1.100:52341', '142.250.185.46:443', 'ESTABLISHED', 'chrome'),
-      NetworkConnection('TCP', '127.0.0.1:5432', '127.0.0.1:54321', 'ESTABLISHED', 'postgres'),
-      NetworkConnection('UDP', '0.0.0.0:53', '*:*', 'LISTEN', 'systemd-resolved'),
+      NetworkConnection('TCP', '192.168.1.100:52341', '142.250.185.46:443',
+          'ESTABLISHED', 'chrome'),
+      NetworkConnection('TCP', '127.0.0.1:5432', '127.0.0.1:54321',
+          'ESTABLISHED', 'postgres'),
+      NetworkConnection(
+          'UDP', '0.0.0.0:53', '*:*', 'LISTEN', 'systemd-resolved'),
       NetworkConnection('TCP', ':::80', ':::*', 'LISTEN', 'nginx'),
     ];
 
@@ -82,8 +90,8 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
       _systemStats.diskUsage = 60 + random.nextDouble() * 20;
       _systemStats.networkIn = random.nextDouble() * 100;
       _systemStats.networkOut = random.nextDouble() * 50;
-      _systemStats.uptime =
-          DateTime.now().difference(DateTime.now().subtract(Duration(days: 5, hours: 12, minutes: 34)));
+      _systemStats.uptime = DateTime.now().difference(
+          DateTime.now().subtract(Duration(days: 5, hours: 12, minutes: 34)));
 
       // Update CPU/Memory history
       _cpuHistory.removeAt(0);
@@ -93,7 +101,8 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
 
       // Randomly update process CPU usage
       for (var process in _processes) {
-        process.cpu = math.max(0, process.cpu + (random.nextDouble() - 0.5) * 5);
+        process.cpu =
+            math.max(0, process.cpu + (random.nextDouble() - 0.5) * 5);
       }
     });
   }
@@ -173,7 +182,8 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
                   )),
             ],
           ),
-          Text(DateTime.now().toString().substring(11, 19), style: TextStyle(color: Color(0xFF9CA3AF))),
+          Text(DateTime.now().toString().substring(11, 19),
+              style: TextStyle(color: Color(0xFF9CA3AF))),
         ],
       ),
     );
@@ -190,7 +200,8 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
       padding: EdgeInsets.symmetric(horizontal: 1),
       child: Row(
         children: [
-          for (int i = 0; i < _tabs.length; i++) _buildTab(_tabs[i], i == _selectedTab, i),
+          for (int i = 0; i < _tabs.length; i++)
+            _buildTab(_tabs[i], i == _selectedTab, i),
         ],
       ),
     );
@@ -249,14 +260,23 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
           children: [
             Expanded(
                 child: _buildStatCard(
-                    'CPU', '${_systemStats.cpuUsage.toStringAsFixed(1)}%', _systemStats.cpuUsage, Color(0xFF3B82F6))),
+                    'CPU',
+                    '${_systemStats.cpuUsage.toStringAsFixed(1)}%',
+                    _systemStats.cpuUsage,
+                    Color(0xFF3B82F6))),
             SizedBox(width: 1),
             Expanded(
-                child: _buildStatCard('Memory', '${_systemStats.memoryUsage.toStringAsFixed(1)}%',
-                    _systemStats.memoryUsage, Color(0xFF8B5CF6))),
+                child: _buildStatCard(
+                    'Memory',
+                    '${_systemStats.memoryUsage.toStringAsFixed(1)}%',
+                    _systemStats.memoryUsage,
+                    Color(0xFF8B5CF6))),
             SizedBox(width: 1),
             Expanded(
-                child: _buildStatCard('Disk', '${_systemStats.diskUsage.toStringAsFixed(1)}%', _systemStats.diskUsage,
+                child: _buildStatCard(
+                    'Disk',
+                    '${_systemStats.diskUsage.toStringAsFixed(1)}%',
+                    _systemStats.diskUsage,
                     Color(0xFF10B981))),
           ],
         ),
@@ -279,7 +299,8 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
     );
   }
 
-  Component _buildStatCard(String label, String value, double percentage, Color color) {
+  Component _buildStatCard(
+      String label, String value, double percentage, Color color) {
     return Container(
       decoration: BoxDecoration(
         color: Color(0xFF1F2937),
@@ -344,8 +365,10 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
           SizedBox(height: 1),
           _buildInfoRow('Uptime', _formatDuration(_systemStats.uptime)),
           _buildInfoRow('Processes', '${_processes.length} running'),
-          _buildInfoRow('Network ↓', '${_systemStats.networkIn.toStringAsFixed(1)} MB/s'),
-          _buildInfoRow('Network ↑', '${_systemStats.networkOut.toStringAsFixed(1)} MB/s'),
+          _buildInfoRow(
+              'Network ↓', '${_systemStats.networkIn.toStringAsFixed(1)} MB/s'),
+          _buildInfoRow('Network ↑',
+              '${_systemStats.networkOut.toStringAsFixed(1)} MB/s'),
           _buildInfoRow('Load Average', '2.14, 1.89, 1.95'),
           _buildInfoRow('Temperature', '${45 + _systemStats.cpuUsage / 10}°C'),
         ],
@@ -403,7 +426,8 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
                             ),
                           ),
                           Text('${process.cpu.toStringAsFixed(1)}%',
-                              style: TextStyle(color: _getCpuColor(process.cpu))),
+                              style:
+                                  TextStyle(color: _getCpuColor(process.cpu))),
                         ],
                       ),
                     ),
@@ -447,18 +471,34 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
       child: Row(
         children: [
           SizedBox(
-              width: 15, child: Text('Name', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+              width: 15,
+              child: Text('Name',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
           SizedBox(
-              width: 8, child: Text('PID', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+              width: 8,
+              child: Text('PID',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
           SizedBox(
-              width: 8, child: Text('CPU %', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+              width: 8,
+              child: Text('CPU %',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
           SizedBox(
               width: 10,
-              child: Text('Memory', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+              child: Text('Memory',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
           SizedBox(
               width: 10,
-              child: Text('Status', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
-          Expanded(child: Text('User', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+              child: Text('Status',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+          Expanded(
+              child: Text('User',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
         ],
       ),
     );
@@ -478,16 +518,29 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
           padding: EdgeInsets.symmetric(horizontal: 2, vertical: 0.5),
           child: Row(
             children: [
-              SizedBox(width: 15, child: Text(process.name, style: TextStyle(color: Color(0xFFF3F4F6)))),
-              SizedBox(width: 8, child: Text(process.pid.toString(), style: TextStyle(color: Color(0xFF9CA3AF)))),
+              SizedBox(
+                  width: 15,
+                  child: Text(process.name,
+                      style: TextStyle(color: Color(0xFFF3F4F6)))),
               SizedBox(
                   width: 8,
-                  child: Text(process.cpu.toStringAsFixed(1), style: TextStyle(color: _getCpuColor(process.cpu)))),
+                  child: Text(process.pid.toString(),
+                      style: TextStyle(color: Color(0xFF9CA3AF)))),
+              SizedBox(
+                  width: 8,
+                  child: Text(process.cpu.toStringAsFixed(1),
+                      style: TextStyle(color: _getCpuColor(process.cpu)))),
               SizedBox(
                   width: 10,
-                  child: Text('${process.memory.toStringAsFixed(1)}M', style: TextStyle(color: Color(0xFF9CA3AF)))),
-              SizedBox(width: 10, child: Text(process.status, style: TextStyle(color: Color(0xFF10B981)))),
-              Expanded(child: Text(process.user, style: TextStyle(color: Color(0xFF9CA3AF)))),
+                  child: Text('${process.memory.toStringAsFixed(1)}M',
+                      style: TextStyle(color: Color(0xFF9CA3AF)))),
+              SizedBox(
+                  width: 10,
+                  child: Text(process.status,
+                      style: TextStyle(color: Color(0xFF10B981)))),
+              Expanded(
+                  child: Text(process.user,
+                      style: TextStyle(color: Color(0xFF9CA3AF)))),
             ],
           ),
         );
@@ -587,16 +640,29 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
       child: Row(
         children: [
           SizedBox(
-              width: 8, child: Text('Proto', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+              width: 8,
+              child: Text('Proto',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
           SizedBox(
               width: 25,
-              child: Text('Local Address', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+              child: Text('Local Address',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
           SizedBox(
               width: 25,
-              child: Text('Remote Address', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+              child: Text('Remote Address',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
           SizedBox(
-              width: 12, child: Text('State', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
-          Expanded(child: Text('Process', style: TextStyle(color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+              width: 12,
+              child: Text('State',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
+          Expanded(
+              child: Text('Process',
+                  style: TextStyle(
+                      color: Color(0xFF9CA3AF), fontWeight: FontWeight.bold))),
         ],
       ),
     );
@@ -616,11 +682,25 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
           padding: EdgeInsets.symmetric(horizontal: 2, vertical: 0.5),
           child: Row(
             children: [
-              SizedBox(width: 8, child: Text(conn.protocol, style: TextStyle(color: Color(0xFFF3F4F6)))),
-              SizedBox(width: 25, child: Text(conn.localAddress, style: TextStyle(color: Color(0xFF60A5FA)))),
-              SizedBox(width: 25, child: Text(conn.remoteAddress, style: TextStyle(color: Color(0xFF9CA3AF)))),
-              SizedBox(width: 12, child: Text(conn.state, style: TextStyle(color: _getStateColor(conn.state)))),
-              Expanded(child: Text(conn.process, style: TextStyle(color: Color(0xFF9CA3AF)))),
+              SizedBox(
+                  width: 8,
+                  child: Text(conn.protocol,
+                      style: TextStyle(color: Color(0xFFF3F4F6)))),
+              SizedBox(
+                  width: 25,
+                  child: Text(conn.localAddress,
+                      style: TextStyle(color: Color(0xFF60A5FA)))),
+              SizedBox(
+                  width: 25,
+                  child: Text(conn.remoteAddress,
+                      style: TextStyle(color: Color(0xFF9CA3AF)))),
+              SizedBox(
+                  width: 12,
+                  child: Text(conn.state,
+                      style: TextStyle(color: _getStateColor(conn.state)))),
+              Expanded(
+                  child: Text(conn.process,
+                      style: TextStyle(color: Color(0xFF9CA3AF)))),
             ],
           ),
         );
@@ -655,9 +735,11 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
         children: [
           Row(
             children: [
-              Text('[TAB] Navigate', style: TextStyle(color: Color(0xFF6B7280))),
+              Text('[TAB] Navigate',
+                  style: TextStyle(color: Color(0xFF6B7280))),
               SizedBox(width: 2),
-              Text('[1-4] Jump to tab', style: TextStyle(color: Color(0xFF6B7280))),
+              Text('[1-4] Jump to tab',
+                  style: TextStyle(color: Color(0xFF6B7280))),
               SizedBox(width: 2),
               Text('[Q] Quit', style: TextStyle(color: Color(0xFF6B7280))),
             ],
@@ -685,7 +767,8 @@ class ProcessInfo {
   final String status;
   final String user;
 
-  ProcessInfo(this.name, this.pid, this.cpu, this.memory, this.status, this.user);
+  ProcessInfo(
+      this.name, this.pid, this.cpu, this.memory, this.status, this.user);
 }
 
 class SystemStats {
@@ -704,5 +787,6 @@ class NetworkConnection {
   final String state;
   final String process;
 
-  NetworkConnection(this.protocol, this.localAddress, this.remoteAddress, this.state, this.process);
+  NetworkConnection(this.protocol, this.localAddress, this.remoteAddress,
+      this.state, this.process);
 }

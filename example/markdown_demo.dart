@@ -13,7 +13,12 @@ class MarkdownDemo extends StatefulComponent {
 class _MarkdownDemoState extends State<MarkdownDemo> {
   int _selectedTab = 0;
 
-  final List<String> _tabs = ['Overview', 'Formatting', 'Lists & Code', 'Advanced'];
+  final List<String> _tabs = [
+    'Overview',
+    'Formatting',
+    'Lists & Code',
+    'Advanced'
+  ];
 
   final List<String> _markdownContent = [
     // Overview tab
@@ -189,7 +194,9 @@ echo "Hello, Terminal!"
                     child: Text(
                       _tabs[i],
                       style: TextStyle(
-                        fontWeight: _selectedTab == i ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: _selectedTab == i
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                         color: _selectedTab == i ? Colors.white : Colors.grey,
                       ),
                     ),

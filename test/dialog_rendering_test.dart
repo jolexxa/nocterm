@@ -34,7 +34,8 @@ void main() {
 
           // Verify main content is visible
           expect(tester.terminalState, containsText('Main Page Content'));
-          expect(tester.terminalState, containsText('This should remain visible'));
+          expect(
+              tester.terminalState, containsText('This should remain visible'));
 
           // Get navigator state and show dialog
           final navState = tester.findState<NavigatorState>();

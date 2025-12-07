@@ -6,7 +6,7 @@ void main() async {
 
 class MouseScrollTest extends StatelessComponent {
   const MouseScrollTest({super.key});
-  
+
   @override
   Component build(BuildContext context) {
     return Column(

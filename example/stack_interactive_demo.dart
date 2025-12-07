@@ -77,7 +77,8 @@ class _StackInteractiveDemoState extends State<StackInteractiveDemo> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Interactive Stack Demo', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Interactive Stack Demo',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 2),
                 Text('Counter: $counter'),
                 Text('Selected: $selectedItem'),
@@ -92,14 +93,18 @@ class _StackInteractiveDemoState extends State<StackInteractiveDemo> {
                   Text(
                     '  ${i + 1}. ${items[i]}',
                     style: TextStyle(
-                      color: items[i] == selectedItem ? Colors.green : Colors.white,
-                      fontWeight: items[i] == selectedItem ? FontWeight.bold : FontWeight.normal,
+                      color: items[i] == selectedItem
+                          ? Colors.green
+                          : Colors.white,
+                      fontWeight: items[i] == selectedItem
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                     ),
                   ),
               ],
             ),
           ),
-          
+
           // Floating counter display
           Positioned(
             right: 2,
@@ -119,14 +124,15 @@ class _StackInteractiveDemoState extends State<StackInteractiveDemo> {
               ),
             ),
           ),
-          
+
           // Optional overlay that can be toggled
           if (showOverlay)
             Positioned.fill(
               child: Container(
                 margin: const EdgeInsets.all(5),
                 decoration: BoxDecoration(
-                  border: BoxBorder.all(style: BoxBorderStyle.double, color: Colors.red),
+                  border: BoxBorder.all(
+                      style: BoxBorderStyle.double, color: Colors.red),
                   color: Color.fromRGB(100, 0, 0),
                 ),
                 child: Center(
@@ -141,9 +147,11 @@ class _StackInteractiveDemoState extends State<StackInteractiveDemo> {
                         ),
                       ),
                       const SizedBox(height: 1),
-                      Text('Press O to close', style: TextStyle(color: Colors.white)),
+                      Text('Press O to close',
+                          style: TextStyle(color: Colors.white)),
                       const SizedBox(height: 2),
-                      Text('Current values:', style: TextStyle(color: Colors.yellow)),
+                      Text('Current values:',
+                          style: TextStyle(color: Colors.yellow)),
                       Text('Counter: $counter'),
                       Text('Selected: $selectedItem'),
                     ],
@@ -151,7 +159,7 @@ class _StackInteractiveDemoState extends State<StackInteractiveDemo> {
                 ),
               ),
             ),
-          
+
           // Bottom status bar
           Positioned(
             left: 0,
@@ -164,7 +172,9 @@ class _StackInteractiveDemoState extends State<StackInteractiveDemo> {
               ),
               child: Center(
                 child: Text(
-                  showOverlay ? 'Overlay Mode - Press O to exit' : 'Normal Mode - Press O for overlay',
+                  showOverlay
+                      ? 'Overlay Mode - Press O to exit'
+                      : 'Normal Mode - Press O for overlay',
                   style: TextStyle(color: Colors.green),
                 ),
               ),

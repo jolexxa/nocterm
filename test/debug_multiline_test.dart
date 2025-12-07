@@ -13,11 +13,11 @@ void main() {
             child: Text('Line 1\nLine 2\nLine 3'),
           ),
         );
-        
+
         print('Test 1 - Simple multiline:');
         print(tester.terminalState.getText());
         print('---');
-        
+
         // Test 2: Box drawing
         await tester.pumpComponent(
           Container(
@@ -25,12 +25,12 @@ void main() {
             child: Text('╔═══╗\n║ A ║\n╚═══╝'),
           ),
         );
-        
+
         print('\nTest 2 - Box with A:');
         print(tester.terminalState.getText());
         print('Contains A: ${tester.terminalState.getText().contains('A')}');
         print('---');
-        
+
         // Test 3: Just the problematic row
         await tester.pumpComponent(
           Container(
@@ -44,7 +44,7 @@ void main() {
             ),
           ),
         );
-        
+
         print('\nTest 3 - Row with boxes:');
         print(tester.terminalState.getText());
         print('Contains A: ${tester.terminalState.getText().contains('A')}');

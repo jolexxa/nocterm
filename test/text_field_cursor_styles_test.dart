@@ -12,11 +12,14 @@ void main() {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('TextField Cursor Styles Demo', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.cyan)),
+                Text('TextField Cursor Styles Demo',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.cyan)),
                 const SizedBox(height: 2),
 
                 // Block cursor (default)
-                Text('Block Cursor (default):', style: TextStyle(color: Colors.yellow)),
+                Text('Block Cursor (default):',
+                    style: TextStyle(color: Colors.yellow)),
                 TextField(
                   controller: TextEditingController(text: 'Block cursor'),
                   focused: true,
@@ -31,7 +34,8 @@ void main() {
                 const SizedBox(height: 2),
 
                 // Underline cursor
-                Text('Underline Cursor:', style: TextStyle(color: Colors.yellow)),
+                Text('Underline Cursor:',
+                    style: TextStyle(color: Colors.yellow)),
                 TextField(
                   controller: TextEditingController(text: 'Underline cursor'),
                   cursorStyle: CursorStyle.underline,
@@ -44,7 +48,8 @@ void main() {
                 const SizedBox(height: 2),
 
                 // Block outline cursor
-                Text('Block Outline Cursor:', style: TextStyle(color: Colors.yellow)),
+                Text('Block Outline Cursor:',
+                    style: TextStyle(color: Colors.yellow)),
                 TextField(
                   controller: TextEditingController(text: 'Block outline'),
                   cursorStyle: CursorStyle.blockOutline,
@@ -97,7 +102,8 @@ void main() {
           expect(tester.terminalState, isNotNull);
 
           // Test cursor at end
-          controller.selection = TextSelection.collapsed(offset: controller.text.length);
+          controller.selection =
+              TextSelection.collapsed(offset: controller.text.length);
           await tester.pumpComponent(
             TextField(
               controller: controller,
@@ -188,7 +194,8 @@ void main() {
           await tester.pumpComponent(
             Column(
               children: [
-                Text('Non-blinking cursors:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Non-blinking cursors:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 1),
                 Text('Static block cursor:'),
                 TextField(

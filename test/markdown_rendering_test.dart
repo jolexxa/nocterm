@@ -117,7 +117,8 @@ Text after code.'''),
           for (int i = 0; i < lines.length; i++) {
             final line = lines[i];
             if (line.trim().isNotEmpty) {
-              print('Line $i: "${line.substring(0, line.length > 50 ? 50 : line.length).trim()}"');
+              print(
+                  'Line $i: "${line.substring(0, line.length > 50 ? 50 : line.length).trim()}"');
             }
           }
 
@@ -161,12 +162,14 @@ Final paragraph.'''),
           for (int i = 0; i < lines.length; i++) {
             final line = lines[i];
             if (line.trim().isNotEmpty) {
-              print('Line $i: "${line.substring(0, line.length > 60 ? 60 : line.length).trim()}"');
+              print(
+                  'Line $i: "${line.substring(0, line.length > 60 ? 60 : line.length).trim()}"');
             }
           }
 
           expect(tester.terminalState, containsText('# Title'));
-          expect(tester.terminalState, containsText('This is a paragraph with bold and italic text.'));
+          expect(tester.terminalState,
+              containsText('This is a paragraph with bold and italic text.'));
           expect(tester.terminalState, containsText('## Features'));
           expect(tester.terminalState, containsText('• First feature'));
           expect(tester.terminalState, containsText('• Second feature'));

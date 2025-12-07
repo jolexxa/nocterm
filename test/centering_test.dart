@@ -11,7 +11,8 @@ void main() {
             Center(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                  border: BoxBorder.all(
+                      color: Color.fromRGB(255, 255, 255), width: 1),
                 ),
                 child: SizedBox(
                   width: 45,
@@ -33,7 +34,8 @@ void main() {
 
           expect(tester.terminalState, containsText('Hello World!'));
           expect(tester.terminalState, containsText('✨ Features:'));
-          expect(tester.terminalState, containsText('Both texts are 12 columns wide'));
+          expect(tester.terminalState,
+              containsText('Both texts are 12 columns wide'));
         },
       );
     });
@@ -46,7 +48,8 @@ void main() {
             Center(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  border: BoxBorder.all(color: Color.fromRGB(255, 255, 255), width: 1),
+                  border: BoxBorder.all(
+                      color: Color.fromRGB(255, 255, 255), width: 1),
                 ),
                 child: SizedBox(
                   width: 45,
@@ -210,7 +213,8 @@ void main() {
     });
 
     // Visual test for manual inspection
-    test('centering visual test', skip: 'Run with debugPrintAfterPump for visual inspection', () async {
+    test('centering visual test',
+        skip: 'Run with debugPrintAfterPump for visual inspection', () async {
       await testNocterm(
         'centering visual',
         (tester) async {
@@ -219,7 +223,8 @@ void main() {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('=== Centering Test ===', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('=== Centering Test ===',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 1),
                   DecoratedBox(
                     decoration: BoxDecoration(
@@ -230,14 +235,18 @@ void main() {
                       child: Column(
                         children: [
                           // Show ruler
-                          Text('0123456789012345678901234567890123456789', style: TextStyle(color: Colors.gray)),
-                          Text('────────────────────────────────────────', style: TextStyle(color: Colors.gray)),
+                          Text('0123456789012345678901234567890123456789',
+                              style: TextStyle(color: Colors.gray)),
+                          Text('────────────────────────────────────────',
+                              style: TextStyle(color: Colors.gray)),
 
                           // Center aligned
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: const [
-                              Text('=== CENTER ===', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('=== CENTER ===',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                               Text('Plain text'),
                               Text('✨ With emoji'),
                               Text('Mixed ✨ text'),
@@ -250,7 +259,9 @@ void main() {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [
-                              Text('=== LEFT ===', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('=== LEFT ===',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                               Text('Plain text'),
                               Text('✨ With emoji'),
                               Text('Mixed ✨ text'),
@@ -263,7 +274,9 @@ void main() {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: const [
-                              Text('=== RIGHT ===', style: TextStyle(fontWeight: FontWeight.bold)),
+                              Text('=== RIGHT ===',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                               Text('Plain text'),
                               Text('✨ With emoji'),
                               Text('Mixed ✨ text'),

@@ -16,7 +16,7 @@ void main() {
               ),
             ),
           );
-          
+
           expect(tester.terminalState, containsText('Hello, World!'));
         },
         debugPrintAfterPump: true,
@@ -46,8 +46,9 @@ void main() {
               ),
             ),
           );
-          
-          expect(tester.terminalState, containsText('This is bold and this is italic text.'));
+
+          expect(tester.terminalState,
+              containsText('This is bold and this is italic text.'));
         },
         debugPrintAfterPump: true,
       );
@@ -77,7 +78,7 @@ void main() {
               ),
             ),
           );
-          
+
           expect(tester.terminalState, containsText('Red Green Blue'));
         },
         debugPrintAfterPump: true,
@@ -105,7 +106,7 @@ void main() {
               ),
             ),
           );
-          
+
           // The text should wrap within the 20 character width
           expect(tester.terminalState, containsText('This is a very long'));
           expect(tester.terminalState, containsText('piece of text that'));
@@ -143,8 +144,9 @@ void main() {
               ),
             ),
           );
-          
-          expect(tester.terminalState, containsText('Normal highlighted text with code'));
+
+          expect(tester.terminalState,
+              containsText('Normal highlighted text with code'));
         },
         debugPrintAfterPump: true,
       );
@@ -176,7 +178,7 @@ void main() {
               ),
             ),
           );
-          
+
           // Check that text appears at different positions
           expect(tester.terminalState, containsText('Left'));
           expect(tester.terminalState, containsText('Center'));
@@ -202,7 +204,7 @@ void main() {
               ),
             ),
           );
-          
+
           // Should show ellipsis at the end
           expect(tester.terminalState, containsText('...'));
         },
@@ -219,14 +221,15 @@ void main() {
               width: 20,
               child: RichText(
                 text: const TextSpan(
-                  text: 'This is a very long piece of text that should wrap across multiple lines but be limited to only two lines maximum.',
+                  text:
+                      'This is a very long piece of text that should wrap across multiple lines but be limited to only two lines maximum.',
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
           );
-          
+
           // Should only show 2 lines with ellipsis
           // We can check that the text is truncated by looking for the ellipsis
           expect(tester.terminalState, containsText('...'));

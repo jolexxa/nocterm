@@ -34,11 +34,15 @@ class _ResizeTestAppState extends State<ResizeTestApp> {
 
   void _updateSize() {
     if (stdout.hasTerminal) {
-      final newSize = Size(stdout.terminalColumns.toDouble(), stdout.terminalLines.toDouble());
-      if (_currentSize == null || _currentSize!.width != newSize.width || _currentSize!.height != newSize.height) {
+      final newSize = Size(
+          stdout.terminalColumns.toDouble(), stdout.terminalLines.toDouble());
+      if (_currentSize == null ||
+          _currentSize!.width != newSize.width ||
+          _currentSize!.height != newSize.height) {
         setState(() {
           _currentSize = newSize;
-          _sizeHistory.add('[${DateTime.now().toString().substring(11, 19)}] ${newSize.width}x${newSize.height}');
+          _sizeHistory.add(
+              '[${DateTime.now().toString().substring(11, 19)}] ${newSize.width}x${newSize.height}');
           if (_sizeHistory.length > 10) {
             _sizeHistory.removeAt(0);
           }
@@ -64,7 +68,8 @@ class _ResizeTestAppState extends State<ResizeTestApp> {
             ),
             child: Text(
               ' Terminal Resize Test ',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(height: 1),

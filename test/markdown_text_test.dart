@@ -80,7 +80,8 @@ with multiple lines
 More text'''),
           );
 
-          expect(tester.terminalState, containsText('Some text with inline code'));
+          expect(
+              tester.terminalState, containsText('Some text with inline code'));
           expect(tester.terminalState, containsText('code block'));
           expect(tester.terminalState, containsText('with multiple lines'));
           expect(tester.terminalState, containsText('More text'));

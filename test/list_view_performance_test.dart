@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('ListView Performance', () {
-    test('visual test - ListView should render without continuous updates', () async {
+    test('visual test - ListView should render without continuous updates',
+        () async {
       await testNocterm(
         'list view visual',
         (tester) async {
@@ -22,11 +23,11 @@ void main() {
               ),
             ),
           );
-          
+
           // Should see the first few items
           expect(tester.terminalState, containsText('Item 0'));
           expect(tester.terminalState, containsText('Item 1'));
-          
+
           // Scroll down
           final controller = ScrollController();
           await tester.pumpComponent(
@@ -45,10 +46,10 @@ void main() {
               ),
             ),
           );
-          
+
           controller.scrollDown(10);
           await tester.pump();
-          
+
           // Should see different items after scrolling
           expect(tester.terminalState, containsText('Item 10'));
         },

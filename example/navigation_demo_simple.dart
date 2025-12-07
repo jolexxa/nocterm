@@ -123,7 +123,8 @@ class _MenuListState extends State<MenuList> {
       return true;
     } else if (key == LogicalKey.arrowUp) {
       setState(() {
-        _selectedIndex = (_selectedIndex - 1 + component.items.length) % component.items.length;
+        _selectedIndex = (_selectedIndex - 1 + component.items.length) %
+            component.items.length;
       });
       return true;
     } else if (key == LogicalKey.enter) {
@@ -145,7 +146,9 @@ class _MenuListState extends State<MenuList> {
             Text(
               '${i == _selectedIndex ? '> ' : '  '}${component.items[i].label}',
               style: i == _selectedIndex
-                  ? const TextStyle(fontWeight: FontWeight.bold, color: Color.fromRGB(100, 200, 100))
+                  ? const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color.fromRGB(100, 200, 100))
                   : null,
             ),
         ],

@@ -7,11 +7,11 @@ void main() {
       'debug test',
       (tester) async {
         final scrollController = ScrollController();
-        
+
         await tester.pumpComponent(
           Container(
             width: 20,
-            height: 5,  // Small viewport to force scrolling
+            height: 5, // Small viewport to force scrolling
             decoration: BoxDecoration(
               border: BoxBorder.all(color: Colors.blue),
             ),
@@ -24,12 +24,12 @@ void main() {
             ),
           ),
         );
-        
+
         print('Viewport height: 5 (3 visible lines after borders)');
         print('Total items: 10');
         print('Expected maxScrollExtent: ~7 (10 items - 3 visible)');
         print('Actual maxScrollExtent: ${scrollController.maxScrollExtent}');
-        
+
         expect(scrollController.maxScrollExtent, greaterThan(0),
             reason: 'With 10 items and small viewport, should need scrolling');
       },

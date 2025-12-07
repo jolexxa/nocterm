@@ -237,7 +237,8 @@ void main() {
     });
 
     // Visual test for manual inspection
-    test('border visual test', skip: 'Run with debugPrintAfterPump for visual inspection', () async {
+    test('border visual test',
+        skip: 'Run with debugPrintAfterPump for visual inspection', () async {
       await testNocterm(
         'border visual',
         (tester) async {
@@ -246,7 +247,8 @@ void main() {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('=== Border Test ===', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('=== Border Test ===',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 1),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -289,7 +291,8 @@ void main() {
                             width: 15,
                             height: 3,
                             decoration: BoxDecoration(
-                              border: BoxBorder.all(color: Colors.cyan, width: 1),
+                              border:
+                                  BoxBorder.all(color: Colors.cyan, width: 1),
                             ),
                             child: Center(child: Text('W=1')),
                           ),
@@ -298,7 +301,8 @@ void main() {
                             width: 15,
                             height: 3,
                             decoration: BoxDecoration(
-                              border: BoxBorder.all(color: Colors.magenta, width: 2),
+                              border: BoxBorder.all(
+                                  color: Colors.magenta, width: 2),
                             ),
                             child: Center(child: Text('W=2')),
                           ),

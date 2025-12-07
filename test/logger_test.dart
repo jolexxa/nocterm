@@ -52,8 +52,13 @@ void main() {
 
       expect(logServer.buffer.length, lessThanOrEqualTo(100));
       // Oldest messages should be dropped
-      expect(logServer.buffer.any((entry) => entry.message.contains('Message 0')), isFalse);
-      expect(logServer.buffer.any((entry) => entry.message.contains('Message 149')), isTrue);
+      expect(
+          logServer.buffer.any((entry) => entry.message.contains('Message 0')),
+          isFalse);
+      expect(
+          logServer.buffer
+              .any((entry) => entry.message.contains('Message 149')),
+          isTrue);
     });
 
     test('streams logs to WebSocket client', () async {
@@ -62,7 +67,8 @@ void main() {
       logServer.log('Buffered message 2');
 
       // Connect WebSocket client
-      final ws = await WebSocket.connect('ws://127.0.0.1:${logServer.port}/logs');
+      final ws =
+          await WebSocket.connect('ws://127.0.0.1:${logServer.port}/logs');
 
       // Collect messages
       final messages = <String>[];
@@ -141,7 +147,8 @@ void main() {
     test('includes timestamps', () {
       logger.log('Timestamped message');
 
-      expect(logServer.buffer.first.message, matches(r'\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'));
+      expect(logServer.buffer.first.message,
+          matches(r'\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'));
       expect(logServer.buffer.first.message, contains('Timestamped message'));
     });
 

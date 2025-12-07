@@ -3,7 +3,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('TextField Width Calculations', () {
-    test('correctly calculates available width with padding and borders', () async {
+    test('correctly calculates available width with padding and borders',
+        () async {
       await testNocterm(
         'width with padding and borders',
         (tester) async {
@@ -40,7 +41,8 @@ void main() {
 
           // Should scroll to show cursor at end (or wrap if multi-line)
           // The field should still show 15 characters, scrolled to show the end
-          expect(tester.terminalState, containsText('P')); // End character visible
+          expect(
+              tester.terminalState, containsText('P')); // End character visible
         },
         debugPrintAfterPump: false,
       );
@@ -66,7 +68,8 @@ void main() {
           // Available width = 10 - 2 (border) - 2 (padding) - 1 (cursor) = 5
 
           // Test with emoji (width 2)
-          controller.text = '😀😀'; // 2 emojis = 4 visual columns (fits with cursor)
+          controller.text =
+              '😀😀'; // 2 emojis = 4 visual columns (fits with cursor)
           await tester.pump();
 
           // All emojis should fit
@@ -152,7 +155,8 @@ void main() {
 
           // Cursor should be at the end and visible
           // Should show the last 3 characters plus cursor
-          expect(tester.terminalState, containsText('J')); // Last character visible
+          expect(tester.terminalState,
+              containsText('J')); // Last character visible
 
           // Move cursor to middle
           controller.selection = TextSelection.collapsed(offset: 5);

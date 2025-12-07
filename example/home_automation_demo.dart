@@ -10,7 +10,8 @@ class HomeAutomationDashboard extends StatefulComponent {
   const HomeAutomationDashboard({super.key});
 
   @override
-  State<HomeAutomationDashboard> createState() => _HomeAutomationDashboardState();
+  State<HomeAutomationDashboard> createState() =>
+      _HomeAutomationDashboardState();
 }
 
 class _HomeAutomationDashboardState extends State<HomeAutomationDashboard> {
@@ -260,7 +261,8 @@ class _HomeAutomationDashboardState extends State<HomeAutomationDashboard> {
               SizedBox(width: 1),
               Text(
                 '${_currentTemp.toStringAsFixed(1)}°C',
-                style: TextStyle(color: Color(0xFF00FF88), fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Color(0xFF00FF88), fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -270,7 +272,8 @@ class _HomeAutomationDashboardState extends State<HomeAutomationDashboard> {
               SizedBox(width: 1),
               Text(
                 '$_humidity%',
-                style: TextStyle(color: Color(0xFF00FF88), fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Color(0xFF00FF88), fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -281,7 +284,8 @@ class _HomeAutomationDashboardState extends State<HomeAutomationDashboard> {
               SizedBox(width: 1),
               Text(
                 'AUTO',
-                style: TextStyle(color: Color(0xFF00D9FF), fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    color: Color(0xFF00D9FF), fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -321,13 +325,23 @@ class _HomeAutomationDashboardState extends State<HomeAutomationDashboard> {
               SizedBox(width: 1),
               Text(
                 '${(_lightsOn * 100 / _totalLights).round()}%',
-                style: TextStyle(color: _devices['lights']! ? Color(0xFF00FF88) : Color(0xFF888888)),
+                style: TextStyle(
+                    color: _devices['lights']!
+                        ? Color(0xFF00FF88)
+                        : Color(0xFF888888)),
               ),
             ],
           ),
-          _buildDeviceRow('Smart Lock', _devices['lock']! ? '🔒 LOCKED' : '🔓 UNLOCKED', _devices['lock']!),
-          _buildDeviceRow('Security System', _devices['security']! ? '✓ ARMED' : '✗ DISARMED', _devices['security']!),
-          _buildDeviceRow('Garage Door', _devices['garage']! ? '⬆ OPEN' : '⬇ CLOSED', _devices['garage']!),
+          _buildDeviceRow(
+              'Smart Lock',
+              _devices['lock']! ? '🔒 LOCKED' : '🔓 UNLOCKED',
+              _devices['lock']!),
+          _buildDeviceRow(
+              'Security System',
+              _devices['security']! ? '✓ ARMED' : '✗ DISARMED',
+              _devices['security']!),
+          _buildDeviceRow('Garage Door',
+              _devices['garage']! ? '⬆ OPEN' : '⬇ CLOSED', _devices['garage']!),
         ],
       ),
     );

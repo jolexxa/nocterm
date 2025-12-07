@@ -33,8 +33,9 @@ class _ScrollDemoState extends State<ScrollDemo> {
       focused: true,
       onKeyEvent: (event) {
         if (event.logicalKey == LogicalKey.keyQ) {
-          Navigator.of(context).push(
-              PageRoute(builder: (context) => const ScrollDemo(), settings: const RouteSettings(name: 'scroll_demo')));
+          Navigator.of(context).push(PageRoute(
+              builder: (context) => const ScrollDemo(),
+              settings: const RouteSettings(name: 'scroll_demo')));
           return true;
         }
         if (event.logicalKey == LogicalKey.tab) {
@@ -140,12 +141,15 @@ class _ScrollDemoState extends State<ScrollDemo> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('ScrollController Info:', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('ScrollController Info:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(''),
                         for (int i = 0; i < 50; i++)
-                          Text('Line $i: This is scrollable content that extends beyond the viewport'),
+                          Text(
+                              'Line $i: This is scrollable content that extends beyond the viewport'),
                         Text(''),
-                        Text('--- END OF CONTENT ---', style: TextStyle(color: Colors.yellow)),
+                        Text('--- END OF CONTENT ---',
+                            style: TextStyle(color: Colors.yellow)),
                       ],
                     ),
                   ),
@@ -172,9 +176,11 @@ class _ScrollDemoState extends State<ScrollDemo> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      Text('This is a very long line of text that requires horizontal scrolling to read completely. '),
+                      Text(
+                          'This is a very long line of text that requires horizontal scrolling to read completely. '),
                       Text('It continues with more content here. '),
-                      Text('And even more content to demonstrate horizontal scrolling capabilities.'),
+                      Text(
+                          'And even more content to demonstrate horizontal scrolling capabilities.'),
                     ],
                   ),
                 ),
@@ -205,7 +211,8 @@ class _ScrollDemoState extends State<ScrollDemo> {
               ),
               child: Row(
                 children: [
-                  Text('[${i.toString().padLeft(2, '0')}]', style: TextStyle(color: Colors.cyan)),
+                  Text('[${i.toString().padLeft(2, '0')}]',
+                      style: TextStyle(color: Colors.cyan)),
                   SizedBox(width: 2),
                   Text('List item $i - Static content'),
                 ],
@@ -235,7 +242,8 @@ class _ScrollDemoState extends State<ScrollDemo> {
                     itemBuilder: (context, index) {
                       return Container(
                         padding: EdgeInsets.all(1),
-                        child: Text('Item #$index (of 1000) - Efficiently rendered on demand'),
+                        child: Text(
+                            'Item #$index (of 1000) - Efficiently rendered on demand'),
                       );
                     },
                   ),
@@ -270,7 +278,8 @@ class _ScrollDemoState extends State<ScrollDemo> {
                       return Container(
                         height: 1,
                         child: Center(
-                          child: Text('─' * 20, style: TextStyle(color: Colors.gray)),
+                          child: Text('─' * 20,
+                              style: TextStyle(color: Colors.gray)),
                         ),
                       );
                     },
@@ -296,7 +305,9 @@ class _ScrollDemoState extends State<ScrollDemo> {
         itemBuilder: (context, index) {
           return Container(
             decoration: BoxDecoration(
-              color: index % 2 == 0 ? Color.fromRGB(30, 30, 30) : Color.fromRGB(20, 20, 20),
+              color: index % 2 == 0
+                  ? Color.fromRGB(30, 30, 30)
+                  : Color.fromRGB(20, 20, 20),
             ),
             child: Text('Row $index'),
           );
@@ -312,7 +323,8 @@ class _ScrollDemoState extends State<ScrollDemo> {
         Expanded(
           child: Column(
             children: [
-              Text('SingleChildScrollView + Scrollbar:', style: TextStyle(color: Colors.cyan)),
+              Text('SingleChildScrollView + Scrollbar:',
+                  style: TextStyle(color: Colors.cyan)),
               SizedBox(height: 1),
               Expanded(
                 child: Container(
@@ -328,7 +340,9 @@ class _ScrollDemoState extends State<ScrollDemo> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          for (int i = 0; i < 100; i++) Text('Line $i: Content with visible scrollbar indicator'),
+                          for (int i = 0; i < 100; i++)
+                            Text(
+                                'Line $i: Content with visible scrollbar indicator'),
                         ],
                       ),
                     ),
@@ -345,7 +359,8 @@ class _ScrollDemoState extends State<ScrollDemo> {
         Expanded(
           child: Column(
             children: [
-              Text('ListView + Scrollbar:', style: TextStyle(color: Colors.green)),
+              Text('ListView + Scrollbar:',
+                  style: TextStyle(color: Colors.green)),
               SizedBox(height: 1),
               Expanded(
                 child: Container(

@@ -28,7 +28,8 @@ void main() {
 
           print('Initial state with cursor at end:');
           print('Controller text: "${controller.text}"');
-          print('Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
 
           // Move cursor to beginning
           for (int i = 0; i < 11; i++) {
@@ -36,7 +37,8 @@ void main() {
           }
 
           print('\nAfter moving to beginning:');
-          print('Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
 
           // Select "Hello" using Shift+Right
           for (int i = 0; i < 5; i++) {
@@ -44,7 +46,8 @@ void main() {
               logicalKey: LogicalKey.arrowRight,
               modifiers: ModifierKeys(shift: true),
             ));
-            print('After Shift+Right ${i+1}: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+            print(
+                'After Shift+Right ${i + 1}: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
           }
 
           print('\nFinal selection state:');
@@ -83,7 +86,8 @@ void main() {
 
           print('Initial state:');
           print('Text: "${controller.text}"');
-          print('Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
 
           // Select all with Ctrl+A
           await tester.sendKeyEvent(KeyboardEvent(
@@ -92,8 +96,10 @@ void main() {
           ));
 
           print('\nAfter Ctrl+A:');
-          print('Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
-          print('Selected text: "${controller.text.substring(controller.selection.start, controller.selection.end)}"');
+          print(
+              'Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Selected text: "${controller.text.substring(controller.selection.start, controller.selection.end)}"');
 
           expect(controller.selection.start, 0);
           expect(controller.selection.end, controller.text.length);
@@ -135,7 +141,8 @@ void main() {
           }
 
           print('After selection:');
-          print('Selected: "${controller.text.substring(controller.selection.start, controller.selection.end)}"');
+          print(
+              'Selected: "${controller.text.substring(controller.selection.start, controller.selection.end)}"');
 
           // Type "that"
           await tester.enterText('that');
@@ -165,7 +172,8 @@ void main() {
                 focused: true,
                 selectionColor: Colors.blue,
                 cursorColor: Colors.white,
-                style: TextStyle(color: Colors.white, backgroundColor: Colors.black),
+                style: TextStyle(
+                    color: Colors.white, backgroundColor: Colors.black),
               ),
             ),
           );
@@ -186,8 +194,10 @@ void main() {
             ));
           }
 
-          print('Selection: start=${controller.selection.start}, end=${controller.selection.end}');
-          print('Selected text: "${controller.text.substring(controller.selection.start, controller.selection.end)}"');
+          print(
+              'Selection: start=${controller.selection.start}, end=${controller.selection.end}');
+          print(
+              'Selected text: "${controller.text.substring(controller.selection.start, controller.selection.end)}"');
         },
         debugPrintAfterPump: true,
       );

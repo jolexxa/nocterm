@@ -8,7 +8,8 @@ void main() {
       await testNocterm(
         'vertical selection',
         (tester) async {
-          final controller = TextEditingController(text: 'Line 1\nLine 2\nLine 3');
+          final controller =
+              TextEditingController(text: 'Line 1\nLine 2\nLine 3');
 
           await tester.pumpComponent(
             Container(
@@ -25,7 +26,8 @@ void main() {
 
           print('Initial text:');
           print(controller.text);
-          print('Initial selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Initial selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
 
           // Move cursor to middle of Line 2 (position after "Line 2")
           for (int i = 0; i < 8; i++) {
@@ -33,7 +35,8 @@ void main() {
           }
 
           print('\nAfter positioning cursor:');
-          print('Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
 
           // Select upward with Shift+Up
           await tester.sendKeyEvent(KeyboardEvent(
@@ -42,9 +45,11 @@ void main() {
           ));
 
           print('\nAfter Shift+Up:');
-          print('Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
           if (!controller.selection.isCollapsed) {
-            final selected = controller.text.substring(controller.selection.start, controller.selection.end);
+            final selected = controller.text.substring(
+                controller.selection.start, controller.selection.end);
             print('Selected text: "${selected.replaceAll('\n', '\\\\n')}"');
           }
 
@@ -59,9 +64,11 @@ void main() {
           ));
 
           print('\nAfter Shift+Down twice:');
-          print('Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
           if (!controller.selection.isCollapsed) {
-            final selected = controller.text.substring(controller.selection.start, controller.selection.end);
+            final selected = controller.text.substring(
+                controller.selection.start, controller.selection.end);
             print('Selected text: "${selected.replaceAll('\n', '\\\\n')}"');
           }
 
@@ -70,8 +77,10 @@ void main() {
           expect(controller.selection.start < controller.selection.end, true);
 
           // The selection should include text from multiple lines
-          final selectedText = controller.text.substring(controller.selection.start, controller.selection.end);
-          expect(selectedText.contains('\n'), true, reason: 'Selection should span multiple lines');
+          final selectedText = controller.text
+              .substring(controller.selection.start, controller.selection.end);
+          expect(selectedText.contains('\n'), true,
+              reason: 'Selection should span multiple lines');
         },
         debugPrintAfterPump: true,
       );
@@ -81,7 +90,8 @@ void main() {
       await testNocterm(
         'collapse selection on vertical movement',
         (tester) async {
-          final controller = TextEditingController(text: 'First line\nSecond line\nThird line');
+          final controller = TextEditingController(
+              text: 'First line\nSecond line\nThird line');
 
           await tester.pumpComponent(
             Container(
@@ -103,14 +113,16 @@ void main() {
           ));
 
           print('After Ctrl+A:');
-          print('Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
           expect(controller.selection.isCollapsed, false);
 
           // Move up without shift - should collapse selection
           await tester.sendKey(LogicalKey.arrowUp);
 
           print('\nAfter Arrow Up (no shift):');
-          print('Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
+          print(
+              'Selection: base=${controller.selection.baseOffset}, extent=${controller.selection.extentOffset}');
           expect(controller.selection.isCollapsed, true);
         },
         debugPrintAfterPump: true,

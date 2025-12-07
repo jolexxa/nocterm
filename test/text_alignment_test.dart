@@ -21,36 +21,39 @@ void main() {
                   Text('Center', textAlign: TextAlign.center),
                   Text('Right', textAlign: TextAlign.right),
                   Text('Short'),
-                  Text('This is a longer text that wraps', textAlign: TextAlign.left),
-                  Text('This is a longer text that wraps', textAlign: TextAlign.center),
-                  Text('This is a longer text that wraps', textAlign: TextAlign.right),
+                  Text('This is a longer text that wraps',
+                      textAlign: TextAlign.left),
+                  Text('This is a longer text that wraps',
+                      textAlign: TextAlign.center),
+                  Text('This is a longer text that wraps',
+                      textAlign: TextAlign.right),
                 ],
               ),
             ),
           );
-          
+
           // Print the actual rendered output to see what's happening
           print('Rendered output:');
           final output = tester.terminalState.getText();
           print(output);
-          
+
           // Check that the text appears at expected positions
           final lines = output.split('\n');
-          
+
           // Find the bordered content (skip the border lines)
           // Line 1 should have "Left" aligned to the left
           expect(lines[1], contains('│Left'));
-          
+
           // Line 2 should have "Center" roughly centered
           expect(lines[2], contains('Center'));
-          
+
           // Line 3 should have "Right" aligned to the right
           expect(lines[3], contains('Right'));
         },
         debugPrintAfterPump: true,
       );
     });
-    
+
     test('text alignment with different widths', () async {
       await testNocterm(
         'alignment at various widths',
@@ -105,14 +108,14 @@ void main() {
               ],
             ),
           );
-          
+
           print('Multiple container widths:');
           print(tester.terminalState.getText());
         },
         debugPrintAfterPump: true,
       );
     });
-    
+
     test('justified text alignment', () async {
       await testNocterm(
         'justified text',
@@ -138,14 +141,14 @@ void main() {
               ),
             ),
           );
-          
+
           print('Justified text:');
           print(tester.terminalState.getText());
         },
         debugPrintAfterPump: true,
       );
     });
-    
+
     test('text alignment with padding', () async {
       await testNocterm(
         'alignment with padding',
@@ -166,7 +169,7 @@ void main() {
               ),
             ),
           );
-          
+
           print('With padding:');
           print(tester.terminalState.getText());
         },

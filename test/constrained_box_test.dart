@@ -43,7 +43,8 @@ void main() {
               ),
               child: Container(
                 color: Colors.green,
-                child: const Text('This is a very long text that should be constrained'),
+                child: const Text(
+                    'This is a very long text that should be constrained'),
               ),
             ),
           );

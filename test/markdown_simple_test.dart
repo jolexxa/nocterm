@@ -54,11 +54,13 @@ Second paragraph.'''),
           await tester.pumpComponent(
             Container(
               width: 100,
-              child: const MarkdownText('This is plain text with no formatting.'),
+              child:
+                  const MarkdownText('This is plain text with no formatting.'),
             ),
           );
 
-          expect(tester.terminalState, containsText('This is plain text with no formatting.'));
+          expect(tester.terminalState,
+              containsText('This is plain text with no formatting.'));
         },
         debugPrintAfterPump: true,
       );

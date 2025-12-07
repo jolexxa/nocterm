@@ -22,7 +22,6 @@ class SimpleMarkdownExample extends StatelessComponent {
               ),
             ),
             const SizedBox(height: 2),
-            
             const MarkdownText('''# Hello Markdown!
 
 This is a simple example showing **bold text**, *italic text*, and `inline code`.

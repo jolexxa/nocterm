@@ -7,7 +7,7 @@ void main() {
       'simple test',
       (tester) async {
         final scrollController = ScrollController();
-        
+
         await tester.pumpComponent(
           Container(
             width: 20,
@@ -24,19 +24,19 @@ void main() {
             ),
           ),
         );
-        
+
         print('Initial state:');
         print('Offset: ${scrollController.offset}');
         print('MaxScrollExtent: ${scrollController.maxScrollExtent}');
-        
+
         // Scroll down
         scrollController.scrollDown();
         await tester.pump();
-        
+
         print('\nAfter scroll down:');
         print('Offset: ${scrollController.offset}');
         print('MaxScrollExtent: ${scrollController.maxScrollExtent}');
-        
+
         expect(scrollController.maxScrollExtent, greaterThan(0),
             reason: 'With 10 items, should have scrollable content');
       },
