@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:hotreloader/hotreloader.dart';
 
+import '../foundation/nocterm_error.dart';
 import '../framework/framework.dart';
 
 /// Mixin that adds hot reload support to TUI bindings
@@ -68,7 +69,11 @@ mixin HotReloadBinding on NoctermBinding {
             // Trigger reassemble after successful reload
             _performReassembleAfterReload();
           } else if (ctx.result == HotReloadResult.Failed) {
-            print('[HotReload] Compilation error during hot reload');
+            NoctermError.reportError(NoctermErrorDetails(
+              exception: Exception('Compilation error during hot reload'),
+              library: 'nocterm hot reload',
+              context: 'during hot reload compilation',
+            ));
           } else {
             print('[HotReload] Hot reload failed: ${ctx.result}');
           }
@@ -89,8 +94,12 @@ mixin HotReloadBinding on NoctermBinding {
         await performReassemble();
         print('[HotReload] Application reassembled successfully');
       } catch (e, stack) {
-        print('[HotReload] Error during reassemble: $e');
-        print('[HotReload] Stack trace: $stack');
+        NoctermError.reportError(NoctermErrorDetails(
+          exception: e,
+          stack: stack,
+          library: 'nocterm hot reload',
+          context: 'during reassemble',
+        ));
       }
     });
   }

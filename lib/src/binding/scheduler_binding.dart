@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:meta/meta.dart';
 import 'package:nocterm/src/binding/scheduler_phase.dart';
+import 'package:nocterm/src/foundation/nocterm_error.dart';
 import 'package:nocterm/src/foundation/performance.dart';
 import 'package:nocterm/src/framework/framework.dart';
 
@@ -121,8 +122,12 @@ mixin SchedulerBinding on NoctermBinding {
       try {
         callback(timing);
       } catch (e, stack) {
-        // TODO: Proper error handling
-        print('Error in frame timing callback: $e\n$stack');
+        NoctermError.reportError(NoctermErrorDetails(
+          exception: e,
+          stack: stack,
+          library: 'nocterm scheduler',
+          context: 'during frame timing callback',
+        ));
       }
     }
   }
@@ -468,12 +473,13 @@ mixin SchedulerBinding on NoctermBinding {
     try {
       callback(timeStamp);
     } catch (exception, stack) {
-      // TODO: Proper error reporting
-      // For now, rethrow to surface errors during development
-      Error.throwWithStackTrace(
-        exception,
-        stack,
-      );
+      NoctermError.reportError(NoctermErrorDetails(
+        exception: exception,
+        stack: stack,
+        library: 'nocterm scheduler',
+        context:
+            'during frame callback${debugLabel != null ? ' ($debugLabel)' : ''}',
+      ));
     }
   }
 

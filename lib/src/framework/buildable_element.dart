@@ -31,7 +31,12 @@ abstract class BuildableElement extends Element {
       // Handle build errors
       _debugDoingBuild = false;
       built = ErrorComponent(error: e, stackTrace: stack);
-      print('Error building $runtimeType: $e\n$stack');
+      NoctermError.reportError(NoctermErrorDetails(
+        exception: e,
+        stack: stack,
+        library: 'nocterm framework',
+        context: 'while building $runtimeType',
+      ));
     } finally {
       _dirty = false;
       assert(() {

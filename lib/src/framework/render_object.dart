@@ -540,9 +540,16 @@ abstract class RenderObject {
 
   /// Report an exception that occurred during rendering.
   void _reportException(String method, Object exception, StackTrace stack) {
-    // Report to stderr (will be caught by zone)
-    print('Exception in RenderObject.$method: $exception');
-    print('Stack trace: $stack');
+    NoctermError.reportError(NoctermErrorDetails(
+      exception: exception,
+      stack: stack,
+      library: 'nocterm rendering',
+      context: 'during $method()',
+      informationCollector: () => [
+        'RenderObject: $runtimeType',
+        if (_constraints != null) 'Constraints: $_constraints',
+      ],
+    ));
 
     // Store the error details
     _lastError = exception;

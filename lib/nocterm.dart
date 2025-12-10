@@ -69,6 +69,7 @@ export 'src/utils/nocterm_paths.dart';
 
 // Performance and Debugging
 export 'src/foundation/performance.dart';
+export 'src/foundation/nocterm_error.dart';
 export 'src/rendering/debug.dart';
 
 // Widgets

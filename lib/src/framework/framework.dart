@@ -5,6 +5,7 @@ import 'dart:developer' as developer;
 
 import 'package:meta/meta.dart';
 import 'package:nocterm/src/components/basic.dart';
+import 'package:nocterm/src/foundation/nocterm_error.dart';
 import 'package:nocterm/src/rectangle.dart';
 import 'package:nocterm/src/size.dart';
 import 'package:nocterm/src/style.dart';
