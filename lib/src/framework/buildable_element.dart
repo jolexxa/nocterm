@@ -10,11 +10,15 @@ abstract class BuildableElement extends Element {
   @override
   bool get debugDoingBuild => _debugDoingBuild;
 
+  void _firstBuild() {
+    rebuild();
+  }
+
   @override
   void mount(Element? parent, dynamic newSlot) {
     super.mount(parent, newSlot);
     assert(_child == null);
-    performRebuild();
+    _firstBuild();
   }
 
   @override

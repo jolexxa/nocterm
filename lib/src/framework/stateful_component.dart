@@ -95,7 +95,7 @@ abstract class State<T extends StatefulComponent> {
 
 /// Element for StatefulComponent
 class StatefulElement extends BuildableElement {
-  StatefulElement(StatefulComponent component) : super(component) {
+  StatefulElement(super.component) {
     _state = component.createState();
     assert(_state._element == null, 'State object was already used');
     _state._element = this;
@@ -112,30 +112,22 @@ class StatefulElement extends BuildableElement {
   @override
   Component build() => _state.build(this);
 
-  @override
-  void mount(Element? parent, dynamic newSlot) {
-    // Set up the element tree structure first (from Element.mount)
-    assert(_lifecycleState == _ElementLifecycle.initial);
-    assert(
-        parent == null || parent._lifecycleState == _ElementLifecycle.active);
-    _parent = parent;
-    _slot = newSlot;
-    _depth = parent != null ? parent.depth + 1 : 1;
-    _lifecycleState = _ElementLifecycle.active;
-    if (parent != null) {
-      _owner = parent.owner;
-    }
-    final Key? key = component.key;
-    if (key is GlobalKey) {
-      owner!._registerGlobalKey(key, this);
-    }
+  void _firstBuild() {
+    final Object? debugCheckForReturnedFuture = state.initState() as dynamic;
+    assert(() {
+      if (debugCheckForReturnedFuture is Future) {
+        throw FlutterError([
+          '${state.runtimeType}.initState() returned a Future.',
+          'State.initState() must be a void method without an `async` keyword.',
+          'Rather than awaiting on asynchronous work directly inside of initState, '
+              'call a separate method to do this work without awaiting it.',
+        ].join('\n'));
+      }
+      return true;
+    }());
 
-    // Now that parent is set, call initState() so context.read() works
-    _state.initState();
-
-    // Finally, do the initial build
-    assert(_child == null);
-    performRebuild();
+    state.didChangeDependencies();
+    super._firstBuild();
   }
 
   @override
@@ -144,7 +136,15 @@ class StatefulElement extends BuildableElement {
     assert(component == newComponent);
     final StatefulComponent oldComponent = _state._component!;
     _state._component = component;
-    _state.didUpdateComponent(oldComponent);
+    final Object? debugCheckForReturnedFuture =
+        _state.didUpdateComponent(oldComponent) as dynamic;
+    assert(() {
+      if (debugCheckForReturnedFuture is Future) {
+        throw FlutterError(
+            '${_state.runtimeType}.didUpdateComponent() returned a Future.');
+      }
+      return true;
+    }());
     rebuild();
   }
 
