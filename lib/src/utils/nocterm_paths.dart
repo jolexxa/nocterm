@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
@@ -38,11 +39,6 @@ String getShellHandlePath() {
 /// Get the path to the shell socket file for the current directory.
 String getShellSocketPath() {
   return p.join(getNoctermDirectory(), 'shell.sock');
-}
-
-/// Get the path to the exe directory for the current directory.
-String getExePath() {
-  return p.join(getNoctermDirectory(), 'exe');
 }
 
 /// Ensure the nocterm directory exists for the current working directory.
