@@ -1,6 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 import 'package:test/test.dart';
-import '../example/scroll_demo.dart';
+import '../../example/scroll_demo.dart';
 
 void main() {
   test('check for content accumulation after multiple tab switches', () async {

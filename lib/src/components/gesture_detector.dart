@@ -240,7 +240,7 @@ class _RenderGestureDetector extends RenderMouseRegion {
           onEnter: null,
           onExit: null,
           onHover: null,
-          opaque: behavior != HitTestBehavior.translucent,
+          opaque: behavior == HitTestBehavior.opaque,
         );
 
   void Function(MouseEvent) _onPointerDown;
@@ -273,7 +273,7 @@ class _RenderGestureDetector extends RenderMouseRegion {
     if (_behavior == value) return;
     _behavior = value;
     // Update opaque based on behavior
-    opaque = value != HitTestBehavior.translucent;
+    opaque = value == HitTestBehavior.opaque;
   }
 
   // Store gesture detector annotation separately from mouse region annotation

@@ -1,6 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 import 'package:test/test.dart';
-import '../example/scroll_demo.dart';
+import '../../example/scroll_demo.dart';
 
 void main() {
   test('no lifecycle errors when switching tabs rapidly', () async {

@@ -1,6 +1,6 @@
 import 'package:nocterm/nocterm.dart';
 import 'package:test/test.dart';
-import '../example/scroll_demo.dart';
+import '../../example/scroll_demo.dart';
 
 void main() {
   group('ScrollDemo Tab Navigation Bug', () {

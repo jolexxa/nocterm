@@ -193,8 +193,13 @@ class ClipboardManager {
 
     // Try to also copy to system clipboard via OSC 52
     // Use the Terminal's write buffer to avoid corrupting output
-    final binding = TerminalBinding.instance;
-    binding.terminal.writeClipboardCopy(text);
+    // In test environments, TerminalBinding may not be initialized
+    try {
+      final binding = TerminalBinding.instance;
+      binding.terminal.writeClipboardCopy(text);
+    } catch (_) {
+      // Silently fail - internal buffer is already set
+    }
 
     return true;
   }

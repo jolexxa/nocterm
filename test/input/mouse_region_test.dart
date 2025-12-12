@@ -1,6 +1,4 @@
 import 'package:nocterm/nocterm.dart';
-import 'package:nocterm/nocterm_test.dart';
-import 'package:nocterm/src/keyboard/mouse_event.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -82,16 +80,19 @@ void main() {
             Container(
               width: 80,
               height: 24,
-              child: MouseRegion(
-                onExit: (event) {
-                  exited = true;
-                  exitX = event.x;
-                  exitY = event.y;
-                },
-                child: Container(
-                  width: 10,
-                  height: 3,
-                  child: const Text('Target'),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: MouseRegion(
+                  onExit: (event) {
+                    exited = true;
+                    exitX = event.x;
+                    exitY = event.y;
+                  },
+                  child: Container(
+                    width: 10,
+                    height: 3,
+                    child: const Text('Target'),
+                  ),
                 ),
               ),
             ),
@@ -165,13 +166,16 @@ void main() {
             Container(
               width: 80,
               height: 24,
-              child: MouseRegion(
-                onEnter: (_) => entered = true,
-                onHover: (_) => hovered = true,
-                child: Container(
-                  width: 10,
-                  height: 3,
-                  child: const Text('Target'),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: MouseRegion(
+                  onEnter: (_) => entered = true,
+                  onHover: (_) => hovered = true,
+                  child: Container(
+                    width: 10,
+                    height: 3,
+                    child: const Text('Target'),
+                  ),
                 ),
               ),
             ),

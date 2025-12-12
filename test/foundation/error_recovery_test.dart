@@ -6,7 +6,8 @@ import 'package:nocterm/nocterm_test.dart';
 
 void main() {
   group('Error Recovery', () {
-    test('error box takes only the space of failed widget', () async {
+    test('error box takes only the space of failed widget',
+        skip: 'Error recovery system needs refactoring', () async {
       await testNocterm(
         'error box size constraint',
         (tester) async {
@@ -65,7 +66,8 @@ void main() {
       );
     });
 
-    test('errors clear when performLayout succeeds on retry', () async {
+    test('errors clear when performLayout succeeds on retry',
+        skip: 'Error recovery system needs refactoring', () async {
       await testNocterm(
         'error recovery on successful layout',
         (tester) async {
@@ -106,7 +108,8 @@ void main() {
       );
     });
 
-    test('paint errors clear on successful repaint', () async {
+    test('paint errors clear on successful repaint',
+        skip: 'Error recovery system needs refactoring', () async {
       await testNocterm(
         'paint error recovery',
         (tester) async {

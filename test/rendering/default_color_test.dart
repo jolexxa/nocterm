@@ -27,7 +27,8 @@ void main() {
 
     test('default color toString', () {
       expect(Color.defaultColor.toString(), equals('Color.defaultColor'));
-      expect(Colors.red.toString(), equals('Color(r: 255, g: 0, b: 0)'));
+      // Colors.red is Color.fromRGB(231, 97, 112)
+      expect(Colors.red.toString(), equals('Color(r: 231, g: 97, b: 112)'));
     });
 
     test('TextStyle with default background color', () {
@@ -38,7 +39,8 @@ void main() {
 
       // Should include both foreground and background codes
       final ansi = style.toAnsi();
-      expect(ansi, contains('\x1b[38;2;255;255;255m')); // White foreground
+      // Colors.white is Color.fromRGB(248, 248, 242)
+      expect(ansi, contains('\x1b[38;2;248;248;242m')); // White foreground
       expect(ansi, contains('\x1b[49m')); // Default background
     });
 

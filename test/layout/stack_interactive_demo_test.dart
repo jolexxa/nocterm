@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:nocterm/nocterm.dart';
-import '../example/stack_interactive_demo.dart';
+import '../../example/stack_interactive_demo.dart';
 
 void main() {
   group('Stack Interactive Demo', () {

@@ -301,6 +301,9 @@ Future<void> testNocterm(
 
   print('TEST: $description');
 
+  // Clear clipboard state between tests for isolation
+  ClipboardManager.clear();
+
   final tester = await NoctermTester.create(
     size: size,
     debugPrintAfterPump: debugPrintAfterPump,

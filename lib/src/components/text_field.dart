@@ -335,10 +335,6 @@ class _TextFieldState extends State<TextField> {
       return false;
     }
 
-    if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
-      return false;
-    }
-
     final key = event.logicalKey;
 
     // Handle Tab/Shift+Tab for focus navigation

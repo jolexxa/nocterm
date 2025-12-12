@@ -259,15 +259,15 @@ void main() {
             ),
           );
 
-          // Paste - newlines should be preserved in the text
+          // Paste - newlines should be converted to spaces in single-line fields
           await tester.sendKeyEvent(KeyboardEvent(
             logicalKey: LogicalKey.keyV,
             modifiers: const ModifierKeys(ctrl: true),
           ));
           await tester.pump();
 
-          // In a single-line field, newlines are included but not displayed as separate lines
-          expect(controller.text, contains('\n'));
+          // In a single-line field, newlines are converted to spaces
+          expect(controller.text, equals('Line 1 Line 2 Line 3'));
         },
       );
     });

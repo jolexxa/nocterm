@@ -22,43 +22,43 @@ class _StackInteractiveDemoState extends State<StackInteractiveDemo> {
     return Focusable(
       focused: true,
       onKeyEvent: (event) {
-        if (event == LogicalKey.keyO) {
+        if (event.logicalKey == LogicalKey.keyO) {
           setState(() {
             showOverlay = !showOverlay;
           });
           return true;
         }
-        if (event == LogicalKey.arrowUp) {
+        if (event.logicalKey == LogicalKey.arrowUp) {
           setState(() {
             counter++;
           });
           return true;
         }
-        if (event == LogicalKey.arrowDown) {
+        if (event.logicalKey == LogicalKey.arrowDown) {
           setState(() {
             if (counter > 0) counter--;
           });
           return true;
         }
-        if (event == LogicalKey.digit1) {
+        if (event.logicalKey == LogicalKey.digit1) {
           setState(() {
             selectedItem = items[0];
           });
           return true;
         }
-        if (event == LogicalKey.digit2) {
+        if (event.logicalKey == LogicalKey.digit2) {
           setState(() {
             selectedItem = items[1];
           });
           return true;
         }
-        if (event == LogicalKey.digit3) {
+        if (event.logicalKey == LogicalKey.digit3) {
           setState(() {
             selectedItem = items[2];
           });
           return true;
         }
-        if (event == LogicalKey.digit4) {
+        if (event.logicalKey == LogicalKey.digit4) {
           setState(() {
             selectedItem = items[3];
           });
