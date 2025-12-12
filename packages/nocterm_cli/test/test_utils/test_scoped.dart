@@ -4,10 +4,8 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:nocterm_cli/src/deps/args.dart';
 import 'package:nocterm_cli/src/deps/fs.dart';
 import 'package:nocterm_cli/src/deps/log.dart';
-import 'package:nocterm_cli/utils/args.dart';
 import 'package:scoped_deps/scoped_deps.dart';
 import 'package:test/test.dart';
 
@@ -16,7 +14,6 @@ import 'package:test/test.dart';
 void testScoped(
   String description,
   FutureOr<void> Function() fn, {
-  Args Function()? args,
   Object? skip,
   Logger Function()? logger,
   FileSystem Function()? fs,
@@ -31,11 +28,6 @@ void testScoped(
         fsProvider.overrideWith(() => fs)
       else
         fsProvider.overrideWith(() => MemoryFileSystem.test()),
-
-      if (args?.call() case final args?)
-        argsProvider.overrideWith(() => args)
-      else
-        argsProvider,
     };
 
     await runScoped(values: testProviders, () async {

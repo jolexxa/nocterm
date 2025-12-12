@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:nocterm_cli/src/deps/args.dart' as cli;
 import 'package:nocterm_cli/src/deps/log.dart';
 import 'package:nocterm_cli/utils/cli_command.dart';
 
@@ -20,7 +19,7 @@ Example: nocterm run dart lib/main.dart''';
 
   @override
   Future<int> run() async {
-    final args = cli.args.rest;
+    final args = argResults.rest;
 
     if (args.isEmpty) {
       log('''
