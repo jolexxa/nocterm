@@ -5,9 +5,9 @@ import 'package:nocterm/nocterm.dart';
 /// Useful for chat interfaces, logs, and other auto-scrolling content.
 class AutoScrollController extends ScrollController {
   AutoScrollController({
-    double initialScrollOffset = 0.0,
+    super.initialScrollOffset,
     this.autoScrollThreshold = 1.0,
-  }) : super(initialScrollOffset: initialScrollOffset);
+  });
 
   /// The distance from the bottom within which auto-scroll is enabled.
   /// If the user is within this distance from the bottom, new content

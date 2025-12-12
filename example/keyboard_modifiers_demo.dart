@@ -25,7 +25,7 @@ class _KeyboardModifiersDemoState extends State<KeyboardModifiersDemo> {
       _character = event.character ?? 'None';
 
       final entry =
-          '${event.modifiers.hasAnyModifier ? event.modifiers.toString() + '+' : ''}${event.logicalKey.debugName}';
+          '${event.modifiers.hasAnyModifier ? '${event.modifiers}+' : ''}${event.logicalKey.debugName}';
       _history.insert(0, entry);
       if (_history.length > 10) {
         _history.removeLast();

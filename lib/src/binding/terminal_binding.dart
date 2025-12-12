@@ -29,9 +29,6 @@ class TerminalBinding extends NoctermBinding
   PipelineOwner? _pipelineOwner;
   PipelineOwner get pipelineOwner => _pipelineOwner!;
 
-  // Expose buildOwner from the base class
-  BuildOwner get buildOwner => super.buildOwner;
-
   bool _shouldExit = false;
 
   /// Whether the binding has been signaled to exit
@@ -532,7 +529,7 @@ class TerminalBinding extends NoctermBinding
     // Should be properly integrated into the render object hierarchy
     if (element.renderObject is RenderTheater) {
       final multiChildRenderObject = element as MultiChildRenderObjectElement;
-      if (multiChildRenderObject.children.length > 0) {
+      if (multiChildRenderObject.children.isNotEmpty) {
         final child = multiChildRenderObject.children.last;
         return _dispatchKeyToElement(child, event);
       }
@@ -561,7 +558,7 @@ class TerminalBinding extends NoctermBinding
     // Should be properly integrated into the render object hierarchy
     if (element.renderObject is RenderTheater) {
       final multiChildRenderObject = element as MultiChildRenderObjectElement;
-      if (multiChildRenderObject.children.length > 0) {
+      if (multiChildRenderObject.children.isNotEmpty) {
         final child = multiChildRenderObject.children.last;
         return _dispatchMouseWheelAtPosition(
             child, event, mousePos, currentOffset);

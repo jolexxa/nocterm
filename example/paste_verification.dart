@@ -38,7 +38,7 @@ void main() async {
     },
   );
 
-  print('\n' + '=' * 60);
+  print('\n${'=' * 60}');
   print('\nThe fix ensures that when you paste text using Cmd+V');
   print('(terminal paste), all characters are captured, not just');
   print('the first one.\n');

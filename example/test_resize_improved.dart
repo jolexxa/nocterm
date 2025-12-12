@@ -84,7 +84,7 @@ class _ResizeTestAppState extends State<ResizeTestApp> {
 
         // Current size display
         Text(''),
-        Text('Current Size: ${width}x${height}',
+        Text('Current Size: ${width}x$height',
             style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
         Text('Time: ${DateTime.now().toString().substring(11, 19)}'),
         Text('Resize Count: $_resizeCount'),

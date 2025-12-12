@@ -114,7 +114,7 @@ class TimedBlock {
   int get duration => end - start;
 
   @override
-  String toString() => 'TimedBlock($name, ${duration}µs)';
+  String toString() => 'TimedBlock($name, $duration µs)';
 }
 
 /// Aggregated performance metrics.
@@ -156,7 +156,7 @@ class PerformanceMetrics {
     for (final entry in aggregated.entries) {
       final avg = entry.value.averageDuration.toStringAsFixed(1);
       buffer.writeln(
-          '  ${entry.key}: ${entry.value.totalDuration}µs (${entry.value.count}x, avg: ${avg}µs)');
+          '  ${entry.key}: ${entry.value.totalDuration}µs (${entry.value.count}x, avg: $avgµs)');
     }
     return buffer.toString();
   }
@@ -178,7 +178,7 @@ class AggregatedBlock {
 
   @override
   String toString() =>
-      'AggregatedBlock($name, ${totalDuration}µs, ${count}x, avg: ${averageDuration.toStringAsFixed(1)}µs)';
+      'AggregatedBlock($name, $totalDuration µs, ${count}x, avg: ${averageDuration.toStringAsFixed(1)}µs)';
 }
 
 /// Internal buffer for tracking timed blocks.

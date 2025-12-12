@@ -3,6 +3,7 @@
 /// This demonstrates that terminal resize events are properly handled in the TUI framework.
 /// The framework listens for SIGWINCH signals on Unix systems (macOS/Linux) and also
 /// polls for size changes as a fallback mechanism.
+library;
 
 import 'dart:io';
 import 'package:nocterm/nocterm.dart';

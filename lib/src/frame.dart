@@ -9,7 +9,7 @@ class Frame {
   final Buffer buffer;
   final Size size;
   final Buffer? _previousBuffer;
-  int _contentHeight = 0;
+  final int _contentHeight = 0;
   bool _fullRedraw = true;
 
   Frame({required this.size, Buffer? previousBuffer})

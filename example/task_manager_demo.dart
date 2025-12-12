@@ -26,10 +26,10 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
 
   // Mock data
   List<ProcessInfo> _processes = [];
-  SystemStats _systemStats = SystemStats();
+  final SystemStats _systemStats = SystemStats();
   List<NetworkConnection> _connections = [];
-  List<double> _cpuHistory = List.generate(30, (_) => 0.0);
-  List<double> _memoryHistory = List.generate(30, (_) => 0.0);
+  final List<double> _cpuHistory = List.generate(30, (_) => 0.0);
+  final List<double> _memoryHistory = List.generate(30, (_) => 0.0);
 
   @override
   void initState() {

@@ -107,7 +107,7 @@ void main() {
                         return Container(
                           padding:
                               EdgeInsets.symmetric(vertical: 0, horizontal: 1),
-                          child: Text('${items[index]}'),
+                          child: Text(items[index]),
                         );
                       },
                     ),
@@ -170,7 +170,7 @@ class _TestListView extends StatelessComponent {
               itemBuilder: (context, index) {
                 return Container(
                   padding: EdgeInsets.all(1),
-                  child: Text('${items[index]}'),
+                  child: Text(items[index]),
                 );
               },
             ),

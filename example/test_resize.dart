@@ -13,7 +13,7 @@ class ResizeTestApp extends StatefulComponent {
 
 class _ResizeTestAppState extends State<ResizeTestApp> {
   Size? _currentSize;
-  List<String> _sizeHistory = [];
+  final List<String> _sizeHistory = [];
   Timer? _sizeCheckTimer;
 
   @override

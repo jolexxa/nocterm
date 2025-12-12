@@ -89,8 +89,8 @@ void main() {
           // Available = 20 - 2 - 2 - 1 = 15
 
           // Text that fills multiple lines exactly
-          controller.text = 'ABCDEFGHIJKLMNO' + // 15 chars - line 1
-              'PQRSTUVWXYZ1234' + // 15 chars - line 2
+          controller.text = 'ABCDEFGHIJKLMNO' // 15 chars - line 1
+              'PQRSTUVWXYZ1234' // 15 chars - line 2
               '567890'; // 6 chars - line 3
 
           // Position cursor at end of first line

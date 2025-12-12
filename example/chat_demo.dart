@@ -277,7 +277,7 @@ class _MessageWidget extends StatelessComponent {
           ),
           SizedBox(width: 1),
           Text(
-            message.sender + ':',
+            '${message.sender}:',
             style: TextStyle(
               color: senderColor,
               fontWeight:

@@ -6,7 +6,7 @@ part of 'framework.dart';
 /// exactly one child, ensuring render objects are correctly attached and
 /// detached when the element tree changes.
 abstract class ProxyElement extends Element {
-  ProxyElement(ProxyComponent component) : super(component);
+  ProxyElement(super.component);
 
   @override
   ProxyComponent get component => super.component as ProxyComponent;
@@ -95,7 +95,7 @@ abstract class ProxyElement extends Element {
 /// This properly manages the lifecycle of its child and ensures parent data
 /// is correctly applied to render objects.
 class ParentDataElement<T extends ParentData> extends ProxyElement {
-  ParentDataElement(ParentDataComponent<T> component) : super(component);
+  ParentDataElement(super.component);
 
   @override
   ParentDataComponent<T> get component =>

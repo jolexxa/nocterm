@@ -64,9 +64,9 @@ class StackParentData extends BoxParentData {
       if (height != null) 'height=${height!.toStringAsFixed(1)}',
     ];
     if (values.isEmpty) {
-      return 'StackParentData#${hashCode}(not positioned)';
+      return 'StackParentData#$hashCode(not positioned)';
     }
-    return 'StackParentData#${hashCode}(${values.join(', ')})';
+    return 'StackParentData#$hashCode(${values.join(', ')})';
   }
 }
 

@@ -131,13 +131,12 @@ class Align extends SingleChildRenderObjectComponent {
     this.alignment = Alignment.center,
     this.widthFactor,
     this.heightFactor,
-    this.child,
+    super.child,
   });
 
   final AlignmentGeometry alignment;
   final double? widthFactor;
   final double? heightFactor;
-  final Component? child;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -244,9 +243,8 @@ class Expanded extends ParentDataComponent<FlexParentData> {
   Expanded({
     super.key,
     int flex = 1,
-    required Component child,
-  }) : super(
-            child: child, data: FlexParentData(flex: flex, fit: FlexFit.tight));
+    required super.child,
+  }) : super(data: FlexParentData(flex: flex, fit: FlexFit.tight));
 }
 
 /// Flexible widget for flex containers
@@ -255,8 +253,8 @@ class Flexible extends ParentDataComponent<FlexParentData> {
     super.key,
     int flex = 1,
     FlexFit fit = FlexFit.loose,
-    required Component child,
-  }) : super(child: child, data: FlexParentData(flex: flex, fit: fit));
+    required super.child,
+  }) : super(data: FlexParentData(flex: flex, fit: fit));
 }
 
 /// Proxy component that wraps a single child

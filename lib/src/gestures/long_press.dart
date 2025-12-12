@@ -99,7 +99,7 @@ class LongPressGestureRecognizer extends GestureRecognizer {
 
   @override
   void acceptGesture() {
-    super.acceptGesture();
+    // No additional logic needed beyond base implementation
   }
 
   @override

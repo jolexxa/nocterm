@@ -348,6 +348,7 @@ class RenderTheater extends RenderObject
     return false;
   }
 
+  @override
   void visitChildren(void Function(RenderObject) visitor) {
     for (final child in children) {
       visitor(child);

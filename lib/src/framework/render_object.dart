@@ -733,6 +733,7 @@ abstract class RenderObjectElement extends Element {
       super.component as RenderObjectComponent;
 
   RenderObject? _renderObject;
+  @override
   RenderObject get renderObject => _renderObject!;
 
   /// The ancestor [RenderObjectElement] that this element's [renderObject] is attached to.
@@ -818,7 +819,7 @@ abstract class RenderObjectElement extends Element {
 
 /// Element that has a single child
 class SingleChildRenderObjectElement extends RenderObjectElement {
-  SingleChildRenderObjectElement(RenderObjectComponent super.component);
+  SingleChildRenderObjectElement(super.component);
 
   Element? _child;
 
@@ -887,7 +888,7 @@ class SingleChildRenderObjectElement extends RenderObjectElement {
 
 /// Element that has multiple children
 class MultiChildRenderObjectElement extends RenderObjectElement {
-  MultiChildRenderObjectElement(RenderObjectComponent super.component);
+  MultiChildRenderObjectElement(super.component);
 
   List<Element> _children = const [];
   List<Element> get children => _children;

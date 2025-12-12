@@ -30,7 +30,7 @@ class MouseRegion extends SingleChildRenderObjectComponent {
     this.onExit,
     this.onHover,
     this.opaque = true,
-    required this.child,
+    required super.child,
   });
 
   /// Called when the mouse enters this region.
@@ -47,9 +47,6 @@ class MouseRegion extends SingleChildRenderObjectComponent {
   /// If true, the region will block hit testing from reaching widgets behind it.
   /// If false, hit testing will pass through if the child doesn't handle it.
   final bool opaque;
-
-  /// The child component to wrap.
-  final Component child;
 
   @override
   RenderObject createRenderObject(BuildContext context) {

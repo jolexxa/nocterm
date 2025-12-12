@@ -280,6 +280,7 @@ mixin SchedulerBinding on NoctermBinding {
   /// handleBeginFrame();  // Transient callbacks
   /// handleDrawFrame();   // Build/layout/paint ONCE
   /// ```
+  @override
   void scheduleFrame() {
     if (_hasScheduledFrame) {
       return; // Frame already scheduled

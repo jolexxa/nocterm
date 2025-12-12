@@ -77,8 +77,9 @@ class _FocusDemoState extends State<FocusDemo> {
                   } else if (event.logicalKey == LogicalKey.arrowDown) {
                     _updateLastKey('Arrow Down');
                     setState(() {
-                      if (sidebarIndex < sidebarItems.length - 1)
+                      if (sidebarIndex < sidebarItems.length - 1) {
                         sidebarIndex++;
+                      }
                     });
                     return true;
                   } else if (event.logicalKey == LogicalKey.arrowRight ||

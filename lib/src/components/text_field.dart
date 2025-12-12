@@ -1323,7 +1323,7 @@ class RenderTextField extends RenderObject {
         _text.isEmpty && _placeholder != null ? _placeholder! : _text;
 
     // Apply text obscuring if needed
-    if (_obscureText && !_text.isEmpty) {
+    if (_obscureText && _text.isNotEmpty) {
       textToLayout = _obscuringCharacter * _text.length;
     }
 

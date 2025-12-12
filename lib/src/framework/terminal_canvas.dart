@@ -1,4 +1,4 @@
-library tui.terminal_canvas;
+library;
 
 import 'dart:math' as math;
 import 'package:characters/characters.dart';

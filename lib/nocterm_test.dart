@@ -1,7 +1,7 @@
 /// Testing utilities for TUI applications.
 ///
 /// Provides a Flutter-like testing framework for terminal user interfaces.
-library tui_test;
+library;
 
 export 'src/test/nocterm_tester.dart'
     show NoctermTester, TuiTestCallback, testNocterm;

@@ -112,6 +112,7 @@ class StatefulElement extends BuildableElement {
   @override
   Component build() => _state.build(this);
 
+  @override
   void _firstBuild() {
     final Object? debugCheckForReturnedFuture = state.initState() as dynamic;
     assert(() {

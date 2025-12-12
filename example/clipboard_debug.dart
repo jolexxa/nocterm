@@ -67,7 +67,7 @@ void main() async {
   print('   Pasted via ClipboardManager: "$managerResult"');
   print('   Match: ${managerResult == 'ClipboardManager Test'}');
 
-  print('\n' + '=' * 60);
+  print('\n${'=' * 60}');
   print('Debug complete!\n');
   print('NOTE: OSC 52 integration depends on:');
   print('1. Your terminal emulator supporting OSC 52');

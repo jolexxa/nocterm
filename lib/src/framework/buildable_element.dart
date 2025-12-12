@@ -62,6 +62,7 @@ abstract class BuildableElement extends Element {
     }
   }
 
+  @override
   void forgetChild(Element child) {
     assert(_child == child);
     _child = null;

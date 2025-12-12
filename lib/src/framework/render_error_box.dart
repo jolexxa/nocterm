@@ -141,7 +141,7 @@ class RenderTUIErrorBox extends RenderObject
         if (stackLine.isNotEmpty) {
           // Truncate long stack lines
           final truncated = stackLine.length > availableWidth
-              ? stackLine.substring(0, availableWidth - 3) + '...'
+              ? '${stackLine.substring(0, availableWidth - 3)}...'
               : stackLine;
           lines.add(truncated);
         }
@@ -182,7 +182,7 @@ class RenderTUIErrorBox extends RenderObject
     // Truncate lines that are still too long
     return lines.map((line) {
       if (line.length > maxWidth) {
-        return line.substring(0, maxWidth - 3) + '...';
+        return '${line.substring(0, maxWidth - 3)}...';
       }
       return line;
     }).toList();

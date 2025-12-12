@@ -6,7 +6,7 @@ import 'package:path/path.dart' as p;
 
 /// Get the global nocterm directory for the current working directory.
 ///
-/// Returns a path like: ~/.nocterm/<hash-of-cwd>/
+/// Returns a path like: `~/.nocterm/<hash-of-cwd>/`
 ///
 /// This ensures each project gets its own isolated directory in the global
 /// nocterm storage, avoiding pollution of the user's project directory.

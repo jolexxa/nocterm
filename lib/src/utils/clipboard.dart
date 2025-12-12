@@ -8,12 +8,12 @@ import '../binding/terminal_binding.dart';
 /// with the system clipboard. It's supported by many modern terminals including
 /// iTerm2, Terminal.app (with proper configuration), tmux, and screen.
 ///
-/// The sequence format is: ESC ] 52 ; <target> ; <data> ST
+/// The sequence format is: `ESC ] 52 ; <target> ; <data> ST`
 /// where:
 /// - ESC ] is the OSC (Operating System Command) introducer
 /// - 52 is the clipboard manipulation command
-/// - <target> is the clipboard selection (c for clipboard, p for primary)
-/// - <data> is the base64-encoded text to set, or '?' to query
+/// - `<target>` is the clipboard selection (c for clipboard, p for primary)
+/// - `<data>` is the base64-encoded text to set, or '?' to query
 /// - ST is the String Terminator (ESC \ or BEL)
 ///
 /// Example usage:

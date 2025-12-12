@@ -14,6 +14,7 @@ abstract class Element implements BuildContext {
   Element(this._component);
 
   Component? _component;
+  @override
   Component get component => _component!;
 
   Element? _parent;
@@ -37,6 +38,7 @@ abstract class Element implements BuildContext {
   bool _inDirtyList = false;
 
   BuildOwner? _owner;
+  @override
   BuildOwner? get owner => _owner;
 
   @override
@@ -214,6 +216,7 @@ abstract class Element implements BuildContext {
 
   void visitChildren(ElementVisitor visitor);
 
+  @override
   void visitChildElements(ElementVisitor visitor) {
     visitChildren(visitor);
   }
@@ -417,6 +420,7 @@ abstract class Element implements BuildContext {
     markNeedsBuild();
   }
 
+  @override
   bool get debugDoingBuild => false;
 
   @override

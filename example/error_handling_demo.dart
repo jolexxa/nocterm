@@ -7,6 +7,8 @@
 /// 3. Seeing the RenderTUIErrorBox visual feedback
 ///
 /// Run with: dart run example/error_handling_demo.dart
+library;
+
 import 'package:nocterm/nocterm.dart';
 import 'package:nocterm/src/components/error_widget.dart';
 

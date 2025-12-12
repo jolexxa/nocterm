@@ -188,7 +188,7 @@ class MultipleScrollablesTest extends StatelessComponent {
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 2),
                           child: Text(
-                            'Bottom ${i}: This is a message in the bottom scrollable area that might be quite long',
+                            'Bottom $i: This is a message in the bottom scrollable area that might be quite long',
                             style: TextStyle(
                               color: i % 2 == 0 ? Colors.yellow : Colors.white,
                             ),

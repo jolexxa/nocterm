@@ -510,7 +510,7 @@ class InputParser {
 
       // Parse sequences like ESC [ 2 ~ (Insert), ESC [ 3 ~ (Delete), etc.
       // ESC [ X ~ = 4 bytes
-      if (sequence == '\x1B[2~')
+      if (sequence == '\x1B[2~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.insert,
@@ -518,7 +518,8 @@ class InputParser {
           ),
           4
         );
-      if (sequence == '\x1B[3~')
+      }
+      if (sequence == '\x1B[3~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.delete,
@@ -526,7 +527,8 @@ class InputParser {
           ),
           4
         );
-      if (sequence == '\x1B[5~')
+      }
+      if (sequence == '\x1B[5~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.pageUp,
@@ -534,7 +536,8 @@ class InputParser {
           ),
           4
         );
-      if (sequence == '\x1B[6~')
+      }
+      if (sequence == '\x1B[6~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.pageDown,
@@ -542,10 +545,11 @@ class InputParser {
           ),
           4
         );
+      }
 
       // F5-F12
       // ESC [ 1 X ~ = 5 bytes
-      if (sequence == '\x1B[15~')
+      if (sequence == '\x1B[15~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.f5,
@@ -553,7 +557,8 @@ class InputParser {
           ),
           5
         );
-      if (sequence == '\x1B[17~')
+      }
+      if (sequence == '\x1B[17~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.f6,
@@ -561,7 +566,8 @@ class InputParser {
           ),
           5
         );
-      if (sequence == '\x1B[18~')
+      }
+      if (sequence == '\x1B[18~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.f7,
@@ -569,7 +575,8 @@ class InputParser {
           ),
           5
         );
-      if (sequence == '\x1B[19~')
+      }
+      if (sequence == '\x1B[19~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.f8,
@@ -577,7 +584,8 @@ class InputParser {
           ),
           5
         );
-      if (sequence == '\x1B[20~')
+      }
+      if (sequence == '\x1B[20~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.f9,
@@ -585,7 +593,8 @@ class InputParser {
           ),
           5
         );
-      if (sequence == '\x1B[21~')
+      }
+      if (sequence == '\x1B[21~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.f10,
@@ -593,7 +602,8 @@ class InputParser {
           ),
           5
         );
-      if (sequence == '\x1B[23~')
+      }
+      if (sequence == '\x1B[23~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.f11,
@@ -601,7 +611,8 @@ class InputParser {
           ),
           5
         );
-      if (sequence == '\x1B[24~')
+      }
+      if (sequence == '\x1B[24~') {
         return (
           KeyboardEvent(
             logicalKey: LogicalKey.f12,
@@ -609,6 +620,7 @@ class InputParser {
           ),
           5
         );
+      }
 
       // Sequence complete but unknown
       return null;

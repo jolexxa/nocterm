@@ -493,12 +493,12 @@ class FormsTab extends StatefulComponent {
 }
 
 class _FormsTabState extends State<FormsTab> {
-  String _username = '';
-  String _email = '';
-  String _password = '';
-  bool _newsletter = false;
-  String _country = 'United States';
-  int _selectedOption = 0;
+  final String _username = '';
+  final String _email = '';
+  final String _password = '';
+  final bool _newsletter = false;
+  final String _country = 'United States';
+  final int _selectedOption = 0;
 
   @override
   Component build(BuildContext context) {

@@ -96,17 +96,29 @@ class HasStyledText extends Matcher {
   }
 
   bool _styleMatches(TextStyle actual, TextStyle expected) {
-    if (expected.color != null && actual.color != expected.color) return false;
+    if (expected.color != null && actual.color != expected.color) {
+      return false;
+    }
     if (expected.backgroundColor != null &&
-        actual.backgroundColor != expected.backgroundColor) return false;
+        actual.backgroundColor != expected.backgroundColor) {
+      return false;
+    }
     if (expected.fontWeight == FontWeight.bold &&
-        actual.fontWeight != FontWeight.bold) return false;
+        actual.fontWeight != FontWeight.bold) {
+      return false;
+    }
     if (expected.fontStyle == FontStyle.italic &&
-        actual.fontStyle != FontStyle.italic) return false;
+        actual.fontStyle != FontStyle.italic) {
+      return false;
+    }
     if (expected.decoration?.hasUnderline == true &&
-        actual.decoration?.hasUnderline != true) return false;
+        actual.decoration?.hasUnderline != true) {
+      return false;
+    }
     if (expected.fontWeight == FontWeight.dim &&
-        actual.fontWeight != FontWeight.dim) return false;
+        actual.fontWeight != FontWeight.dim) {
+      return false;
+    }
     if (expected.reverse && !actual.reverse) return false;
     return true;
   }

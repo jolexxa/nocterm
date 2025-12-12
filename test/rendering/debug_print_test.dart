@@ -10,8 +10,8 @@ class InteractiveCounter extends StatefulComponent {
 }
 
 class _InteractiveCounterState extends State<InteractiveCounter> {
-  int _count = 0;
-  String _lastAction = 'Press + or - to change count';
+  final int _count = 0;
+  final String _lastAction = 'Press + or - to change count';
 
   @override
   Component build(BuildContext context) {

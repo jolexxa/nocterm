@@ -194,14 +194,13 @@ class _GestureDetectorMouseRegion extends SingleChildRenderObjectComponent {
     required this.onPointerUp,
     required this.onPointerMove,
     required this.behavior,
-    this.child,
+    super.child,
   });
 
   final void Function(MouseEvent) onPointerDown;
   final void Function(MouseEvent) onPointerUp;
   final void Function(MouseEvent) onPointerMove;
   final HitTestBehavior behavior;
-  final Component? child;
 
   @override
   RenderObject createRenderObject(BuildContext context) {

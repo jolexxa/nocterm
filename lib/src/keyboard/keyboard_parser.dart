@@ -321,68 +321,80 @@ class KeyboardParser {
       final sequence = String.fromCharCodes(_buffer);
 
       // Parse sequences like ESC [ 2 ~ (Insert), ESC [ 3 ~ (Delete), etc.
-      if (sequence == '\x1B[2~')
+      if (sequence == '\x1B[2~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.insert,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[3~')
+      }
+      if (sequence == '\x1B[3~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.delete,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[5~')
+      }
+      if (sequence == '\x1B[5~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.pageUp,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[6~')
+      }
+      if (sequence == '\x1B[6~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.pageDown,
           modifiers: const ModifierKeys(),
         );
+      }
 
       // F5-F12
-      if (sequence == '\x1B[15~')
+      if (sequence == '\x1B[15~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.f5,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[17~')
+      }
+      if (sequence == '\x1B[17~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.f6,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[18~')
+      }
+      if (sequence == '\x1B[18~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.f7,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[19~')
+      }
+      if (sequence == '\x1B[19~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.f8,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[20~')
+      }
+      if (sequence == '\x1B[20~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.f9,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[21~')
+      }
+      if (sequence == '\x1B[21~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.f10,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[23~')
+      }
+      if (sequence == '\x1B[23~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.f11,
           modifiers: const ModifierKeys(),
         );
-      if (sequence == '\x1B[24~')
+      }
+      if (sequence == '\x1B[24~') {
         return KeyboardEvent(
           logicalKey: LogicalKey.f12,
           modifiers: const ModifierKeys(),
         );
+      }
 
       // Sequence complete but unknown
       return null;
