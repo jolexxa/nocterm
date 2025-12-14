@@ -17,6 +17,15 @@ import 'dart:developer' as developer;
 abstract final class NoctermTimeline {
   static final _BlockBuffer _buffer = _BlockBuffer();
 
+  /// Whether to emit events to dart:developer Timeline (DevTools).
+  ///
+  /// When false (default), no Timeline events are emitted, reducing overhead.
+  /// Set to true when using DevTools Timeline view for frame analysis.
+  ///
+  /// This is separate from [metricsEnabled] which controls internal metric
+  /// collection for programmatic access.
+  static bool debugTimelineEnabled = false;
+
   /// Whether metric collection is enabled.
   ///
   /// When enabled, timing data is collected and can be retrieved via
@@ -26,8 +35,8 @@ abstract final class NoctermTimeline {
 
   /// Enable or disable metric collection.
   ///
-  /// When disabled, only sends events to DevTools Timeline.
-  /// When enabled, also collects metrics for programmatic access.
+  /// When enabled, collects metrics for programmatic access via [collectMetrics].
+  /// This is independent of [debugTimelineEnabled] which controls DevTools events.
   static set metricsEnabled(bool value) {
     if (value == _metricsEnabled) return;
     _metricsEnabled = value;
@@ -41,10 +50,12 @@ abstract final class NoctermTimeline {
   /// This operation must be finished by calling [finishSync] before
   /// returning to the event queue.
   ///
-  /// Events are always sent to DevTools Timeline. If [metricsEnabled] is true,
-  /// timing data is also collected for programmatic access.
+  /// If [debugTimelineEnabled] is true, events are sent to DevTools Timeline.
+  /// If [metricsEnabled] is true, timing data is collected for programmatic access.
   static void startSync(String name, {Map<String, Object?>? arguments}) {
-    developer.Timeline.startSync(name, arguments: arguments);
+    if (debugTimelineEnabled) {
+      developer.Timeline.startSync(name, arguments: arguments);
+    }
     if (_metricsEnabled) {
       _buffer.startSync(name);
     }
@@ -52,7 +63,9 @@ abstract final class NoctermTimeline {
 
   /// Finish the last synchronous operation that was started.
   static void finishSync() {
-    developer.Timeline.finishSync();
+    if (debugTimelineEnabled) {
+      developer.Timeline.finishSync();
+    }
     if (_metricsEnabled) {
       _buffer.finishSync();
     }
@@ -60,7 +73,9 @@ abstract final class NoctermTimeline {
 
   /// Emit an instant event.
   static void instantSync(String name, {Map<String, Object?>? arguments}) {
-    developer.Timeline.instantSync(name, arguments: arguments);
+    if (debugTimelineEnabled) {
+      developer.Timeline.instantSync(name, arguments: arguments);
+    }
   }
 
   /// Time a synchronous function.
