@@ -335,6 +335,11 @@ class _TextFieldState extends State<TextField> {
       return false;
     }
 
+    // Let Ctrl+C bubble up to allow app termination
+    if (event.logicalKey == LogicalKey.keyC && event.isControlPressed) {
+      return false;
+    }
+
     final key = event.logicalKey;
 
     // Handle Tab/Shift+Tab for focus navigation
