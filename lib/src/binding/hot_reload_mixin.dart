@@ -48,7 +48,7 @@ mixin HotReloadBinding on NoctermBinding {
 
       _reloader = await HotReloader.create(
         automaticReload: true,
-        debounceInterval: Duration.zero,
+        debounceInterval: Duration(milliseconds: 100),
         onBeforeReload: (ctx) {
           // Log the file that triggered the reload
           if (ctx.event case final event?) {
