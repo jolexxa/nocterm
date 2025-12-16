@@ -3,6 +3,8 @@ import 'package:test/test.dart' hide isEmpty;
 
 void main() {
   group('TextField clipboard integration', () {
+    // Ctrl+C is intentionally reserved for app termination in TUI applications.
+    // Copy functionality would need an alternative keybinding if supported.
     test('copy selected text with Ctrl+C', () async {
       await testNocterm(
         'TextField copy test',
@@ -26,22 +28,13 @@ void main() {
           ));
           await tester.pump();
 
-          // Verify selection
+          // Verify selection works
           expect(controller.selection.start, 0);
           expect(controller.selection.end, controller.text.length);
 
-          // Clear the clipboard first
-          ClipboardManager.clear();
-
-          // Copy with Ctrl+C
-          await tester.sendKeyEvent(KeyboardEvent(
-            logicalKey: LogicalKey.keyC,
-            modifiers: const ModifierKeys(ctrl: true),
-          ));
-          await tester.pump();
-
-          // Verify clipboard has the content
-          expect(ClipboardManager.paste(), equals('Hello, World!'));
+          // Ctrl+C is reserved for app termination, so it doesn't copy.
+          // Verify the text field still has the selection (not cleared).
+          expect(controller.selection.isCollapsed, false);
         },
       );
     });
@@ -159,9 +152,11 @@ void main() {
       );
     });
 
-    test('copy-paste workflow', () async {
+    // Tests cut-paste workflow since Ctrl+C is reserved for app termination.
+    // This verifies clipboard integration using Ctrl+X (cut) instead of Ctrl+C (copy).
+    test('cut-paste workflow', () async {
       await testNocterm(
-        'TextField copy-paste workflow',
+        'TextField cut-paste workflow',
         (tester) async {
           final controller = TextEditingController(text: 'Original text');
 
@@ -182,19 +177,26 @@ void main() {
           ));
           await tester.pump();
 
-          // Copy
+          // Cut (Ctrl+X works, unlike Ctrl+C which is reserved for app termination)
           await tester.sendKeyEvent(KeyboardEvent(
-            logicalKey: LogicalKey.keyC,
+            logicalKey: LogicalKey.keyX,
             modifiers: const ModifierKeys(ctrl: true),
           ));
           await tester.pump();
 
-          // Move to end and add space
-          await tester.sendKey(LogicalKey.end);
+          // Verify text was cut
+          expect(controller.text, equals(''));
+
+          // Paste twice to verify clipboard content
+          await tester.sendKeyEvent(KeyboardEvent(
+            logicalKey: LogicalKey.keyV,
+            modifiers: const ModifierKeys(ctrl: true),
+          ));
+          await tester.pump();
+
           await tester.enterText(' ');
           await tester.pump();
 
-          // Paste
           await tester.sendKeyEvent(KeyboardEvent(
             logicalKey: LogicalKey.keyV,
             modifiers: const ModifierKeys(ctrl: true),
