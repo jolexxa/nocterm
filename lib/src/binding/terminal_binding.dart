@@ -402,7 +402,11 @@ class TerminalBinding extends NoctermBinding
           _lastKnownSize = newSize;
           terminal.updateSize(newSize);
           // Clear previous buffer to force full redraw on resize
-          _previousBuffer = null;
+          // In inline mode, we keep _previousBuffer so diff still works
+          // (resize in inline mode is inherently imperfect, but diff helps)
+          if (!isInlineMode) {
+            _previousBuffer = null;
+          }
           scheduleFrame();
         }
       });
@@ -928,31 +932,99 @@ class TerminalBinding extends NoctermBinding
     terminal.flush();
   }
 
+  /// Compare two lines in buffers for equality.
+  ///
+  /// Returns true if all cells in line [y] are identical between [a] and [b].
+  bool _linesEqual(buf.Buffer a, buf.Buffer b, int y) {
+    if (a.width != b.width) return false;
+    for (int x = 0; x < a.width; x++) {
+      if (a.getCell(x, y) != b.getCell(x, y)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /// Render inline without alternate screen.
   ///
-  /// The key differences from full render:
-  /// - First frame: print lines with newlines (they stay in terminal history)
-  /// - Subsequent frames: move cursor back up to top of our region, re-render
-  void _renderInline(buf.Buffer buffer) {
-    // If not the first frame and we have previously rendered lines,
-    // move the cursor back up to re-render in place
-    if (!_isFirstInlineFrame && _inlineRenderedLines > 0) {
-      // Move cursor up N lines to the start of our rendered region
-      terminal.write('\x1B[${_inlineRenderedLines}A');
-      // Move cursor to beginning of line
-      terminal.write('\x1B[G');
+  /// Simple approach:
+  /// 1. Compare buffers to find first differing line
+  /// 2. Move cursor back to that line
+  /// 3. Re-render from there (new lines naturally scroll the terminal)
+  void _renderInline(buf.Buffer buffer, int componentHeight) {
+    final previous = _previousBuffer;
+    final terminalHeight = terminal.size.height.toInt();
+
+    // First frame: just print everything
+    if (_isFirstInlineFrame || previous == null) {
+      _renderLines(buffer, 0, buffer.height);
+      _inlineRenderedLines = buffer.height;
+      _isFirstInlineFrame = false;
+      terminal.flush();
+      return;
     }
 
+    // Find first differing line from the top
+    int diffStartLine = 0;
+    final minHeight =
+        buffer.height < previous.height ? buffer.height : previous.height;
+    for (int y = 0; y < minHeight; y++) {
+      if (!_linesEqual(buffer, previous, y)) {
+        break;
+      }
+      diffStartLine = y + 1;
+    }
+
+    // Nothing changed? Skip rendering
+    if (diffStartLine == buffer.height && buffer.height == previous.height) {
+      return;
+    }
+
+    // How many lines can we actually go back?
+    // We can only access lines that are still in the terminal viewport
+    final linesWeCanAccess = _inlineRenderedLines < terminalHeight
+        ? _inlineRenderedLines
+        : terminalHeight;
+
+    // The "accessible start line" is the first line we can still update
+    // (everything before this has scrolled into inaccessible scrollback)
+    final accessibleStartLine = _inlineRenderedLines - linesWeCanAccess;
+
+    // If diffStartLine is in scrollback, we can only start from accessibleStartLine
+    final actualStartLine = diffStartLine < accessibleStartLine
+        ? accessibleStartLine
+        : diffStartLine;
+
+    // Calculate cursor movement
+    // Cursor is at end of last rendered line (_inlineRenderedLines - 1)
+    // We want to get to actualStartLine
+    final currentLine = _inlineRenderedLines - 1;
+    final targetLine = actualStartLine;
+
+    // But we can only move up within the accessible region
+    final linesToMoveUp =
+        (currentLine - targetLine).clamp(0, linesWeCanAccess - 1);
+
+    if (linesToMoveUp > 0) {
+      terminal.write('\x1B[${linesToMoveUp}A');
+    }
+    terminal.write('\x1B[G'); // Move to column 0
+
+    // Render from actualStartLine to end
+    _renderLines(buffer, actualStartLine, buffer.height);
+
+    _inlineRenderedLines = buffer.height;
+    terminal.flush();
+  }
+
+  /// Render lines from startY (inclusive) to endY (exclusive).
+  void _renderLines(buf.Buffer buffer, int startY, int endY) {
     TextStyle? currentStyle;
 
-    for (int y = 0; y < buffer.height; y++) {
-      // No line clear needed - we overwrite all cells in the buffer width
-      // which eliminates flickering caused by clear+write
-
+    for (int y = startY; y < endY; y++) {
       for (int x = 0; x < buffer.width; x++) {
         final cell = buffer.getCell(x, y);
 
-        // Handle style
         final hasStyle = cell.style.color != null ||
             cell.style.backgroundColor != null ||
             cell.style.fontWeight == FontWeight.bold ||
@@ -979,22 +1051,14 @@ class TerminalBinding extends NoctermBinding
         }
       }
 
-      // Move to next line
-      if (y < buffer.height - 1) {
+      if (y < endY - 1) {
         terminal.write('\n');
       }
     }
 
-    // Reset style at end
     if (currentStyle != null) {
       terminal.write(TextStyle.reset);
     }
-
-    // Track how many lines we rendered for next frame
-    _inlineRenderedLines = buffer.height;
-    _isFirstInlineFrame = false;
-
-    terminal.flush();
   }
 
   /// The actual frame drawing logic, registered as a persistent callback.
@@ -1058,19 +1122,14 @@ class TerminalBinding extends NoctermBinding
     final int bufferWidth = terminalSize.width.toInt();
     final int bufferHeight;
     double paintYOffset = 0.0;
+    int componentHeight = 0;
 
     if (isInlineMode) {
-      // In inline mode, use the component's actual rendered height
-      // clamped to terminal height (excess scrolls into terminal scrollback)
-      final componentHeight = renderObject.size.height.toInt();
-      final terminalHeight = terminalSize.height.toInt();
-      bufferHeight = componentHeight.clamp(1, terminalHeight);
-
-      // Calculate paint offset - if component overflows, paint with negative Y
-      // so the BOTTOM of the component appears in our buffer
-      if (componentHeight > terminalHeight) {
-        paintYOffset = -(componentHeight - terminalHeight).toDouble();
-      }
+      // In inline mode, always use the component's full height
+      // Let the terminal handle scrolling naturally
+      componentHeight = renderObject.size.height.toInt();
+      bufferHeight = componentHeight;
+      paintYOffset = 0.0;
     } else {
       bufferHeight = terminalSize.height.toInt();
     }
@@ -1086,7 +1145,7 @@ class TerminalBinding extends NoctermBinding
 
     // Render to terminal
     if (isInlineMode) {
-      _renderInline(buffer);
+      _renderInline(buffer, componentHeight);
     } else {
       _renderDifferential(buffer);
     }
