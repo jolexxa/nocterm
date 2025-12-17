@@ -946,9 +946,8 @@ class TerminalBinding extends NoctermBinding
     TextStyle? currentStyle;
 
     for (int y = 0; y < buffer.height; y++) {
-      // Clear the line before writing to handle cases where new content
-      // is shorter than previous content
-      terminal.write('\x1B[K'); // Clear from cursor to end of line
+      // No line clear needed - we overwrite all cells in the buffer width
+      // which eliminates flickering caused by clear+write
 
       for (int x = 0; x < buffer.width; x++) {
         final cell = buffer.getCell(x, y);
