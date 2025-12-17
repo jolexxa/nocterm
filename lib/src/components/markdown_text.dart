@@ -196,7 +196,6 @@ class _MarkdownVisitor {
 
   final MarkdownStyleSheet styleSheet;
   int _listDepth = 0;
-  int _orderedListCounter = 1;
 
   List<InlineSpan> visitNodes(List<md.Node> nodes) {
     final spans = <InlineSpan>[];
@@ -339,9 +338,7 @@ class _MarkdownVisitor {
       case 'ul':
       case 'ol':
         _listDepth++;
-        if (element.tag == 'ol') {
-          _orderedListCounter = 1;
-        }
+        // TODO: Track ordered list counter when ordered list support is added
         final children = visitChildren(element);
         _listDepth--;
         return TextSpan(children: [
@@ -350,12 +347,8 @@ class _MarkdownVisitor {
         ]);
       case 'li':
         final indent = '  ' * _listDepth;
-        // In markdown package, we need to check the parent element differently
-        final isOrderedList = false; // Default to unordered
-        // ignore: dead_code
-        final bullet = isOrderedList
-            ? '${_orderedListCounter++}. '
-            : styleSheet.listBullet;
+        // TODO: Support ordered lists by checking parent element
+        final bullet = styleSheet.listBullet;
         final children = <InlineSpan>[TextSpan(text: indent + bullet)];
 
         if (element.children != null) {

@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:nocterm/nocterm.dart';
 import 'package:nocterm/src/framework/terminal_canvas.dart';
-import 'package:nocterm/src/rectangle.dart';
 
 /// Render object for flex layouts (Row/Column)
 class RenderFlex extends RenderObject
