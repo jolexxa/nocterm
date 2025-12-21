@@ -26,6 +26,7 @@ part 'render_error_box.dart';
 part 'render_object.dart';
 part 'stateful_component.dart';
 part 'stateless_component.dart';
+part 'layout_builder.dart';
 
 typedef ComponentBuilder = Component Function(BuildContext context);
 typedef StateSetter = void Function(VoidCallback fn);

@@ -54,6 +54,7 @@ export 'src/components/markdown_text.dart';
 export 'src/framework/listenable.dart';
 export 'src/framework/value_listenable.dart';
 export 'src/components/value_listenable_builder.dart';
+// LayoutBuilder is exported via framework.dart (it's a part file)
 
 // Mouse and Gesture Support
 export 'src/components/mouse_region.dart';

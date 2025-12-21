@@ -69,26 +69,3 @@ class TerminalResizeDemo extends StatelessComponent {
     return ' ' * padding + text + ' ' * rightPadding;
   }
 }
-
-/// LayoutBuilder provides constraints that update when terminal is resized
-class LayoutBuilder extends StatelessComponent {
-  final Component Function(BuildContext, BoxConstraints) builder;
-
-  const LayoutBuilder({required this.builder});
-
-  @override
-  Component build(BuildContext context) {
-    // In a real implementation, this would get constraints from the render tree
-    // For now, we'll use the terminal size directly
-    if (stdout.hasTerminal) {
-      final constraints = BoxConstraints(
-        maxWidth: stdout.terminalColumns.toDouble(),
-        maxHeight: stdout.terminalLines.toDouble(),
-      );
-      return builder(context, constraints);
-    }
-
-    // Fallback constraints
-    return builder(context, BoxConstraints.tight(Size(80, 24)));
-  }
-}
