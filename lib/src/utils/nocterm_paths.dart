@@ -40,6 +40,9 @@ String getProjectDirectory() {
     if (pubspec.existsSync()) {
       return parent.path;
     }
+    if (newParent.path == '/') {
+      return '/';
+    }
 
     parent = newParent;
   }
