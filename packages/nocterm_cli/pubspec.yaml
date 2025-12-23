@@ -1,12 +1,11 @@
 name: nocterm_cli
 description: CLI tools for nocterm - TUI framework for Dart
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/norbert515/nocterm
 
 environment:
-  sdk: ^3.7.0
+  sdk: ">=3.5.0 <4.0.0"
 
-# Add regular dependencies here.
 dependencies:
   args: ^2.7.0
   file: ^7.0.1
