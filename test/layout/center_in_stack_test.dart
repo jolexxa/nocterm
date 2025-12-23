@@ -28,7 +28,8 @@ void main() {
 
           // Find where X is located
           final matches = tester.terminalState.findText('X');
-          expect(matches.isNotEmpty, isTrue, reason: 'Should find X in the output');
+          expect(matches.isNotEmpty, isTrue,
+              reason: 'Should find X in the output');
 
           final xMatch = matches.first;
           print('Found X at row=${xMatch.y}, col=${xMatch.x}');
@@ -77,7 +78,8 @@ void main() {
 
           // Find where CENTERED is located
           final matches = tester.terminalState.findText('CENTERED');
-          expect(matches.isNotEmpty, isTrue, reason: 'Should find CENTERED in output');
+          expect(matches.isNotEmpty, isTrue,
+              reason: 'Should find CENTERED in output');
 
           final match = matches.first;
           print('Found CENTERED at row=${match.y}, col=${match.x}');
@@ -112,7 +114,8 @@ void main() {
 
           // Find where OK is located
           final matches = tester.terminalState.findText('OK');
-          expect(matches.isNotEmpty, isTrue, reason: 'Should find OK in the output');
+          expect(matches.isNotEmpty, isTrue,
+              reason: 'Should find OK in the output');
 
           final match = matches.first;
           print('Found OK at row=${match.y}, col=${match.x}');
