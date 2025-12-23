@@ -5,6 +5,13 @@
 [![CI](https://github.com/norbert515/nocterm/actions/workflows/ci.yml/badge.svg)](https://github.com/norbert515/nocterm/actions/workflows/ci.yml)
 [![Pub Version](https://img.shields.io/pub/v/nocterm)](https://pub.dev/packages/nocterm)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-docs.nocterm.dev-blue)](https://docs.nocterm.dev)
+
+<p align="center">
+<a href="https://docs.nocterm.dev"><strong>Docs</strong></a> |
+<a href="https://pub.dev/packages/nocterm"><strong>pub.dev</strong></a> |
+<a href="#quick-start"><strong>Quick Start</strong></a>
+</p>
 
 **If you know Flutter, you know Nocterm.** Build terminal UIs with the same patterns—`StatefulComponent`, `setState()`, `Column`, `Row`, and hot reload.
 
@@ -78,7 +85,7 @@ await testNocterm('counter test', (tester) async {
 
 ## Documentation
 
-See the [full documentation](https://docs.page/Norbert515/nocterm~docs) for guides on components, state management, testing, and more.
+See the [full documentation](https://docs.nocterm.dev) for guides on components, state management, testing, and more.
 
 ## Contributing
 
