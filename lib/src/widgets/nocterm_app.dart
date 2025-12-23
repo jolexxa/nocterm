@@ -95,6 +95,7 @@ class NoctermApp extends StatefulComponent {
     this.onGenerateRoute,
     this.onUnknownRoute,
     this.navigatorObservers = const [],
+    this.navigatorKey,
     this.theme,
     super.key,
   })  : assert(
@@ -177,6 +178,12 @@ class NoctermApp extends StatefulComponent {
   /// This list is empty by default. To observe navigation events, provide
   /// a list of NavigatorObserver instances.
   final List<NavigatorObserver> navigatorObservers;
+
+  /// A key to use for the Navigator created for this app.
+  ///
+  /// This can be used to access the NavigatorState directly via
+  /// [GlobalKey.currentState].
+  final GlobalKey<NavigatorState>? navigatorKey;
 
   /// The theme to use for this application.
   ///
@@ -326,6 +333,7 @@ class _NoctermAppState extends State<NoctermApp> {
     } else {
       // Otherwise, create a Navigator with the provided configuration
       content = Navigator(
+        key: component.navigatorKey,
         home: component.home,
         routes: component.routes,
         initialRoute: component.initialRoute,

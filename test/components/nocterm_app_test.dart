@@ -199,16 +199,14 @@ void main() {
       await testNocterm(
         'push named route',
         (tester) async {
-          late BuildContext savedContext;
+          final navigatorKey = GlobalKey<NavigatorState>();
 
           await tester.pumpComponent(
             NoctermApp(
               title: 'Push Test',
+              navigatorKey: navigatorKey,
               routes: {
-                '/': (context) {
-                  savedContext = context;
-                  return Text('Home');
-                },
+                '/': (context) => Text('Home'),
                 '/detail': (context) => Text('Detail Screen'),
               },
             ),
@@ -216,8 +214,8 @@ void main() {
 
           expect(tester.terminalState, containsText('Home'));
 
-          // Navigate to detail
-          Navigator.of(savedContext).pushNamed('/detail');
+          // Navigate to detail using the navigator key
+          navigatorKey.currentState!.pushNamed('/detail');
           await tester.pump();
 
           expect(tester.terminalState, containsText('Detail Screen'));
