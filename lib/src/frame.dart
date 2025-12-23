@@ -88,7 +88,7 @@ class Frame {
 
     for (int x = 0; x < buffer.width; x++) {
       final currentCell = buffer.getCell(x, y);
-      final previousCell = _previousBuffer!.getCell(x, y);
+      final previousCell = _previousBuffer.getCell(x, y);
 
       if (currentCell.char != previousCell.char ||
           currentCell.style.color != previousCell.style.color ||
