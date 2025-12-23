@@ -79,3 +79,6 @@ export 'src/rendering/debug.dart';
 
 // Widgets
 export 'src/widgets/nocterm_app.dart';
+
+// Theme
+export 'src/theme/theme.dart';

@@ -24,6 +24,7 @@ import {
   Eye,
   Search,
   Star,
+  Palette,
 } from 'lucide-react';
 
 const icons = {
@@ -49,6 +50,7 @@ const icons = {
   eye: Eye,
   search: Search,
   star: Star,
+  palette: Palette,
 };
 
 export const source = loader({

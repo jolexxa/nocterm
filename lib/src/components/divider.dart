@@ -25,29 +25,35 @@ class Divider extends SingleChildRenderObjectComponent {
   final double thickness;
   final double indent;
   final double endIndent;
+
+  /// The color of the divider.
+  ///
+  /// If null, defaults to the theme's [TuiThemeData.outline] color.
   final Color? color;
   final DividerStyle style;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return RenderDivider(
       height: height,
       thickness: thickness,
       indent: indent,
       endIndent: endIndent,
-      color: color ?? Colors.grey,
+      color: color ?? theme.outline,
       style: style,
     );
   }
 
   @override
   void updateRenderObject(BuildContext context, RenderDivider renderObject) {
+    final theme = TuiTheme.of(context);
     renderObject
       ..height = height
       ..thickness = thickness
       ..indent = indent
       ..endIndent = endIndent
-      ..color = color ?? Colors.grey
+      ..color = color ?? theme.outline
       ..style = style;
   }
 }
@@ -67,17 +73,22 @@ class VerticalDivider extends SingleChildRenderObjectComponent {
   final double thickness;
   final double indent;
   final double endIndent;
+
+  /// The color of the divider.
+  ///
+  /// If null, defaults to the theme's [TuiThemeData.outline] color.
   final Color? color;
   final DividerStyle style;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return RenderVerticalDivider(
       width: width,
       thickness: thickness,
       indent: indent,
       endIndent: endIndent,
-      color: color ?? Colors.grey,
+      color: color ?? theme.outline,
       style: style,
     );
   }
@@ -85,12 +96,13 @@ class VerticalDivider extends SingleChildRenderObjectComponent {
   @override
   void updateRenderObject(
       BuildContext context, RenderVerticalDivider renderObject) {
+    final theme = TuiTheme.of(context);
     renderObject
       ..width = width
       ..thickness = thickness
       ..indent = indent
       ..endIndent = endIndent
-      ..color = color ?? Colors.grey
+      ..color = color ?? theme.outline
       ..style = style;
   }
 }

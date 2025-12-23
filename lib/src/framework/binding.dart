@@ -169,6 +169,8 @@ class InheritedElement extends BuildableElement {
     if (component.updateShouldNotify(oldComponent)) {
       notifyClients(oldComponent);
     }
+    // Rebuild to update the child widget tree (like Flutter's ProxyElement)
+    rebuild();
   }
 
   @override

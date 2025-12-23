@@ -16,6 +16,8 @@ class Scrollbar extends StatefulComponent {
     this.thumbVisibility = false,
     this.thickness = 1.0,
     this.radius,
+    this.trackColor,
+    this.thumbColor,
   });
 
   /// The widget below this widget in the tree.
@@ -40,6 +42,16 @@ class Scrollbar extends StatefulComponent {
 
   /// The radius of the scrollbar thumb.
   final double? radius;
+
+  /// The color of the scrollbar track.
+  ///
+  /// If null, defaults to the theme's [TuiThemeData.surface] color.
+  final Color? trackColor;
+
+  /// The color of the scrollbar thumb.
+  ///
+  /// If null, defaults to the theme's [TuiThemeData.onSurface] color.
+  final Color? thumbColor;
 
   @override
   State<Scrollbar> createState() => _ScrollbarState();
@@ -68,6 +80,8 @@ class _ScrollbarState extends State<Scrollbar> {
       controller: _controller,
       thumbVisibility: component.thumbVisibility,
       thickness: component.thickness,
+      trackColor: component.trackColor,
+      thumbColor: component.thumbColor,
       child: component.child,
     );
   }
@@ -78,28 +92,38 @@ class _ScrollbarRenderObjectWidget extends SingleChildRenderObjectComponent {
     required this.controller,
     required this.thumbVisibility,
     required this.thickness,
+    this.trackColor,
+    this.thumbColor,
     required super.child,
   });
 
   final ScrollController? controller;
   final bool thumbVisibility;
   final double thickness;
+  final Color? trackColor;
+  final Color? thumbColor;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return RenderScrollbar(
       controller: controller,
       thumbVisibility: thumbVisibility,
       thickness: thickness,
+      trackColor: trackColor ?? theme.surface,
+      thumbColor: thumbColor ?? theme.onSurface,
     );
   }
 
   @override
   void updateRenderObject(BuildContext context, RenderScrollbar renderObject) {
+    final theme = TuiTheme.of(context);
     renderObject
       ..controller = controller
       ..thumbVisibility = thumbVisibility
-      ..thickness = thickness;
+      ..thickness = thickness
+      ..trackColor = trackColor ?? theme.surface
+      ..thumbColor = thumbColor ?? theme.onSurface;
   }
 }
 
@@ -110,9 +134,13 @@ class RenderScrollbar extends RenderObject
     ScrollController? controller,
     required bool thumbVisibility,
     required double thickness,
+    required Color trackColor,
+    required Color thumbColor,
   })  : _controller = controller,
         _thumbVisibility = thumbVisibility,
-        _thickness = thickness {
+        _thickness = thickness,
+        _trackColor = trackColor,
+        _thumbColor = thumbColor {
     _controller?.addListener(_handleScrollUpdate);
   }
 
@@ -123,6 +151,24 @@ class RenderScrollbar extends RenderObject
       _controller?.removeListener(_handleScrollUpdate);
       _controller = value;
       _controller?.addListener(_handleScrollUpdate);
+      markNeedsPaint();
+    }
+  }
+
+  Color _trackColor;
+  Color get trackColor => _trackColor;
+  set trackColor(Color value) {
+    if (_trackColor != value) {
+      _trackColor = value;
+      markNeedsPaint();
+    }
+  }
+
+  Color _thumbColor;
+  Color get thumbColor => _thumbColor;
+  set thumbColor(Color value) {
+    if (_thumbColor != value) {
+      _thumbColor = value;
       markNeedsPaint();
     }
   }
@@ -236,7 +282,7 @@ class RenderScrollbar extends RenderObject
       canvas.drawText(
         offset + Offset(scrollbarX, y.toDouble()),
         '│',
-        style: TextStyle(color: Colors.gray),
+        style: TextStyle(color: _trackColor),
       );
     }
 
@@ -252,7 +298,7 @@ class RenderScrollbar extends RenderObject
         offset + Offset(scrollbarX, 0),
         '▲',
         style: TextStyle(
-          color: topArrowActive ? Colors.brightWhite : Colors.gray,
+          color: topArrowActive ? _thumbColor : _trackColor,
         ),
       );
 
@@ -260,7 +306,7 @@ class RenderScrollbar extends RenderObject
         offset + Offset(scrollbarX, scrollbarHeight - 1),
         '▼',
         style: TextStyle(
-          color: bottomArrowActive ? Colors.brightWhite : Colors.gray,
+          color: bottomArrowActive ? _thumbColor : _trackColor,
         ),
       );
     }
@@ -276,7 +322,7 @@ class RenderScrollbar extends RenderObject
       canvas.drawText(
         offset + Offset(scrollbarX, y.toDouble()),
         '█',
-        style: TextStyle(color: Colors.brightWhite),
+        style: TextStyle(color: _thumbColor),
       );
     }
   }

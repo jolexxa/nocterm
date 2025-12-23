@@ -17,8 +17,8 @@ class ProgressBar extends SingleChildRenderObjectComponent {
     super.key,
     this.value,
     this.minHeight = 1,
-    this.backgroundColor = Colors.grey,
-    this.valueColor = Colors.green,
+    this.backgroundColor,
+    this.valueColor,
     this.borderStyle,
     this.fillCharacter = '█',
     this.emptyCharacter = '░',
@@ -29,8 +29,16 @@ class ProgressBar extends SingleChildRenderObjectComponent {
 
   final double? value;
   final double minHeight;
-  final Color backgroundColor;
-  final Color valueColor;
+
+  /// The background color for the progress bar.
+  ///
+  /// If null, defaults to the theme's [TuiThemeData.outline] color.
+  final Color? backgroundColor;
+
+  /// The color for the filled portion of the progress bar.
+  ///
+  /// If null, defaults to the theme's [TuiThemeData.primary] color.
+  final Color? valueColor;
   final ProgressBarBorderStyle? borderStyle;
   final String fillCharacter;
   final String emptyCharacter;
@@ -40,11 +48,12 @@ class ProgressBar extends SingleChildRenderObjectComponent {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return RenderProgressBar(
       value: value,
       minHeight: minHeight,
-      backgroundColor: backgroundColor,
-      valueColor: valueColor,
+      backgroundColor: backgroundColor ?? theme.outline,
+      valueColor: valueColor ?? theme.primary,
       borderStyle: borderStyle,
       fillCharacter: fillCharacter,
       emptyCharacter: emptyCharacter,
@@ -57,11 +66,12 @@ class ProgressBar extends SingleChildRenderObjectComponent {
   @override
   void updateRenderObject(
       BuildContext context, RenderProgressBar renderObject) {
+    final theme = TuiTheme.of(context);
     renderObject
       ..value = value
       ..minHeight = minHeight
-      ..backgroundColor = backgroundColor
-      ..valueColor = valueColor
+      ..backgroundColor = backgroundColor ?? theme.outline
+      ..valueColor = valueColor ?? theme.primary
       ..borderStyle = borderStyle
       ..fillCharacter = fillCharacter
       ..emptyCharacter = emptyCharacter

@@ -21,10 +21,14 @@ class BorderTitle {
   final TextStyle? style;
 }
 
+/// Sentinel color value that indicates "use theme default".
+/// This is used internally to detect when to apply theme colors.
+const Color _defaultBorderColor = Color.fromRGB(255, 255, 255);
+
 /// Border side configuration for a box decoration
 class BorderSide {
   const BorderSide({
-    this.color = const Color.fromRGB(255, 255, 255),
+    this.color = _defaultBorderColor,
     this.width = 1.0,
     this.style = BoxBorderStyle.solid,
   });
@@ -36,6 +40,18 @@ class BorderSide {
   static const BorderSide none = BorderSide(style: BoxBorderStyle.none);
 
   bool get isNone => style == BoxBorderStyle.none || width == 0.0;
+
+  /// Returns true if the color is the default (theme should be used).
+  bool get usesDefaultColor => color == _defaultBorderColor;
+
+  /// Creates a copy of this border side with the given color.
+  BorderSide copyWith({Color? color, double? width, BoxBorderStyle? style}) {
+    return BorderSide(
+      color: color ?? this.color,
+      width: width ?? this.width,
+      style: style ?? this.style,
+    );
+  }
 }
 
 /// Border style options
@@ -58,7 +74,7 @@ class BoxBorder {
   });
 
   BoxBorder.all({
-    Color color = const Color.fromRGB(255, 255, 255),
+    Color color = _defaultBorderColor,
     double width = 1.0,
     BoxBorderStyle style = BoxBorderStyle.solid,
   })  : top = BorderSide(color: color, width: width, style: style),
@@ -73,6 +89,17 @@ class BoxBorder {
 
   bool get hasNoBorder =>
       top.isNone && right.isNone && bottom.isNone && left.isNone;
+
+  /// Creates a copy of this border with theme colors applied where defaults are used.
+  BoxBorder withThemeColor(Color themeColor) {
+    return BoxBorder(
+      top: top.usesDefaultColor ? top.copyWith(color: themeColor) : top,
+      right: right.usesDefaultColor ? right.copyWith(color: themeColor) : right,
+      bottom:
+          bottom.usesDefaultColor ? bottom.copyWith(color: themeColor) : bottom,
+      left: left.usesDefaultColor ? left.copyWith(color: themeColor) : left,
+    );
+  }
 }
 
 /// Box shadow configuration
@@ -168,6 +195,22 @@ class BoxDecoration {
   final BlendMode? backgroundBlendMode;
   final BoxShape shape;
   final BorderTitle? title;
+
+  /// Creates a copy of this decoration with theme colors applied to borders
+  /// where default colors are used.
+  BoxDecoration withThemeColor(Color themeColor) {
+    return BoxDecoration(
+      color: color,
+      image: image,
+      border: border?.withThemeColor(themeColor),
+      borderRadius: borderRadius,
+      boxShadow: boxShadow,
+      gradient: gradient,
+      backgroundBlendMode: backgroundBlendMode,
+      shape: shape,
+      title: title,
+    );
+  }
 }
 
 /// Shape of the box
@@ -335,9 +378,13 @@ class RenderDecoratedBox extends RenderObject
     // Get border characters based on style
     final chars = _getBorderCharacters(border);
 
+    // Use the decoration's background color for border background
+    final borderBackground = _decoration.color;
+
     // Paint top border
     if (!border.top.isNone) {
-      final borderStyle = TextStyle(color: border.top.color);
+      final borderStyle =
+          TextStyle(color: border.top.color, backgroundColor: borderBackground);
       if (left == right) {
         // Special case: width is 1
         // Determine which character to use based on what borders exist
@@ -456,7 +503,8 @@ class RenderDecoratedBox extends RenderObject
 
     // Paint bottom border
     if (!border.bottom.isNone && bottom > top) {
-      final style = TextStyle(color: border.bottom.color);
+      final style = TextStyle(
+          color: border.bottom.color, backgroundColor: borderBackground);
       if (left == right) {
         // Special case: width is 1
         // Determine which character to use based on what borders exist
@@ -490,7 +538,8 @@ class RenderDecoratedBox extends RenderObject
 
     // Paint left border
     if (!border.left.isNone) {
-      final style = TextStyle(color: border.left.color);
+      final style = TextStyle(
+          color: border.left.color, backgroundColor: borderBackground);
       // Only paint vertical lines if there's space between top and bottom
       if (bottom > top) {
         for (int y = top + 1; y < bottom; y++) {
@@ -501,7 +550,8 @@ class RenderDecoratedBox extends RenderObject
 
     // Paint right border
     if (!border.right.isNone && right > left) {
-      final style = TextStyle(color: border.right.color);
+      final style = TextStyle(
+          color: border.right.color, backgroundColor: borderBackground);
       // Only paint vertical lines if there's space between top and bottom
       if (bottom > top) {
         for (int y = top + 1; y < bottom; y++) {
@@ -652,8 +702,9 @@ class DecoratedBox extends SingleChildRenderObjectComponent {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
+    final theme = TuiTheme.of(context);
     return RenderDecoratedBox(
-      decoration: decoration,
+      decoration: decoration.withThemeColor(theme.outline),
       position: position,
     );
   }
@@ -661,8 +712,9 @@ class DecoratedBox extends SingleChildRenderObjectComponent {
   @override
   void updateRenderObject(
       BuildContext context, RenderDecoratedBox renderObject) {
+    final theme = TuiTheme.of(context);
     renderObject
-      ..decoration = decoration
+      ..decoration = decoration.withThemeColor(theme.outline)
       ..position = position;
   }
 }

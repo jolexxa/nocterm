@@ -165,9 +165,18 @@ class TextField extends StatefulComponent {
   /// Return `false` or null to proceed with default insertion.
   final bool Function(String pastedText)? onPaste;
   final bool enabled;
+
+  /// The color of the text cursor.
+  ///
+  /// If null, defaults to the theme's [TuiThemeData.primary] color.
   final Color? cursorColor;
   final CursorStyle cursorStyle;
   final Duration? cursorBlinkRate;
+
+  /// The color of the text selection highlight.
+  ///
+  /// If null, defaults to the theme's [TuiThemeData.primary] color with
+  /// reduced opacity.
   final Color? selectionColor;
   final bool showCursor;
   final double? width;
@@ -893,6 +902,12 @@ class _TextFieldState extends State<TextField> {
       }
     }
 
+    // Resolve colors from theme if not provided
+    final theme = TuiTheme.of(context);
+    final effectiveCursorColor = component.cursorColor ?? theme.primary;
+    final effectiveSelectionColor =
+        component.selectionColor ?? theme.primary.withOpacity(0.4);
+
     // Build the text field content
     Component content = _TextFieldContent(
       text: actualText,
@@ -902,9 +917,9 @@ class _TextFieldState extends State<TextField> {
       selection: _controller.selection,
       viewOffset: _viewOffset,
       cursorVisible: _cursorVisible && isFocused && component.showCursor,
-      cursorColor: component.cursorColor,
+      cursorColor: effectiveCursorColor,
       cursorStyle: component.cursorStyle,
-      selectionColor: component.selectionColor,
+      selectionColor: effectiveSelectionColor,
       textAlign: component.textAlign,
       maxLines: component.maxLines,
       isFocused: isFocused, // Pass focus state to render object

@@ -12,6 +12,7 @@
     "fundamentals/components",
     "fundamentals/building-uis",
     "fundamentals/state",
+    "fundamentals/theming",
     "fundamentals/hot-reload",
     "---UI Components---",
     "components/layout",
