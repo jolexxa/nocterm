@@ -1,3 +1,94 @@
+# 0.2.0
+
+## Highlights
+
+This is a **major release** with 100+ commits introducing foundational changes for theming, performance, web support, and developer experience.
+
+### Comprehensive Theming System
+- **6 built-in themes**: dark, light, nord, dracula, catppuccin, gruvbox
+- **Auto-detection**: Terminal brightness detection via OSC 11, COLORFGBG, and macOS Dark Mode
+- New `TuiThemeData`, `TuiColors`, and `TuiTheme` InheritedComponent
+- Added `onSuccess` and `onWarning` colors for complete status color pairs
+
+### Differential Rendering (Major Performance Boost)
+- Partial rendering that only updates cells that changed since previous frame
+- Cell equality comparison (char + style) with previous frame buffer tracking
+- Dramatically reduces terminal output for mostly static UIs
+
+### Web Platform Support (Experimental)
+- New `WebBackend` abstraction for running in browsers
+- Extracted Terminal backend architecture for platform flexibility
+- xterm.dart integration experiments
+
+### Monorepo Architecture
+- **Melos** for monorepo management with standardized scripts (test, analyze, format, clean)
+- New `provider` package for state management
+- New `nested` package for organization
+- SDK constraint updated to `>=3.5.0`
+
+## Major Features
+
+### UI Components
+- **LayoutBuilder**: Constraint-aware layouts (Flutter-like) for responsive designs
+- **ValueListenableBuilder**: Reactive widget for `ValueListenable`
+- **Rectangle class**: Exposed for geometry operations
+- **Border titles**: `BoxDecoration` now supports title property
+- **Opacity/Alpha blending**: Proper transparency support
+- **Clipping**: Implement clipping with riverpod provider assertions
+- **ensureVisible**: Auto-scroll support for ScrollViews
+
+### Input
+- **Soft-wrapping TextField**: Text wrapping, selection, and clipboard support
+- **SIGINT handling**: Proper Ctrl+C signal handling
+
+### Terminal Features
+- **Terminal Color API**: Get/set API with extended OSC handling
+- **Service extensions**: Debugging tools including rainbow paint
+
+### CLI & Developer Experience
+- **compile command**: Compile and restore shell commands in CLI
+- **Args package**: CLI argument parsing
+- **Hot reload debounce**: Prevents rapid reload spam
+- **HTTP logging**: Logs exposed via HTTP server instead of `log.txt`
+- **Pre-commit hook**: Auto-format on commit
+
+### Documentation
+- **Full documentation site** at docs.nocterm.dev (Fumadocs + GitHub Pages)
+- Updated README with proper badges and guides
+
+## Performance Improvements
+- **Differential rendering**: Only redraws changed cells between frames
+- **No-flush optimization**: Reduced unnecessary flushes
+- **Better frame scheduling**: Smoother animations
+
+## Bug Fixes
+
+### Critical Fixes
+- **Center widget**: Now properly expands within bounded constraints (was incorrectly shrinking)
+- **Ctrl+C in TextField**: App is now properly quittable again
+- **Hot reload assertion**: Fixed crashes during hot reload
+
+### Rendering Fixes
+- Fixed unconnected borders in BoxDecoration
+- Fixed markdown rendering and nested list items
+- Improved emoji handling (including FEOF emojis)
+
+### Other Fixes
+- Navigator test stale context (now uses GlobalKey)
+- Stateful component inheritance
+- TextField `onChange` text mutation issues
+- Shell command exceptions
+- Frame buffer null assertion removal
+
+## Refactoring & Maintenance
+- Hot reload architecture cleanup with shareable classes
+- Code organization with proper command classes
+- Extensive linting and formatting passes
+- Added pubignore for cleaner publishing
+- Third-party license notice for Flutter code
+
+---
+
 # 0.1.0
 
 ## Breaking Changes
