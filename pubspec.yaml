@@ -3,7 +3,7 @@ description: A Flutter-like framework for terminal UIs.
 version: 0.2.0
 repository: https://github.com/norbert515/nocterm
 homepage: https://nocterm.dev
-documentation: https://docs.page/Norbert515/nocterm~docs
+documentation: https://docs.nocterm.dev
 
 environment:
   sdk: ">=3.5.0 <4.0.0"
