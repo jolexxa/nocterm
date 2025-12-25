@@ -138,10 +138,11 @@ class OverlayState extends State<Overlay> {
     if (entry._overlay != this) {
       return;
     }
-    setState(() {
-      _entries.remove(entry);
-    });
+    _entries.remove(entry);
     entry._overlay = null;
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   /// Rearrange the entries to match the given order.
