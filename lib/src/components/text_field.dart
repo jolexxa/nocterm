@@ -124,6 +124,7 @@ class TextField extends StatefulComponent {
     this.onEditingComplete,
     this.onSubmitted,
     this.onPaste,
+    this.onKeyEvent,
     this.enabled = true,
     this.cursorColor,
     this.cursorStyle = CursorStyle.block,
@@ -164,6 +165,12 @@ class TextField extends StatefulComponent {
   /// Return `true` to indicate the paste was handled (skip default insertion).
   /// Return `false` or null to proceed with default insertion.
   final bool Function(String pastedText)? onPaste;
+
+  /// Callback invoked when a key event occurs, before TextField processes it.
+  /// Return `true` to indicate the event was handled (TextField will skip processing).
+  /// Return `false` to let TextField handle the event normally.
+  /// This allows parent widgets to intercept keys like arrow up/down for custom handling.
+  final bool Function(KeyboardEvent event)? onKeyEvent;
   final bool enabled;
 
   /// The color of the text cursor.
@@ -342,6 +349,11 @@ class _TextFieldState extends State<TextField> {
   bool _handleKeyEvent(KeyboardEvent event) {
     if (component.readOnly || !component.enabled) {
       return false;
+    }
+
+    // Allow parent widgets to intercept key events first
+    if (component.onKeyEvent != null && component.onKeyEvent!(event)) {
+      return true;
     }
 
     // Let Ctrl+C bubble up to allow app termination
