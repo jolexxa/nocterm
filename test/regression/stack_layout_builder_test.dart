@@ -59,8 +59,7 @@ void main() {
                             for (int i = 0; i < 10; i++)
                               Row(
                                 children: [
-                                  for (int j = 0; j < 5; j++)
-                                    Text('[$i,$j]'),
+                                  for (int j = 0; j < 5; j++) Text('[$i,$j]'),
                                 ],
                               ),
                           ],
@@ -265,8 +264,7 @@ void main() {
     });
 
     group('LayoutBuilder with constraint-based decisions', () {
-      test(
-          'foreground visible when LayoutBuilder changes based on constraints',
+      test('foreground visible when LayoutBuilder changes based on constraints',
           () async {
         await testNocterm(
           'constraint based layout',
@@ -417,8 +415,7 @@ void main() {
                       builder: (context, constraints) {
                         return Column(
                           children: [
-                            for (int i = 0; i < 3; i++)
-                              Text('Row $i'),
+                            for (int i = 0; i < 3; i++) Text('Row $i'),
                           ],
                         );
                       },
