@@ -2,7 +2,7 @@
 default:
     @just --list
 
-# Interactive release workflow - creates and pushes git tags
+# Interactive release workflow - updates README, commits, and creates tag
 release:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -21,22 +21,32 @@ release:
     echo "  1) patch    → v$major.$minor.$((patch + 1))"
     echo "  2) minor    → v$major.$((minor + 1)).0"
     echo "  3) major    → v$((major + 1)).0.0"
-    echo "  4) override → $latest_tag (re-push existing tag)"
-    echo "  5) cancel"
+    echo "  4) custom   → enter custom version"
+    echo "  5) override → $latest_tag (re-push existing tag)"
+    echo "  6) cancel"
     echo ""
 
-    read -p "Choice [1-5]: " choice
+    read -p "Choice [1-6]: " choice
 
     case $choice in
         1) new_version="v$major.$minor.$((patch + 1))" ;;
         2) new_version="v$major.$((minor + 1)).0" ;;
         3) new_version="v$((major + 1)).0.0" ;;
-        4) new_version="$latest_tag"; override=true ;;
-        5) echo "Cancelled."; exit 0 ;;
+        4)
+            read -p "Enter custom version (e.g., 1.2.3): " custom_ver
+            # Strip 'v' prefix if provided
+            custom_ver=${custom_ver#v}
+            new_version="v$custom_ver"
+            ;;
+        5) new_version="$latest_tag"; override=true ;;
+        6) echo "Cancelled."; exit 0 ;;
         *) echo "Invalid choice."; exit 1 ;;
     esac
 
     echo ""
+
+    # Strip 'v' prefix for version number
+    version_number=${new_version#v}
 
     if [[ "${override:-false}" == "true" ]]; then
         read -p "Delete and re-push tag $new_version? [y/N]: " confirm
@@ -50,10 +60,24 @@ release:
             echo "Cancelled."
         fi
     else
-        read -p "Create and push tag $new_version? [y/N]: " confirm
+        read -p "Release $new_version? (updates README, commits, tags, pushes) [y/N]: " confirm
         if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            # Update version in README.md
+            echo "Updating README.md..."
+            sed -i '' -E "s/nocterm: \^[0-9]+\.[0-9]+\.[0-9]+/nocterm: ^$version_number/" README.md
+            sed -i '' -E "s/in early development \([0-9]+\.[0-9]+\.[0-9]+\)/in early development ($version_number)/" README.md
+
+            # Commit the README change
+            git add README.md
+            git commit -m "chore: bump version to $version_number in README"
+
+            # Push the commit
+            git push origin main
+
+            # Create and push the tag
             git tag "$new_version"
             git push origin "$new_version"
+
             echo "✓ Released $new_version"
         else
             echo "Cancelled."
