@@ -1,5 +1,0 @@
-dependency_overrides:
-  nocterm:
-    path: ../../
-  nocterm_nested:
-    path: ../nocterm_nested
