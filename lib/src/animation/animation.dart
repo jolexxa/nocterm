@@ -383,9 +383,8 @@ class AnimationController extends Animation<double> {
     Curve curve = Curves.linear,
   }) {
     final double range = upperBound - lowerBound;
-    final double remainingFraction = range.isFinite
-        ? (target - _value).abs() / range
-        : 1.0;
+    final double remainingFraction =
+        range.isFinite ? (target - _value).abs() / range : 1.0;
 
     Duration? simulationDuration;
     if (_direction == _AnimationDirection.reverse && reverseDuration != null) {
@@ -596,8 +595,8 @@ class _InterpolationSimulation extends _AnimationSimulation {
 
   @override
   double x(Duration time) {
-    final double t = (time.inMicroseconds / _duration.inMicroseconds)
-        .clamp(0.0, 1.0);
+    final double t =
+        (time.inMicroseconds / _duration.inMicroseconds).clamp(0.0, 1.0);
     if (t == 0.0) {
       return _begin;
     } else if (t == 1.0) {
@@ -609,8 +608,8 @@ class _InterpolationSimulation extends _AnimationSimulation {
 
   @override
   double velocity(Duration time) {
-    final double t = (time.inMicroseconds / _duration.inMicroseconds)
-        .clamp(0.0, 1.0);
+    final double t =
+        (time.inMicroseconds / _duration.inMicroseconds).clamp(0.0, 1.0);
     final double epsilon = 0.01;
     final double t1 = (t - epsilon).clamp(0.0, 1.0);
     final double t2 = (t + epsilon).clamp(0.0, 1.0);
@@ -642,8 +641,8 @@ class _RepeatingSimulation extends _AnimationSimulation {
   @override
   double x(Duration time) {
     final double periodInMicroseconds = _period.inMicroseconds.toDouble();
-    final double t = (time.inMicroseconds % periodInMicroseconds) /
-        periodInMicroseconds;
+    final double t =
+        (time.inMicroseconds % periodInMicroseconds) / periodInMicroseconds;
 
     final int iteration = (time.inMicroseconds / periodInMicroseconds).floor();
     final bool goingForward = _reverse ? iteration.isEven : true;
@@ -661,8 +660,12 @@ class _RepeatingSimulation extends _AnimationSimulation {
     final int iteration = (time.inMicroseconds / periodInMicroseconds).floor();
     final bool goingForward = _reverse ? iteration.isEven : true;
     return goingForward
-        ? (_max - _min) / _period.inMicroseconds * Duration.microsecondsPerSecond
-        : -(_max - _min) / _period.inMicroseconds * Duration.microsecondsPerSecond;
+        ? (_max - _min) /
+            _period.inMicroseconds *
+            Duration.microsecondsPerSecond
+        : -(_max - _min) /
+            _period.inMicroseconds *
+            Duration.microsecondsPerSecond;
   }
 
   @override

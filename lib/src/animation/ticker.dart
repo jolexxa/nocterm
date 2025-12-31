@@ -80,17 +80,20 @@ class TickerFuture implements Future<void> {
   Stream<void> asStream() => _primaryCompleter.future.asStream();
 
   @override
-  Future<void> catchError(Function onError, {bool Function(Object error)? test}) {
+  Future<void> catchError(Function onError,
+      {bool Function(Object error)? test}) {
     return _primaryCompleter.future.catchError(onError, test: test);
   }
 
   @override
-  Future<R> then<R>(FutureOr<R> Function(void value) onValue, {Function? onError}) {
+  Future<R> then<R>(FutureOr<R> Function(void value) onValue,
+      {Function? onError}) {
     return _primaryCompleter.future.then(onValue, onError: onError);
   }
 
   @override
-  Future<void> timeout(Duration timeLimit, {FutureOr<void> Function()? onTimeout}) {
+  Future<void> timeout(Duration timeLimit,
+      {FutureOr<void> Function()? onTimeout}) {
     return _primaryCompleter.future.timeout(timeLimit, onTimeout: onTimeout);
   }
 
@@ -258,7 +261,8 @@ class Ticker {
   /// This is used when the ticker provider changes (e.g., during hot reload).
   void absorbTicker(Ticker originalTicker) {
     assert(!isActive);
-    assert(originalTicker._future == null || !originalTicker._future!._completed);
+    assert(
+        originalTicker._future == null || !originalTicker._future!._completed);
 
     if (originalTicker._future != null) {
       _future = originalTicker._future;

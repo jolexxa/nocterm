@@ -308,7 +308,8 @@ void main() {
             duration: const Duration(milliseconds: 100),
             vsync: vsync,
           );
-          final animation = Tween<double>(begin: 10.0, end: 90.0).animate(controller);
+          final animation =
+              Tween<double>(begin: 10.0, end: 90.0).animate(controller);
 
           await tester.pumpComponent(
             Container(
@@ -368,7 +369,8 @@ void main() {
             duration: const Duration(milliseconds: 100),
             vsync: vsync,
           );
-          final animation = CurveTween(curve: Curves.easeIn).animate(controller);
+          final animation =
+              CurveTween(curve: Curves.easeIn).animate(controller);
 
           controller.value = 0.5;
           // easeIn at 0.5 should be less than 0.5
@@ -566,7 +568,8 @@ void main() {
             duration: const Duration(milliseconds: 100),
             vsync: vsync,
           );
-          final animation = Tween<double>(begin: 0.0, end: 100.0).animate(controller);
+          final animation =
+              Tween<double>(begin: 0.0, end: 100.0).animate(controller);
 
           expect(animation.status, AnimationStatus.dismissed);
 

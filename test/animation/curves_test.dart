@@ -30,9 +30,12 @@ void main() {
 
       test('starts slow and ends slow', () {
         // Ease curve should have slower rate of change at the ends
-        final earlyDelta = Curves.ease.transform(0.1) - Curves.ease.transform(0.0);
-        final midDelta = Curves.ease.transform(0.55) - Curves.ease.transform(0.45);
-        final lateDelta = Curves.ease.transform(1.0) - Curves.ease.transform(0.9);
+        final earlyDelta =
+            Curves.ease.transform(0.1) - Curves.ease.transform(0.0);
+        final midDelta =
+            Curves.ease.transform(0.55) - Curves.ease.transform(0.45);
+        final lateDelta =
+            Curves.ease.transform(1.0) - Curves.ease.transform(0.9);
 
         // Middle should change faster than the ends
         expect(midDelta, greaterThan(earlyDelta));
@@ -276,7 +279,8 @@ void main() {
     test('double flip returns to original', () {
       final doubleFlipped = Curves.ease.flipped.flipped;
       expect(doubleFlipped.transform(0.0), closeTo(0.0, 0.001));
-      expect(doubleFlipped.transform(0.5), closeTo(Curves.ease.transform(0.5), 0.01));
+      expect(doubleFlipped.transform(0.5),
+          closeTo(Curves.ease.transform(0.5), 0.01));
       expect(doubleFlipped.transform(1.0), closeTo(1.0, 0.001));
     });
 

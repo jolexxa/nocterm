@@ -627,7 +627,8 @@ void main() {
           duration: const Duration(milliseconds: 100),
           vsync: vsync,
         );
-        final animation = controller.drive(Tween<double>(begin: 0.0, end: 100.0));
+        final animation =
+            controller.drive(Tween<double>(begin: 0.0, end: 100.0));
 
         expect(animation.value, 0.0);
 
@@ -646,8 +647,9 @@ void main() {
           duration: const Duration(milliseconds: 100),
           vsync: vsync,
         );
-        final animation =
-            controller.drive(CurveTween(curve: Curves.easeIn)).drive(Tween<double>(begin: 0.0, end: 100.0));
+        final animation = controller
+            .drive(CurveTween(curve: Curves.easeIn))
+            .drive(Tween<double>(begin: 0.0, end: 100.0));
 
         controller.forward();
         vsync.tick(const Duration(milliseconds: 50));
@@ -664,7 +666,8 @@ void main() {
       expect(AnimationStatus.dismissed, isNot(equals(AnimationStatus.forward)));
       expect(AnimationStatus.forward, isNot(equals(AnimationStatus.reverse)));
       expect(AnimationStatus.reverse, isNot(equals(AnimationStatus.completed)));
-      expect(AnimationStatus.completed, isNot(equals(AnimationStatus.dismissed)));
+      expect(
+          AnimationStatus.completed, isNot(equals(AnimationStatus.dismissed)));
     });
   });
 }

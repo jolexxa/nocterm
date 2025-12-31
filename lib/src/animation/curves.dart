@@ -85,9 +85,7 @@ class Cubic extends Curve {
     // The formula is derived from the Bezier curve equation:
     // B(t) = (1-t)^3 * P0 + 3*(1-t)^2*t * P1 + 3*(1-t)*t^2 * P2 + t^3 * P3
     // where P0 = 0, P1 = a, P2 = b, P3 = 1
-    return 3 * a * (1 - m) * (1 - m) * m +
-        3 * b * (1 - m) * m * m +
-        m * m * m;
+    return 3 * a * (1 - m) * (1 - m) * m + 3 * b * (1 - m) * m * m + m * m * m;
   }
 
   @override
@@ -118,7 +116,8 @@ class Cubic extends Curve {
   }
 
   @override
-  String toString() => 'Cubic(${a.toStringAsFixed(2)}, ${b.toStringAsFixed(2)}, '
+  String toString() =>
+      'Cubic(${a.toStringAsFixed(2)}, ${b.toStringAsFixed(2)}, '
       '${c.toStringAsFixed(2)}, ${d.toStringAsFixed(2)})';
 }
 
@@ -135,7 +134,8 @@ class _ElasticInCurve extends Curve {
   double transform(double t) {
     final double s = period / 4.0;
     t = t - 1.0;
-    return -math.pow(2.0, 10.0 * t) * math.sin((t - s) * (math.pi * 2.0) / period);
+    return -math.pow(2.0, 10.0 * t) *
+        math.sin((t - s) * (math.pi * 2.0) / period);
   }
 
   @override
@@ -154,7 +154,9 @@ class _ElasticOutCurve extends Curve {
   @override
   double transform(double t) {
     final double s = period / 4.0;
-    return math.pow(2.0, -10.0 * t) * math.sin((t - s) * (math.pi * 2.0) / period) + 1.0;
+    return math.pow(2.0, -10.0 * t) *
+            math.sin((t - s) * (math.pi * 2.0) / period) +
+        1.0;
   }
 
   @override
@@ -172,9 +174,14 @@ class _ElasticInOutCurve extends Curve {
     final double s = period / 4.0;
     t = 2.0 * t - 1.0;
     if (t < 0.0) {
-      return -0.5 * math.pow(2.0, 10.0 * t) * math.sin((t - s) * (math.pi * 2.0) / period);
+      return -0.5 *
+          math.pow(2.0, 10.0 * t) *
+          math.sin((t - s) * (math.pi * 2.0) / period);
     } else {
-      return math.pow(2.0, -10.0 * t) * math.sin((t - s) * (math.pi * 2.0) / period) * 0.5 + 1.0;
+      return math.pow(2.0, -10.0 * t) *
+              math.sin((t - s) * (math.pi * 2.0) / period) *
+              0.5 +
+          1.0;
     }
   }
 

@@ -41,7 +41,8 @@ class Tween<T extends dynamic> extends Animatable<T> {
     assert(end != null);
     // This works for numeric types like int, double.
     // Subclasses should override for other types.
-    return (begin as dynamic) + ((end as dynamic) - (begin as dynamic)) * t as T;
+    return (begin as dynamic) + ((end as dynamic) - (begin as dynamic)) * t
+        as T;
   }
 
   /// Returns the interpolated value at the given animation value [t].
@@ -60,7 +61,8 @@ class Tween<T extends dynamic> extends Animatable<T> {
   }
 
   @override
-  String toString() => '${objectRuntimeType(this, 'Tween')}<$T>($begin \u2192 $end)'; // →
+  String toString() =>
+      '${objectRuntimeType(this, 'Tween')}<$T>($begin \u2192 $end)'; // →
 }
 
 /// Helper function to get the runtime type name of an object.
@@ -122,7 +124,8 @@ class CurveTween extends Animatable<double> {
   double transform(double t) => curve.transform(t);
 
   @override
-  String toString() => '${objectRuntimeType(this, 'CurveTween')}(curve: $curve)';
+  String toString() =>
+      '${objectRuntimeType(this, 'CurveTween')}(curve: $curve)';
 }
 
 /// A tween that goes from 0.0 to 1.0.
@@ -136,7 +139,8 @@ class ConstantTween<T> extends Tween<T> {
   T lerp(double t) => begin as T;
 
   @override
-  String toString() => '${objectRuntimeType(this, 'ConstantTween')}<$T>(value: $begin)';
+  String toString() =>
+      '${objectRuntimeType(this, 'ConstantTween')}<$T>(value: $begin)';
 }
 
 /// A tween that reverses another tween.
@@ -173,8 +177,7 @@ class StepTween extends Tween<int> {
 /// the total duration it covers.
 class TweenSequence<T> extends Animatable<T> {
   /// Creates a tween sequence.
-  TweenSequence(List<TweenSequenceItem<T>> items)
-      : _items = items {
+  TweenSequence(List<TweenSequenceItem<T>> items) : _items = items {
     // Calculate total weight
     double totalWeight = 0.0;
     for (final item in items) {
@@ -291,7 +294,8 @@ class Interval extends Curve {
 /// applying the [curve] to the input.
 class Threshold extends Curve {
   /// Creates a threshold curve.
-  const Threshold(this.threshold) : assert(threshold >= 0.0 && threshold <= 1.0);
+  const Threshold(this.threshold)
+      : assert(threshold >= 0.0 && threshold <= 1.0);
 
   /// The threshold value.
   final double threshold;
