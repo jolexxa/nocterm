@@ -62,14 +62,18 @@ release:
     else
         read -p "Release $new_version? (updates README, commits, tags, pushes) [y/N]: " confirm
         if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            # Update version in pubspec.yaml
+            echo "Updating pubspec.yaml..."
+            sed -i '' -E "s/^version: [0-9]+\.[0-9]+\.[0-9]+/version: $version_number/" pubspec.yaml
+
             # Update version in README.md
             echo "Updating README.md..."
             sed -i '' -E "s/nocterm: \^[0-9]+\.[0-9]+\.[0-9]+/nocterm: ^$version_number/" README.md
             sed -i '' -E "s/in early development \([0-9]+\.[0-9]+\.[0-9]+\)/in early development ($version_number)/" README.md
 
-            # Commit the README change
-            git add README.md
-            git commit -m "chore: bump version to $version_number in README"
+            # Commit the version bump
+            git add pubspec.yaml README.md
+            git commit -m "chore: bump version to $version_number"
 
             # Push the commit
             git push origin main
