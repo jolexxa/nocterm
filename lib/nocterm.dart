@@ -83,3 +83,7 @@ export 'src/widgets/nocterm_app.dart';
 
 // Theme
 export 'src/theme/theme.dart';
+
+// ASCII Text
+export 'src/components/ascii_text.dart';
+export 'src/components/ascii_font.dart' show AsciiFont, AsciiGlyph;
