@@ -17,6 +17,9 @@ class PipelineOwner {
   final List<RenderObject> _nodesNeedingLayout = [];
   final List<RenderObject> _nodesNeedingPaint = [];
 
+  /// Flag to track if dirty nodes need to be merged after layout callback
+  bool _shouldMergeDirtyNodes = false;
+
   /// Callback to request a visual update (frame)
   VoidCallback? onNeedsVisualUpdate;
 
@@ -37,16 +40,39 @@ class PipelineOwner {
     onNeedsVisualUpdate?.call();
   }
 
+  /// Enable mutations during layout callback.
+  ///
+  /// This is used by [RenderObject.invokeLayoutCallback] to allow building
+  /// children during layout. The callback is invoked synchronously, and
+  /// sets [_shouldMergeDirtyNodes] to ensure newly created render objects
+  /// are properly merged into the layout pipeline.
+  void _enableMutationsToDirtySubtrees(VoidCallback callback) {
+    try {
+      callback();
+    } finally {
+      _shouldMergeDirtyNodes = true;
+    }
+  }
+
   void flushLayout() {
     // Sort by depth to process parents before children
     _nodesNeedingLayout.sort((a, b) => a.depth.compareTo(b.depth));
 
     while (_nodesNeedingLayout.isNotEmpty) {
+      // Check if we need to re-sort after a layout callback added new nodes
+      if (_shouldMergeDirtyNodes) {
+        _shouldMergeDirtyNodes = false;
+        _nodesNeedingLayout.sort((a, b) => a.depth.compareTo(b.depth));
+      }
+
       final node = _nodesNeedingLayout.removeLast();
       if (node._needsLayout && node.owner == this) {
         node._layoutWithoutResize();
       }
     }
+
+    // Reset flag at end
+    _shouldMergeDirtyNodes = false;
   }
 
   void flushPaint() {
@@ -318,15 +344,18 @@ abstract class RenderObject {
     _constraints = constraints;
     // TODO remove the || true at some point
     if (_needsLayout || _size == null || true) {
+      // Set _needsLayout = false BEFORE calling performLayout so that
+      // invokeLayoutCallback can be used during layout (its assertion
+      // checks that we're in the middle of performLayout by verifying
+      // _needsLayout is false).
+      _needsLayout = false;
       try {
         performLayout();
         assert(_size != null, 'performLayout() did not set a size');
-        _needsLayout = false;
       } catch (e, stack) {
         _reportException('performLayout', e, stack);
         // Set a default size to prevent cascading failures
         _size = constraints.constrain(const Size(10, 5));
-        _needsLayout = false;
         _hasLayoutError = true;
       }
     }
@@ -515,6 +544,36 @@ abstract class RenderObject {
   @protected
   bool hitTestSelf(Offset position) => false;
 
+  /// Allows mutations to be made to this object's child list during layout.
+  ///
+  /// This is used by LayoutBuilder to build children on-demand during layout.
+  /// The callback is invoked synchronously, and mutations are only allowed
+  /// during that callback's execution.
+  ///
+  /// This method ensures that any new render objects created during the callback
+  /// are properly merged into the layout pipeline by setting a flag that causes
+  /// [PipelineOwner.flushLayout] to re-sort the dirty nodes list.
+  @protected
+  void invokeLayoutCallback<T extends BoxConstraints>(
+    void Function(T constraints) callback,
+  ) {
+    assert(
+      _needsLayout == false,
+      'invokeLayoutCallback must be called during performLayout',
+    );
+    // If owner is null (render object not fully attached), just invoke the
+    // callback directly. This can happen with nested LayoutBuilders where
+    // an inner LayoutBuilder's render object is created during layout but
+    // hasn't been fully attached to the tree yet.
+    if (owner != null) {
+      owner!._enableMutationsToDirtySubtrees(() {
+        callback(constraints as T);
+      });
+    } else {
+      callback(constraints as T);
+    }
+  }
+
   /// Called during layout to update internal layout state.
   void _layoutWithoutResize() {
     // Reset error state when attempting layout
@@ -522,14 +581,14 @@ abstract class RenderObject {
     _lastError = null;
     _lastStackTrace = null;
 
+    // Set _needsLayout = false BEFORE calling performLayout so that
+    // invokeLayoutCallback can be used during layout.
+    _needsLayout = false;
     try {
       performLayout();
-      _needsLayout = false;
       markNeedsPaint();
     } catch (e, stack) {
       _reportException('performLayout', e, stack);
-      // Mark as laid out to prevent infinite loops
-      _needsLayout = false;
       _hasLayoutError = true;
       // Set a default size if not set
       if (_size == null && _constraints != null) {

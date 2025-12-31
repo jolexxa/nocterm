@@ -167,8 +167,14 @@ class RenderLayoutBuilder extends RenderObject
 
   @override
   void performLayout() {
-    // Call the layout callback to build/update child with actual constraints
-    _layoutCallback?.call(constraints);
+    // Wrap the layout callback in invokeLayoutCallback to properly handle
+    // widget tree mutations during layout. This ensures newly created render
+    // objects are properly merged into the layout pipeline.
+    if (_layoutCallback != null) {
+      invokeLayoutCallback<BoxConstraints>((constraints) {
+        _layoutCallback!.call(constraints);
+      });
+    }
 
     if (child != null) {
       child!.layout(constraints, parentUsesSize: true);
