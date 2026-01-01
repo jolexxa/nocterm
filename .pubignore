@@ -1,5 +1,5 @@
 docs-site/
-third_party/
+/third_party/
 packages/
 melos.yaml
 pubspec_overrides.yaml
