@@ -916,17 +916,12 @@ void main() {
 
             // Find the segment containing 'AAA' and 'BBB'
             // BUG: Because _stylesEqual doesn't check reverse, they may be merged into 'AAABBB'
-            bool foundCorrectlySeparated = false;
             bool foundIncorrectlyMerged = false;
 
             for (final seg in segments) {
               if (seg.text.contains('AAA') && seg.text.contains('BBB')) {
                 // Bug! They were merged into one segment
                 foundIncorrectlyMerged = true;
-              }
-              if (seg.text == 'AAA' || seg.text.trim() == 'AAA') {
-                // Correctly separated
-                foundCorrectlySeparated = true;
               }
             }
 
