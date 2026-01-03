@@ -256,6 +256,9 @@ enum BlendMode {
 /// RenderObject that applies decoration to its child
 class RenderDecoratedBox extends RenderObject
     with RenderObjectWithChildMixin<RenderObject> {
+  @override
+  bool get isRepaintBoundary => true;
+
   RenderDecoratedBox({
     required BoxDecoration decoration,
     DecorationPosition position = DecorationPosition.background,
@@ -345,26 +348,11 @@ class RenderDecoratedBox extends RenderObject
 
   void _setCell(
       TerminalCanvas canvas, int x, int y, String char, TextStyle style) {
-    // x and y are already in absolute canvas coordinates
-    // Check bounds against the absolute buffer area
-    final bufferX = canvas.area.left.round() + x;
-    final bufferY = canvas.area.top.round() + y;
-
-    // Check if we're within the canvas area bounds
-    if (bufferX < canvas.area.left ||
-        bufferY < canvas.area.top ||
-        bufferX >= canvas.area.left + canvas.area.width ||
-        bufferY >= canvas.area.top + canvas.area.height) {
-      return;
-    }
-
-    canvas.buffer.setCell(
-      bufferX,
-      bufferY,
-      Cell(
-        char: char,
-        style: style,
-      ),
+    // Use drawText with a single character at the given position
+    canvas.drawText(
+      Offset(x.toDouble(), y.toDouble()),
+      char,
+      style: style,
     );
   }
 

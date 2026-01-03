@@ -11,9 +11,9 @@ import 'framework.dart';
 
 /// Canvas for drawing to the terminal
 class TerminalCanvas {
-  TerminalCanvas(this.buffer, this.area);
+  TerminalCanvas(this._buffer, this.area);
 
-  final Buffer buffer;
+  final Buffer _buffer;
   final Rect area;
 
   /// Blends a style with the background color from the existing cell if needed.
@@ -90,11 +90,11 @@ class TerminalCanvas {
       final cellY = area.top.round() + y;
 
       // Get existing cell and blend style (handles alpha + background preservation)
-      final existingCell = buffer.getCell(cellX, cellY);
+      final existingCell = _buffer.getCell(cellX, cellY);
       final effectiveStyle = style ?? const TextStyle();
       final finalStyle = _blendStyle(effectiveStyle, existingCell);
 
-      buffer.setCell(
+      _buffer.setCell(
         cellX,
         cellY,
         Cell(
@@ -112,12 +112,12 @@ class TerminalCanvas {
         final nextCellY = area.top.round() + y;
 
         // Get existing cell and blend style (handles alpha + background preservation)
-        final nextExistingCell = buffer.getCell(nextCellX, nextCellY);
+        final nextExistingCell = _buffer.getCell(nextCellX, nextCellY);
         final nextEffectiveStyle = style ?? const TextStyle();
         final nextFinalStyle =
             _blendStyle(nextEffectiveStyle, nextExistingCell);
 
-        buffer.setCell(
+        _buffer.setCell(
           nextCellX,
           nextCellY,
           Cell(
@@ -146,10 +146,10 @@ class TerminalCanvas {
         final cellY = area.top.round() + y;
 
         // Get existing cell and blend style (handles alpha blending)
-        final existingCell = buffer.getCell(cellX, cellY);
+        final existingCell = _buffer.getCell(cellX, cellY);
         final finalStyle = _blendStyle(effectiveStyle, existingCell);
 
-        buffer.setCell(
+        _buffer.setCell(
           cellX,
           cellY,
           Cell(
@@ -199,11 +199,11 @@ class TerminalCanvas {
     final cellY = area.top.round() + y;
 
     // Get existing cell and blend style (handles alpha blending)
-    final existingCell = buffer.getCell(cellX, cellY);
+    final existingCell = _buffer.getCell(cellX, cellY);
     final effectiveStyle = style ?? const TextStyle();
     final finalStyle = _blendStyle(effectiveStyle, existingCell);
 
-    buffer.setCell(
+    _buffer.setCell(
       cellX,
       cellY,
       Cell(
@@ -224,7 +224,7 @@ class TerminalCanvas {
       ),
       area,
     );
-    return TerminalCanvas(buffer, clippedArea);
+    return TerminalCanvas(_buffer, clippedArea);
   }
 
   Rect _intersect(Rect a, Rect b) {

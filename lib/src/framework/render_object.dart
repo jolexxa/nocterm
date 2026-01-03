@@ -283,6 +283,14 @@ abstract class RenderObject {
   Object? _lastError;
   StackTrace? _lastStackTrace;
 
+  /// Cached DisplayList from last paint. Invalidated when markNeedsPaint() is called.
+  DisplayList? _cachedDisplayList;
+
+  /// Whether this RenderObject acts as a repaint boundary.
+  /// Repaint boundaries cache their DisplayList and stop markNeedsPaint propagation.
+  /// Override to return true for expensive-to-paint subtrees.
+  bool get isRepaintBoundary => false;
+
   /// Whether this render object has been laid out and has a size.
   bool get hasSize => _size != null;
 
@@ -306,13 +314,19 @@ abstract class RenderObject {
   void markNeedsPaint() {
     if (_needsPaint) return;
     _needsPaint = true;
+    _cachedDisplayList = null; // Invalidate cache
 
     // Track for debug rainbow visualization
     if (debugRepaintRainbowEnabled) {
       _debugWasMarkedNeedsPaint = true;
     }
 
-    // Check if this is a repaint boundary
+    // Repaint boundaries stop propagation
+    if (isRepaintBoundary) {
+      owner?.requestVisualUpdate();
+      return;
+    }
+
     if (parent != null) {
       // Continue propagation up the tree
       parent!.markNeedsPaint();
@@ -399,7 +413,7 @@ abstract class RenderObject {
     // Subclasses override this to paint
   }
 
-  /// Internal paint method with error handling.
+  /// Internal paint method with error handling and caching.
   void paintWithContext(TerminalCanvas canvas, Offset offset) {
     // If there was a layout error, show error box and return
     if (_hasLayoutError) {
@@ -413,43 +427,39 @@ abstract class RenderObject {
       _lastStackTrace = null;
     }
 
-    try {
-      paint(canvas, offset);
-
-      // Debug: Apply rainbow tint overlay only to render objects that were
-      // actually marked as needing repaint (not just painted as part of tree)
-      if (debugRepaintRainbowEnabled && hasSize && _debugWasMarkedNeedsPaint) {
-        final rainbowColor = debugCurrentRepaintColor.toColor();
-        final buffer = canvas.buffer;
-        final startX = (canvas.area.left + offset.dx).toInt();
-        final startY = (canvas.area.top + offset.dy).toInt();
-        final endX = (startX + size.width).toInt().clamp(0, buffer.width);
-        final endY = (startY + size.height).toInt().clamp(0, buffer.height);
-
-        for (int y = startY.clamp(0, buffer.height); y < endY; y++) {
-          for (int x = startX.clamp(0, buffer.width); x < endX; x++) {
-            final existingCell = buffer.getCell(x, y);
-            final existingBg =
-                existingCell.style.backgroundColor ?? Color.defaultColor;
-            final blendedBg = Color.alphaBlend(rainbowColor, existingBg);
-            buffer.setCell(
-              x,
-              y,
-              existingCell.copyWith(
-                style: existingCell.style.copyWith(backgroundColor: blendedBg),
-              ),
-            );
-          }
-        }
-
-        // Reset the flag after painting
-        _debugWasMarkedNeedsPaint = false;
-      }
-    } catch (e, stack) {
-      _reportException('paint', e, stack);
-      // Try to paint an error indicator
-      _paintErrorBox(canvas, offset);
+    // If clean and have cache, just replay it (skip painting!)
+    if (!_needsPaint && _cachedDisplayList != null) {
+      _cachedDisplayList!.playback(canvas, offset);
+      return;
     }
+
+    // For repaint boundaries with known size, record to local DisplayList
+    if (isRepaintBoundary && hasSize) {
+      final localRect = Rect.fromLTWH(0, 0, size.width, size.height);
+      final recorder = RecordingCanvas(localRect);
+
+      try {
+        paint(recorder, Offset.zero); // Paint at local origin
+        _cachedDisplayList = recorder.finish();
+        _cachedDisplayList!
+            .playback(canvas, offset); // Replay at actual position
+      } catch (e, stack) {
+        _cachedDisplayList = null;
+        _reportException('paint', e, stack);
+        _paintErrorBox(canvas, offset);
+      }
+    } else {
+      // Non-boundary: paint directly (no caching)
+      try {
+        paint(canvas, offset);
+      } catch (e, stack) {
+        _reportException('paint', e, stack);
+        _paintErrorBox(canvas, offset);
+      }
+    }
+
+    // Reset debug flag after painting
+    _debugWasMarkedNeedsPaint = false;
   }
 
   /// Paint an error box when painting fails.
