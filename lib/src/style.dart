@@ -1,3 +1,8 @@
+/// Linearly interpolate between two integers.
+int _lerpInt(int a, int b, double t) {
+  return (a + (b - a) * t).round();
+}
+
 /// Color constants which align with terminal colors.
 ///
 /// This follows Flutter's pattern of having a separate Colors class
@@ -233,6 +238,40 @@ class Color {
         other.red == red &&
         other.green == green &&
         other.blue == blue;
+  }
+
+  /// Linearly interpolate between two colors.
+  ///
+  /// The [t] argument represents position on the timeline, with 0.0 meaning
+  /// that the interpolation has not started, returning [a] (or something
+  /// equivalent to [a]), 1.0 meaning that the interpolation has finished,
+  /// returning [b] (or something equivalent to [b]), and values in between
+  /// meaning that the interpolation is at the relevant point on the timeline
+  /// between [a] and [b].
+  ///
+  /// The interpolation can be extrapolated beyond 0.0 and 1.0, so negative
+  /// values and values greater than 1.0 are valid (and can easily be generated
+  /// by curves such as `Curves.elasticInOut`). Each channel will be clamped to
+  /// the range 0 to 255.
+  ///
+  /// If either color is null, this function linearly interpolates from a
+  /// transparent instance of the other color.
+  static Color? lerp(Color? a, Color? b, double t) {
+    if (identical(a, b)) {
+      return a;
+    }
+    if (a == null) {
+      return b!.withAlpha((b.alpha * t).round().clamp(0, 255));
+    }
+    if (b == null) {
+      return a.withAlpha((a.alpha * (1.0 - t)).round().clamp(0, 255));
+    }
+    return Color.fromARGB(
+      _lerpInt(a.alpha, b.alpha, t).clamp(0, 255),
+      _lerpInt(a.red, b.red, t).clamp(0, 255),
+      _lerpInt(a.green, b.green, t).clamp(0, 255),
+      _lerpInt(a.blue, b.blue, t).clamp(0, 255),
+    );
   }
 
   @override
