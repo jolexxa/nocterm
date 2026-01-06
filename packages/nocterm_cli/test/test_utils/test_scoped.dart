@@ -23,7 +23,6 @@ void testScoped(
 
     final testProviders = {
       logProvider.overrideWith(() => logger?.call() ?? mockLogger),
-
       if (fs?.call() case final fs?)
         fsProvider.overrideWith(() => fs)
       else

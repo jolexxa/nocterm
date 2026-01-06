@@ -158,7 +158,7 @@ class Consumer<T> extends SingleChildStatelessComponent {
   /// Consumes a [Provider<T>]
   /// {@endtemplate}
   Consumer({Key? key, required this.builder, Component? child})
-    : super(key: key, child: child);
+      : super(key: key, child: child);
 
   /// {@template provider.consumer.builder}
   /// Build a Component tree based on the value from a [Provider<T>].
@@ -166,7 +166,7 @@ class Consumer<T> extends SingleChildStatelessComponent {
   /// Must not be `null`.
   /// {@endtemplate}
   final Component Function(BuildContext context, T value, Component? child)
-  builder;
+      builder;
 
   @override
   Component buildWithChild(BuildContext context, Component? child) {
@@ -178,7 +178,7 @@ class Consumer<T> extends SingleChildStatelessComponent {
 class Consumer2<A, B> extends SingleChildStatelessComponent {
   /// {@macro provider.consumer.constructor}
   Consumer2({Key? key, required this.builder, Component? child})
-    : super(key: key, child: child);
+      : super(key: key, child: child);
 
   /// {@macro provider.consumer.builder}
   final Component Function(
@@ -186,8 +186,7 @@ class Consumer2<A, B> extends SingleChildStatelessComponent {
     A value,
     B value2,
     Component? child,
-  )
-  builder;
+  ) builder;
 
   @override
   Component buildWithChild(BuildContext context, Component? child) {
@@ -204,7 +203,7 @@ class Consumer2<A, B> extends SingleChildStatelessComponent {
 class Consumer3<A, B, C> extends SingleChildStatelessComponent {
   /// {@macro provider.consumer.constructor}
   Consumer3({Key? key, required this.builder, Component? child})
-    : super(key: key, child: child);
+      : super(key: key, child: child);
 
   /// {@macro provider.consumer.builder}
   final Component Function(
@@ -213,8 +212,7 @@ class Consumer3<A, B, C> extends SingleChildStatelessComponent {
     B value2,
     C value3,
     Component? child,
-  )
-  builder;
+  ) builder;
 
   @override
   Component buildWithChild(BuildContext context, Component? child) {
@@ -232,7 +230,7 @@ class Consumer3<A, B, C> extends SingleChildStatelessComponent {
 class Consumer4<A, B, C, D> extends SingleChildStatelessComponent {
   /// {@macro provider.consumer.constructor}
   Consumer4({Key? key, required this.builder, Component? child})
-    : super(key: key, child: child);
+      : super(key: key, child: child);
 
   /// {@macro provider.consumer.builder}
   final Component Function(
@@ -242,8 +240,7 @@ class Consumer4<A, B, C, D> extends SingleChildStatelessComponent {
     C value3,
     D value4,
     Component? child,
-  )
-  builder;
+  ) builder;
 
   @override
   Component buildWithChild(BuildContext context, Component? child) {
@@ -262,7 +259,7 @@ class Consumer4<A, B, C, D> extends SingleChildStatelessComponent {
 class Consumer5<A, B, C, D, E> extends SingleChildStatelessComponent {
   /// {@macro provider.consumer.constructor}
   Consumer5({Key? key, required this.builder, Component? child})
-    : super(key: key, child: child);
+      : super(key: key, child: child);
 
   /// {@macro provider.consumer.builder}
   final Component Function(
@@ -273,8 +270,7 @@ class Consumer5<A, B, C, D, E> extends SingleChildStatelessComponent {
     D value4,
     E value5,
     Component? child,
-  )
-  builder;
+  ) builder;
 
   @override
   Component buildWithChild(BuildContext context, Component? child) {
@@ -294,7 +290,7 @@ class Consumer5<A, B, C, D, E> extends SingleChildStatelessComponent {
 class Consumer6<A, B, C, D, E, F> extends SingleChildStatelessComponent {
   /// {@macro provider.consumer.constructor}
   Consumer6({Key? key, required this.builder, Component? child})
-    : super(key: key, child: child);
+      : super(key: key, child: child);
 
   /// {@macro provider.consumer.builder}
   final Component Function(
@@ -306,8 +302,7 @@ class Consumer6<A, B, C, D, E, F> extends SingleChildStatelessComponent {
     E value5,
     F value6,
     Component? child,
-  )
-  builder;
+  ) builder;
 
   @override
   Component buildWithChild(BuildContext context, Component? child) {
