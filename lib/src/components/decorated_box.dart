@@ -10,15 +10,36 @@ enum TitleAlignment {
 
 /// Configuration for a title embedded in a border
 class BorderTitle {
+  /// Creates a border title with plain text.
   const BorderTitle({
     required this.text,
     this.alignment = TitleAlignment.left,
     this.style,
-  });
+  }) : textSpan = null;
 
+  /// Creates a border title with rich text (multiple styles).
+  const BorderTitle.rich({
+    required InlineSpan this.textSpan,
+    this.alignment = TitleAlignment.left,
+  })  : text = '',
+        style = null;
+
+  /// Plain text for the title. Used when [textSpan] is null.
   final String text;
+
+  /// Rich text for the title. When provided, [text] and [style] are ignored.
+  final InlineSpan? textSpan;
+
   final TitleAlignment alignment;
+
+  /// Style for plain text. Ignored when [textSpan] is provided.
   final TextStyle? style;
+
+  /// Returns the plain text representation of the title.
+  String get plainText => textSpan?.toPlainText() ?? text;
+
+  /// Returns the length of the title in characters.
+  int get length => plainText.length;
 }
 
 /// Sentinel color value that indicates "use theme default".
@@ -400,7 +421,7 @@ class RenderDecoratedBox extends RenderObject
         if (title != null && horizontalWidth >= 5) {
           // Minimum width: space + 1 char title + space + some border chars
           // Format: ─ Title ─────
-          final titleText = title.text;
+          final titleText = title.plainText;
           final titleStyle = title.style ?? borderStyle;
 
           // Calculate title display with " Title " format (space padding)
@@ -455,9 +476,35 @@ class RenderDecoratedBox extends RenderObject
             }
 
             // Paint title
-            for (int i = 0; i < displayTitle.length; i++) {
-              _setCell(
-                  canvas, titleStartX + i, top, displayTitle[i], titleStyle);
+            if (title.textSpan != null) {
+              // Rich text - paint with per-character styles
+              final styledSegments =
+                  title.textSpan!.toStyledSegments(titleStyle);
+              // Paint leading space
+              _setCell(canvas, titleStartX, top, ' ', titleStyle);
+              // Paint styled characters
+              final contentLen =
+                  displayTitle.length - 2; // Minus padding spaces
+              int charIndex = 0;
+              for (final segment in styledSegments) {
+                for (int i = 0;
+                    i < segment.text.length && charIndex < contentLen;
+                    i++) {
+                  _setCell(canvas, titleStartX + 1 + charIndex, top,
+                      segment.text[i], segment.style ?? titleStyle);
+                  charIndex++;
+                }
+                if (charIndex >= contentLen) break;
+              }
+              // Paint trailing space
+              _setCell(canvas, titleStartX + displayTitle.length - 1, top, ' ',
+                  titleStyle);
+            } else {
+              // Plain text - use single style
+              for (int i = 0; i < displayTitle.length; i++) {
+                _setCell(
+                    canvas, titleStartX + i, top, displayTitle[i], titleStyle);
+              }
             }
 
             // Paint right horizontal chars

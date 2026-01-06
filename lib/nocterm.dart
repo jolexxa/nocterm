@@ -53,6 +53,7 @@ export 'src/navigation/navigator_observer.dart';
 export 'src/navigation/overlay.dart';
 
 export 'src/components/markdown_text.dart';
+export 'src/components/rich_text.dart';
 export 'src/framework/listenable.dart';
 export 'src/framework/value_listenable.dart';
 export 'src/components/value_listenable_builder.dart';
