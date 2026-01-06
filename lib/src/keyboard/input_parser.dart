@@ -622,7 +622,13 @@ class InputParser {
         );
       }
 
-      // Sequence complete but unknown
+      // Sequence complete but unknown - consume the sequence with ~ terminator
+      final tildeIndex = _buffer.indexOf(0x7E);
+      if (tildeIndex != -1) {
+        _buffer.removeRange(0, tildeIndex + 1);
+        // Try to parse the next event in the buffer
+        return _parseKeyboardEvent();
+      }
       return null;
     }
 
@@ -631,7 +637,22 @@ class InputParser {
     final lastByte = _buffer.last;
     if ((lastByte >= 0x40 && lastByte <= 0x7E) || lastByte == 0x7E) {
       // Sequence is complete but we don't recognize it
-      return null;
+      // Find the end of this CSI sequence and consume it to prevent buffer buildup
+      // CSI sequences end with a byte in the range 0x40-0x7E (@ through ~)
+      int endIndex = 2; // Start after ESC [
+      while (endIndex < _buffer.length) {
+        final byte = _buffer[endIndex];
+        if (byte >= 0x40 && byte <= 0x7E) {
+          // Found the terminator
+          endIndex++;
+          break;
+        }
+        endIndex++;
+      }
+      // Consume the invalid CSI sequence
+      _buffer.removeRange(0, endIndex);
+      // Try to parse the next event in the buffer
+      return _parseKeyboardEvent();
     }
 
     // Need more bytes

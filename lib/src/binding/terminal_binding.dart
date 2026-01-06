@@ -38,6 +38,12 @@ class TerminalBinding extends NoctermBinding
   final _keyboardEventController = StreamController<KeyboardEvent>.broadcast();
   final _inputParser = InputParser();
   final _mouseEventController = StreamController<MouseEvent>.broadcast();
+
+  /// Timestamp of last input bytes added to parser (for buffer staleness detection)
+  DateTime? _lastInputTime;
+
+  /// Timeout for stale buffer detection (100ms)
+  static const _bufferStaleTimeout = Duration(milliseconds: 100);
   final _mouseTracker = MouseTracker();
   final _oscEventsController = StreamController<String>.broadcast();
 
@@ -129,6 +135,16 @@ class TerminalBinding extends NoctermBinding
       // - Normal mode: Terminal emulator responses (color queries, clipboard, etc.)
       // - Shell mode: Above + custom protocol (e.g., OSC 9999 size updates)
       bytes = _processOscSequences(bytes);
+
+      // Check for stale buffer - if too much time has passed since last input,
+      // clear any incomplete sequences that may be blocking the parser.
+      // This handles edge cases where rapid key sequences get corrupted.
+      final now = DateTime.now();
+      if (_lastInputTime != null &&
+          now.difference(_lastInputTime!) > _bufferStaleTimeout) {
+        _inputParser.clear();
+      }
+      _lastInputTime = now;
 
       // Parse the bytes and process ALL events in the buffer
       _inputParser.addBytes(bytes);
@@ -606,12 +622,19 @@ class TerminalBinding extends NoctermBinding
       childrenOffset = Offset(elementBounds.left, elementBounds.top);
     }
 
+    // Visit children in reverse order to respect visual stacking
+    // (last child is visually on top in Stack-like containers)
+    final children = <Element>[];
     element.visitChildren((child) {
+      children.add(child);
+    });
+
+    for (final child in children.reversed) {
       if (!handled) {
         handled = _dispatchMouseWheelAtPosition(
             child, event, mousePos, childrenOffset);
       }
-    });
+    }
 
     // If no child handled it and this element's render object is scrollable, handle it here
     if (!handled &&
