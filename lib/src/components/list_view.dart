@@ -449,7 +449,7 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
   }
 
   void _handleScrollUpdate() {
-    markNeedsPaint();
+    markNeedsLayout();
   }
 
   @override

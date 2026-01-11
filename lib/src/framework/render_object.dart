@@ -331,8 +331,7 @@ abstract class RenderObject {
     if (!_needsLayout && constraints == _constraints) return;
 
     _constraints = constraints;
-    // TODO remove the || true at some point
-    if (_needsLayout || _size == null || true) {
+    if (_needsLayout || _size == null) {
       // Set _needsLayout = false BEFORE calling performLayout so that
       // invokeLayoutCallback can be used during layout (its assertion
       // checks that we're in the middle of performLayout by verifying
