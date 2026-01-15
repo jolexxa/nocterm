@@ -15,6 +15,9 @@ typedef ItemCountGetter = int Function();
 ///
 /// ListView is the most commonly used scrolling widget. It displays its
 /// children one after another in the scroll direction.
+///
+/// Set [keyboardScrollable] to true to enable keyboard navigation with
+/// arrow keys, Page Up/Down, and Home/End.
 class ListView extends StatefulComponent {
   /// Creates a scrollable, linear array of widgets from an explicit [List].
   ListView({
@@ -25,6 +28,7 @@ class ListView extends StatefulComponent {
     this.padding,
     this.itemExtent,
     this.lazy = false,
+    this.keyboardScrollable = false,
     List<Component> children = const [],
   })  : itemCount = children.length,
         itemBuilder = ((context, index) => children[index]),
@@ -43,6 +47,7 @@ class ListView extends StatefulComponent {
     this.padding,
     this.itemExtent,
     this.lazy = false,
+    this.keyboardScrollable = false,
     required this.itemBuilder,
     this.itemCount,
   }) : separatorBuilder = null;
@@ -55,6 +60,7 @@ class ListView extends StatefulComponent {
     this.controller,
     this.padding,
     this.lazy = false,
+    this.keyboardScrollable = false,
     required this.itemBuilder,
     required this.separatorBuilder,
     this.itemCount,
@@ -96,6 +102,14 @@ class ListView extends StatefulComponent {
   /// When true, only visible children are built, which is more efficient for
   /// large lists but may result in estimated scroll extents.
   final bool lazy;
+
+  /// Whether to enable keyboard scrolling with arrow keys, Page Up/Down, etc.
+  ///
+  /// When true, the scroll view will be wrapped in a [Focusable] that handles:
+  /// - Arrow Up/Down (or Left/Right for horizontal): scroll by 1 line
+  /// - Page Up/Down: scroll by viewport height
+  /// - Home/End: scroll to start/end
+  final bool keyboardScrollable;
 
   /// Called to build children for the list.
   final IndexedWidgetBuilder itemBuilder;
@@ -144,9 +158,53 @@ class _ListViewState extends State<ListView> {
     super.dispose();
   }
 
+  bool _handleKeyEvent(KeyboardEvent event) {
+    final controller = _effectiveController;
+    final isVertical = component.scrollDirection == Axis.vertical;
+
+    // Arrow keys for single line scroll
+    if (isVertical) {
+      if (event.logicalKey == LogicalKey.arrowUp) {
+        controller.scrollUp(1.0);
+        return true;
+      } else if (event.logicalKey == LogicalKey.arrowDown) {
+        controller.scrollDown(1.0);
+        return true;
+      }
+    } else {
+      if (event.logicalKey == LogicalKey.arrowLeft) {
+        controller.scrollUp(1.0);
+        return true;
+      } else if (event.logicalKey == LogicalKey.arrowRight) {
+        controller.scrollDown(1.0);
+        return true;
+      }
+    }
+
+    // Page Up/Down for viewport-sized scroll
+    if (event.logicalKey == LogicalKey.pageUp) {
+      controller.scrollUp(controller.viewportDimension ?? 10);
+      return true;
+    } else if (event.logicalKey == LogicalKey.pageDown) {
+      controller.scrollDown(controller.viewportDimension ?? 10);
+      return true;
+    }
+
+    // Home/End for scroll to start/end
+    if (event.logicalKey == LogicalKey.home) {
+      controller.jumpTo(0);
+      return true;
+    } else if (event.logicalKey == LogicalKey.end) {
+      controller.jumpTo(controller.maxScrollExtent ?? 0);
+      return true;
+    }
+
+    return false;
+  }
+
   @override
   Component build(BuildContext context) {
-    return _ListViewport(
+    Component viewport = _ListViewport(
       scrollDirection: component.scrollDirection,
       reverse: component.reverse,
       controller: _effectiveController,
@@ -157,6 +215,17 @@ class _ListViewState extends State<ListView> {
       separatorBuilder: component.separatorBuilder,
       itemCount: component.itemCount,
     );
+
+    // Wrap with Focusable for keyboard scrolling if enabled
+    if (component.keyboardScrollable) {
+      viewport = Focusable(
+        focused: true,
+        onKeyEvent: _handleKeyEvent,
+        child: viewport,
+      );
+    }
+
+    return viewport;
   }
 }
 
@@ -228,6 +297,15 @@ class _ListViewportElement extends RenderObjectElement {
   /// Currently built children indexed by their item index.
   final Map<int, Element> _children = {};
 
+  /// Tracks whether children need to be updated (parent state changed).
+  /// When true, buildChild will call itemBuilder and update existing elements.
+  /// This is reset after layout completes.
+  bool _needsChildUpdate = false;
+
+  /// Tracks which children have been updated during the current layout pass.
+  /// This prevents updating the same child multiple times per layout.
+  final Set<int> _updatedThisLayout = {};
+
   @override
   void mount(Element? parent, Object? newSlot) {
     super.mount(parent, newSlot);
@@ -243,22 +321,18 @@ class _ListViewportElement extends RenderObjectElement {
   @override
   void update(Component newComponent) {
     super.update(newComponent);
-    // Clear cached children so they get rebuilt with new props
+    // Mark that children need to be updated with new props
     // This is necessary when parent state changes (e.g., selection index)
-    _clearChildren();
+    _needsChildUpdate = true;
+    _updatedThisLayout.clear();
     // Force rebuild to update children
     renderObject.markNeedsLayout();
   }
 
-  /// Clears all cached children, unmounting them properly.
-  void _clearChildren() {
-    for (final child in _children.values) {
-      if (child.mounted) {
-        child.deactivate();
-        child.unmount();
-      }
-    }
-    _children.clear();
+  /// Called by RenderListViewport after layout completes to reset update flags.
+  void layoutComplete() {
+    _needsChildUpdate = false;
+    _updatedThisLayout.clear();
   }
 
   @override
@@ -292,21 +366,55 @@ class _ListViewportElement extends RenderObjectElement {
       return null;
     }
 
-    // Return cached element if it exists - avoids redundant itemBuilder calls
     final existingChild = _children[index];
+
+    // If we have a cached element and don't need to update, return it directly
+    // This avoids redundant itemBuilder calls during the same layout pass
     if (existingChild != null) {
-      return existingChild;
+      if (!_needsChildUpdate || _updatedThisLayout.contains(index)) {
+        // Either no update needed, or already updated this layout pass
+        return existingChild;
+      }
+
+      // Need to update this child - call itemBuilder and update element
+      _updatedThisLayout.add(index);
+      final newChild = component.itemBuilder(this, index);
+      if (newChild == null) {
+        // Item no longer exists, remove cached element
+        existingChild.deactivate();
+        existingChild.unmount();
+        _children.remove(index);
+        return null;
+      }
+
+      // Update existing element if possible
+      if (Component.canUpdate(existingChild.component, newChild)) {
+        existingChild.update(newChild);
+        return existingChild;
+      } else {
+        // Can't update, replace element
+        existingChild.deactivate();
+        existingChild.unmount();
+        // ignore: invalid_use_of_protected_member
+        final element = newChild.createElement();
+        _children[index] = element;
+        element.mount(this, index);
+        return element;
+      }
     }
 
-    // Only call itemBuilder when we need to create a new element
+    // No cached element - create new one
     final child = component.itemBuilder(this, index);
     if (child == null) return null;
 
     // ignore: invalid_use_of_protected_member
-    final newChild = child.createElement();
-    _children[index] = newChild;
-    newChild.mount(this, index);
-    return newChild;
+    final newElement = child.createElement();
+    _children[index] = newElement;
+    newElement.mount(this, index);
+    if (_needsChildUpdate) {
+      _updatedThisLayout.add(index);
+    }
+    return newElement;
   }
 
   /// Builds a separator at the given index.
@@ -610,6 +718,9 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
         lastIndex >= 0 ? lastIndex : itemCount ?? lastIndex,
       );
     }
+
+    // Reset the child update flag after layout completes
+    _element?.layoutComplete();
   }
 
   /// Performs lazy layout - only builds visible children
