@@ -40,6 +40,12 @@ class PipelineOwner {
     onNeedsVisualUpdate?.call();
   }
 
+  /// Whether there are any render objects that need layout.
+  bool get hasNodesToLayout => _nodesNeedingLayout.isNotEmpty;
+
+  /// Whether there are any render objects that need painting.
+  bool get hasNodesToPaint => _nodesNeedingPaint.isNotEmpty;
+
   /// Enable mutations during layout callback.
   ///
   /// This is used by [RenderObject.invokeLayoutCallback] to allow building

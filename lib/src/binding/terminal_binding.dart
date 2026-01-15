@@ -54,6 +54,76 @@ class TerminalBinding extends NoctermBinding
   /// Previous frame's buffer for differential rendering.
   buf.Buffer? _previousBuffer;
 
+  // Debug frame counting
+  int _frameCount = 0;
+  int _buildCount = 0;
+  int _layoutCount = 0;
+  int _paintCount = 0;
+  DateTime? _statsStartTime;
+
+  /// Get current performance stats and reset counters.
+  /// Returns a map with fps, builds/sec, layouts/sec, paints/sec.
+  Map<String, double> getPerformanceStats() {
+    final now = DateTime.now();
+    final start = _statsStartTime ?? now;
+    final elapsed = now.difference(start).inMilliseconds / 1000.0;
+
+    if (elapsed < 0.001) {
+      return {'fps': 0, 'builds': 0, 'layouts': 0, 'paints': 0};
+    }
+
+    final stats = {
+      'fps': _frameCount / elapsed,
+      'builds': _buildCount / elapsed,
+      'layouts': _layoutCount / elapsed,
+      'paints': _paintCount / elapsed,
+    };
+
+    // Reset counters
+    _frameCount = 0;
+    _buildCount = 0;
+    _layoutCount = 0;
+    _paintCount = 0;
+    _statsStartTime = now;
+
+    return stats;
+  }
+
+  /// Increment build counter (called from BuildOwner)
+  void recordBuild() => _buildCount++;
+
+  /// Increment layout counter
+  void recordLayout() => _layoutCount++;
+
+  /// Increment paint counter
+  void recordPaint() => _paintCount++;
+
+  // Performance logging
+  Timer? _perfLogTimer;
+
+  /// Start logging performance stats every [interval] seconds.
+  /// Stats are printed to the nocterm log (view with `nocterm logs`).
+  void startPerformanceLogging(
+      {Duration interval = const Duration(seconds: 5)}) {
+    _perfLogTimer?.cancel();
+    _statsStartTime = DateTime.now();
+    _perfLogTimer = Timer.periodic(interval, (_) {
+      final stats = getPerformanceStats();
+      final msg = 'PERF: fps=${stats['fps']!.toStringAsFixed(1)}, '
+          'builds=${stats['builds']!.toStringAsFixed(1)}/s, '
+          'layouts=${stats['layouts']!.toStringAsFixed(1)}/s, '
+          'paints=${stats['paints']!.toStringAsFixed(1)}/s';
+      // Use print which goes to nocterm logs
+      print(msg);
+    });
+  }
+
+  /// Stop performance logging.
+  void stopPerformanceLogging() {
+    _perfLogTimer?.cancel();
+    _perfLogTimer = null;
+  }
+
   StreamSubscription? _inputSubscription;
   StreamSubscription? _resizeSubscription;
   StreamSubscription? _shutdownSubscription;
@@ -790,6 +860,9 @@ class TerminalBinding extends NoctermBinding
 
   @override
   void handleDrawFrame() {
+    _frameCount++;
+    _statsStartTime ??= DateTime.now();
+
     if (rootElement == null) {
       super.handleDrawFrame(); // Let scheduler handle phase transitions
       return;
@@ -879,6 +952,9 @@ class TerminalBinding extends NoctermBinding
 
   /// Full redraw (used for first frame or after resize).
   void _renderFull(buf.Buffer buffer) {
+    // Clear the screen first to remove any artifacts from previous renders
+    // (especially important when terminal size shrinks)
+    terminal.write(EscapeCodes.clearScreen);
     terminal.moveTo(0, 0);
     TextStyle? currentStyle;
 
@@ -933,6 +1009,20 @@ class TerminalBinding extends NoctermBinding
   /// The actual frame drawing logic, registered as a persistent callback.
   void _drawFrameCallback(Duration timeStamp) {
     if (rootElement == null) return;
+
+    // Check if we need to do visual work BEFORE the build phase
+    // We check this early to avoid unnecessary work
+    final needsBuild = buildOwner.hasDirtyElements;
+    final needsLayout = pipelineOwner.hasNodesToLayout;
+    final needsPaint = pipelineOwner.hasNodesToPaint;
+
+    // If nothing needs visual update and we have a previous buffer, skip entirely
+    if (!needsBuild && !needsLayout && !needsPaint && _previousBuffer != null) {
+      // Nothing to do - reuse previous frame
+      // Still call super.drawFrame() to maintain proper phase transitions
+      super.drawFrame();
+      return;
+    }
 
     // Build phase - handled by BuildOwner via persistent callback
     super.drawFrame();
