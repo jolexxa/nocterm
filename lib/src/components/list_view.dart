@@ -738,17 +738,9 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
       // Fast path for fixed extent
       itemIndex = (scrollOffset / itemExtent!).floor();
       currentPosition = itemIndex * itemExtent!;
-    } else if (_averageItemExtent != null &&
-        _averageItemExtent! > 0 &&
-        scrollOffset > 0) {
-      // Use average extent to estimate starting position
-      // Subtract buffer items to account for size variance
-      final estimatedIndex = (scrollOffset / _averageItemExtent!).floor() - 10;
-      itemIndex = estimatedIndex.clamp(
-          0, itemCount != null ? itemCount - 1 : estimatedIndex);
-      currentPosition = itemIndex * _averageItemExtent!;
     } else {
-      // No average yet or at start - start from 0
+      // For variable extent, start from 0
+      // TODO: Optimize with offset caching for large lists
       itemIndex = 0;
       currentPosition = 0;
     }
