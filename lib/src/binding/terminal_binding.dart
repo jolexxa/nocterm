@@ -539,7 +539,7 @@ class TerminalBinding extends NoctermBinding
     // Check if this element is a BlockFocus that's blocking
     if (element is BlockFocusElement && element.isBlocking) {
       // Block all keyboard events from reaching children
-      return false; // Event is "handled" (blocked)
+      return true; // Event is handled (blocked)
     }
 
     // TODO: This is a hack to handle RenderTheater specially for Navigator
@@ -652,8 +652,10 @@ class TerminalBinding extends NoctermBinding
 
   /// Run the main event loop
   Future<void> runEventLoop() async {
-    // Initial frame
-    drawFrame();
+    // Initial frame - use executeFrame() to render synchronously before entering event loop
+    // Note: drawFrame() only builds the tree, it doesn't render to terminal.
+    // We need to go through the scheduler to invoke persistent callbacks (_drawFrameCallback).
+    executeFrame();
 
     // Keep the app running until shutdown is called
     // Use a completer-based approach for truly event-driven behavior

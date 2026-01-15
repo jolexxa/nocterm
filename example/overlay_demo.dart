@@ -22,34 +22,59 @@ class _OverlayDemoState extends State<OverlayDemo> {
 
   void _showOverlay() {
     _overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        left: 10,
-        top: 5,
-        child: Container(
-          width: 30,
-          height: 10,
-          decoration: BoxDecoration(
-            border: BoxBorder.all(color: Colors.cyan),
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Overlay Window'),
-                const SizedBox(height: 1),
-                Text(
-                  'Terminal BG shows through!',
-                  style: TextStyle(color: Colors.green),
-                ),
-                const SizedBox(height: 1),
-                Text(
-                  'Press ESC to close',
-                  style: TextStyle(
-                      color: Colors.yellow, fontStyle: FontStyle.italic),
-                ),
-              ],
+      builder: (context) => KeyboardListener(
+        autofocus: true,
+        onKeyEvent: (event) {
+          if (event == LogicalKey.escape) {
+            _hideOverlay();
+            return true;
+          }
+          return false;
+        },
+        // Use Stack to layer the barrier behind the dialog
+        child: Stack(
+          children: [
+            // Animated dimming barrier that fades in
+            FadeModalBarrier(
+              color: Colors.black.withOpacity(0.6),
+              dismissible: true,
+              onDismiss: _hideOverlay,
+              duration: const Duration(milliseconds: 150),
             ),
-          ),
+            // The actual dialog
+            Positioned(
+              left: 10,
+              top: 5,
+              child: Container(
+                width: 30,
+                height: 10,
+                decoration: BoxDecoration(
+                  border: BoxBorder.all(color: Colors.cyan),
+                  // Give the dialog a background so it's visible against the dim
+                  color: Colors.black,
+                ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Overlay Window'),
+                      const SizedBox(height: 1),
+                      Text(
+                        'Background is dimmed!',
+                        style: TextStyle(color: Colors.green),
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        'Press ESC to close',
+                        style: TextStyle(
+                            color: Colors.yellow, fontStyle: FontStyle.italic),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -73,6 +98,7 @@ class _OverlayDemoState extends State<OverlayDemo> {
             });
 
             return KeyboardListener(
+              autofocus: true,
               onKeyEvent: (event) {
                 if (event == LogicalKey.escape) {
                   if (_overlayEntry != null) {
@@ -104,10 +130,10 @@ class _OverlayDemoState extends State<OverlayDemo> {
                       ),
                       const SizedBox(height: 2),
                       const Text(
-                          'This demo shows overlays with terminal default background'),
+                          'This demo shows overlays with animated dimming background'),
                       const SizedBox(height: 1),
                       Text(
-                        'The overlay won\'t have a gray background - it uses terminal\'s default!',
+                        'The background fades to dark when the overlay appears!',
                         style: TextStyle(color: Colors.green),
                       ),
                       const SizedBox(height: 2),

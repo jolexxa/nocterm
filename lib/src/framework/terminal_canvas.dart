@@ -161,6 +161,54 @@ class TerminalCanvas {
     }
   }
 
+  /// Apply a semi-transparent tint/overlay to a rectangle.
+  ///
+  /// Unlike [fillRect], this preserves the existing characters and only
+  /// modifies the colors by blending with the overlay color.
+  ///
+  /// This is useful for modal barriers and dimming effects where you want
+  /// to darken or tint the underlying content without erasing it.
+  void applyTint(Rect rect, Color tintColor) {
+    final left = math.max(0, rect.left.round());
+    final top = math.max(0, rect.top.round());
+    final right = math.min(area.width, (rect.left + rect.width).round());
+    final bottom = math.min(area.height, (rect.top + rect.height).round());
+
+    for (int y = top; y < bottom; y++) {
+      for (int x = left; x < right; x++) {
+        final cellX = area.left.round() + x;
+        final cellY = area.top.round() + y;
+
+        final existingCell = _buffer.getCell(cellX, cellY);
+
+        // Blend the tint color over both foreground and background colors
+        final existingFg = existingCell.style.color ?? Color.defaultColor;
+        final existingBg =
+            existingCell.style.backgroundColor ?? Color.defaultColor;
+
+        // Apply tint to both foreground and background
+        final blendedFg = Color.alphaBlend(tintColor, existingFg);
+        final blendedBg = Color.alphaBlend(tintColor, existingBg);
+
+        _buffer.setCell(
+          cellX,
+          cellY,
+          Cell(
+            char: existingCell.char, // Keep the existing character!
+            style: TextStyle(
+              color: blendedFg,
+              backgroundColor: blendedBg,
+              fontWeight: existingCell.style.fontWeight,
+              fontStyle: existingCell.style.fontStyle,
+              decoration: existingCell.style.decoration,
+              reverse: existingCell.style.reverse,
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   /// Draw a box with borders
   void drawBox(Rect rect, {BorderStyle? border, TextStyle? style}) {
     if (border == null) return;

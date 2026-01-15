@@ -1,6 +1,88 @@
 import 'package:nocterm/src/framework/framework.dart';
 import 'package:nocterm/src/framework/listenable.dart';
 
+/// A component that rebuilds when the given [Listenable] changes value.
+///
+/// [AnimatedComponent] is most commonly used with [Animation] objects, which are
+/// [Listenable]s, but it can be used with any [Listenable], including
+/// [ChangeNotifier] and [ValueNotifier].
+///
+/// This is an abstract class, you should create your own subclass that overrides
+/// [build] to return the component tree you want to build.
+///
+/// Example:
+/// ```dart
+/// class SpinningContainer extends AnimatedComponent {
+///   const SpinningContainer({
+///     super.key,
+///     required AnimationController controller,
+///   }) : super(listenable: controller);
+///
+///   @override
+///   Component build(BuildContext context) {
+///     final controller = listenable as AnimationController;
+///     return Transform.rotate(
+///       angle: controller.value * 2.0 * math.pi,
+///       child: Container(...),
+///     );
+///   }
+/// }
+/// ```
+abstract class AnimatedComponent extends StatefulComponent {
+  /// Creates a component that rebuilds when [listenable] changes value.
+  const AnimatedComponent({
+    super.key,
+    required this.listenable,
+  });
+
+  /// The [Listenable] to which this component is listening.
+  ///
+  /// Commonly an [Animation] or a [ChangeNotifier].
+  final Listenable listenable;
+
+  /// Override this method to build the component tree.
+  ///
+  /// This method is called every time [listenable] changes value.
+  Component build(BuildContext context);
+
+  @override
+  State<AnimatedComponent> createState() => _AnimatedComponentState();
+}
+
+class _AnimatedComponentState extends State<AnimatedComponent> {
+  @override
+  void initState() {
+    super.initState();
+    component.listenable.addListener(_handleChange);
+  }
+
+  @override
+  void didUpdateComponent(AnimatedComponent oldComponent) {
+    super.didUpdateComponent(oldComponent);
+    if (component.listenable != oldComponent.listenable) {
+      oldComponent.listenable.removeListener(_handleChange);
+      component.listenable.addListener(_handleChange);
+    }
+  }
+
+  @override
+  void dispose() {
+    component.listenable.removeListener(_handleChange);
+    super.dispose();
+  }
+
+  void _handleChange() {
+    setState(() {
+      // The listenable changed, rebuild.
+    });
+  }
+
+  @override
+  Component build(BuildContext context) {
+    return component.build(context);
+  }
+}
+
 /// Signature for the builder callback used by [AnimatedBuilder].
 typedef AnimatedComponentBuilder = Component Function(
   BuildContext context,

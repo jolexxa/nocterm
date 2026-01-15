@@ -173,17 +173,17 @@ class _FocusDemoState extends State<FocusDemo> {
                         focusedArea = FocusArea.footer;
                       });
                       return true;
-                    } else if (event.logicalKey == LogicalKey.tab) {
-                      _updateLastKey('Tab');
-                      setState(() {
-                        focusedArea = FocusArea.footer;
-                      });
-                      return true;
                     } else if (event.logicalKey == LogicalKey.tab &&
                         event.isShiftPressed) {
                       _updateLastKey('Shift+Tab');
                       setState(() {
                         focusedArea = FocusArea.sidebar;
+                      });
+                      return true;
+                    } else if (event.logicalKey == LogicalKey.tab) {
+                      _updateLastKey('Tab');
+                      setState(() {
+                        focusedArea = FocusArea.footer;
                       });
                       return true;
                     }
@@ -295,17 +295,17 @@ class _FocusDemoState extends State<FocusDemo> {
                 focusedArea = FocusArea.main;
               });
               return true;
-            } else if (event.logicalKey == LogicalKey.tab) {
-              _updateLastKey('Tab');
-              setState(() {
-                focusedArea = FocusArea.sidebar;
-              });
-              return true;
             } else if (event.logicalKey == LogicalKey.tab &&
                 event.isShiftPressed) {
               _updateLastKey('Shift+Tab');
               setState(() {
                 focusedArea = FocusArea.main;
+              });
+              return true;
+            } else if (event.logicalKey == LogicalKey.tab) {
+              _updateLastKey('Tab');
+              setState(() {
+                focusedArea = FocusArea.sidebar;
               });
               return true;
             } else if (event.logicalKey == LogicalKey.keyQ) {

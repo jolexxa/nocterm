@@ -193,9 +193,10 @@ mixin SchedulerBinding on NoctermBinding {
     final int id = _nextFrameCallbackId++;
     _transientCallbacks[id] =
         _FrameCallbackEntry(callback, debugLabel: debugLabel);
-    if (!rescheduling) {
-      scheduleFrame();
-    }
+    // Always schedule a frame - even when rescheduling, we need to ensure
+    // the frame loop continues (nocterm doesn't have a persistent frame loop
+    // like Flutter's engine)
+    scheduleFrame();
     return id;
   }
 
@@ -384,6 +385,11 @@ mixin SchedulerBinding on NoctermBinding {
       _schedulerPhase = SchedulerPhase.transientCallbacks;
       final localTransientCallbacks =
           Map<int, _FrameCallbackEntry>.of(_transientCallbacks);
+      // Remove only the callbacks we're about to process, not any new ones
+      // that might be added during callback execution
+      for (final id in localTransientCallbacks.keys) {
+        _transientCallbacks.remove(id);
+      }
       for (final entry in localTransientCallbacks.values) {
         if (!entry.cancelled) {
           _invokeFrameCallback(
@@ -393,7 +399,6 @@ mixin SchedulerBinding on NoctermBinding {
           );
         }
       }
-      _transientCallbacks.clear();
       _removeCompletedCallbacks();
       NoctermTimeline.finishSync(); // Animate
 

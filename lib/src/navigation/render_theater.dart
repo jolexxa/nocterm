@@ -58,7 +58,19 @@ class RenderTheater extends RenderObject
   @override
   void setupParentData(RenderObject child) {
     if (child.parentData is! TheaterParentData) {
-      child.parentData = TheaterParentData();
+      // If the child already has StackParentData (e.g., from Positioned widget),
+      // preserve the positioning values when upgrading to TheaterParentData
+      final existingData = child.parentData;
+      final newData = TheaterParentData();
+      if (existingData is stack_lib.StackParentData) {
+        newData.left = existingData.left;
+        newData.top = existingData.top;
+        newData.right = existingData.right;
+        newData.bottom = existingData.bottom;
+        newData.width = existingData.width;
+        newData.height = existingData.height;
+      }
+      child.parentData = newData;
     }
   }
 

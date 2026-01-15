@@ -92,3 +92,7 @@ export 'src/components/ascii_font.dart' show AsciiFont, AsciiGlyph;
 
 // Animation
 export 'src/animation/animations.dart';
+export 'src/animation/animated_builder.dart';
+
+// Modal Barrier
+export 'src/components/modal_barrier.dart';

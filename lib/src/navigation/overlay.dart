@@ -231,11 +231,9 @@ class _OverlayEntryWidgetState extends State<_OverlayEntryWidget> {
 
   @override
   Component build(BuildContext context) {
-    // For now, ignore tickerEnabled since we don't have TickerMode yet
-    return Container(
-      color: Color.defaultColor, // Always use terminal default background
-      child: component.entry.builder(context),
-    );
+    // Don't wrap in Container - let the builder result be the direct child
+    // so Positioned parent data propagates correctly to RenderTheater
+    return component.entry.builder(context);
   }
 }
 

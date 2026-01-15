@@ -106,8 +106,26 @@ class ParentDataElement<T extends ParentData> extends ProxyElement {
   void _applyParentData(ParentDataComponent<T> component) {
     void applyParentDataToChild(Element child) {
       if (child is RenderObjectElement) {
-        // Apply parent data to the render object
-        child.renderObject.parentData = component.data;
+        final renderObject = child.renderObject;
+        final existingData = renderObject.parentData;
+        final newData = component.data;
+
+        // If the existing parent data is a subtype that extends the new data's type,
+        // copy properties instead of replacing. This handles cases like
+        // TheaterParentData (extends StackParentData) where we want to
+        // preserve the subtype but copy positioning values from StackParentData.
+        if (existingData != null && existingData is T && newData is T) {
+          // Check if existingData is a subtype of StackParentData and newData is StackParentData
+          // If so, copy the positioning properties instead of replacing
+          if (existingData.runtimeType != newData.runtimeType &&
+              _copyStackParentDataIfApplicable(existingData, newData)) {
+            // Properties were copied, don't replace
+            return;
+          }
+        }
+
+        // Default: Apply parent data to the render object
+        renderObject.parentData = newData;
       } else {
         // Recursively apply to children if this isn't a render object element
         child.visitChildren(applyParentDataToChild);
@@ -117,6 +135,37 @@ class ParentDataElement<T extends ParentData> extends ProxyElement {
     if (_child != null) {
       applyParentDataToChild(_child!);
     }
+  }
+
+  /// Attempts to copy StackParentData properties from source to target.
+  /// Returns true if the copy was performed, false otherwise.
+  bool _copyStackParentDataIfApplicable(ParentData target, ParentData source) {
+    // Import the StackParentData type check dynamically
+    // We check if both are StackParentData-like by checking for the positioning properties
+    try {
+      final targetDynamic = target as dynamic;
+      final sourceDynamic = source as dynamic;
+
+      // Check if source has the StackParentData properties
+      if (sourceDynamic.left != null ||
+          sourceDynamic.top != null ||
+          sourceDynamic.right != null ||
+          sourceDynamic.bottom != null ||
+          sourceDynamic.width != null ||
+          sourceDynamic.height != null) {
+        // Copy the positioning properties
+        targetDynamic.left = sourceDynamic.left;
+        targetDynamic.top = sourceDynamic.top;
+        targetDynamic.right = sourceDynamic.right;
+        targetDynamic.bottom = sourceDynamic.bottom;
+        targetDynamic.width = sourceDynamic.width;
+        targetDynamic.height = sourceDynamic.height;
+        return true;
+      }
+    } catch (_) {
+      // If dynamic access fails, fall back to replacing
+    }
+    return false;
   }
 
   @override

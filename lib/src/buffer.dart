@@ -1,3 +1,4 @@
+import 'package:characters/characters.dart';
 import 'package:nocterm/src/rectangle.dart';
 
 import 'style.dart';
@@ -64,14 +65,12 @@ class Buffer {
 
   void setString(int x, int y, String text, {TextStyle? style}) {
     int currentX = x;
-    final runes = text.runes.toList();
 
-    for (int i = 0; i < runes.length; i++) {
+    // Use grapheme clusters for proper Unicode handling (emojis, ZWJ sequences, etc.)
+    for (final grapheme in text.characters) {
       if (currentX >= width) break;
 
-      final rune = runes[i];
-      final char = String.fromCharCode(rune);
-      final charWidth = UnicodeWidth.runeWidth(rune);
+      final charWidth = UnicodeWidth.graphemeWidth(grapheme);
 
       // Skip zero-width characters
       if (charWidth == 0) continue;
@@ -80,7 +79,7 @@ class Buffer {
       if (charWidth == 2 && currentX + 1 >= width) break;
 
       if (y >= 0 && y < height && currentX >= 0) {
-        cells[y][currentX] = Cell(char: char, style: style);
+        cells[y][currentX] = Cell(char: grapheme, style: style);
 
         // For wide characters, mark the next cell as occupied
         if (charWidth == 2 && currentX + 1 < width) {

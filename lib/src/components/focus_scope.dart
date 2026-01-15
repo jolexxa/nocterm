@@ -1,63 +1,35 @@
 import '../framework/framework.dart';
-import 'focusable.dart';
+import 'block_focus.dart';
 
 /// A widget that creates a focus scope boundary.
 ///
-/// When [enabled] is false, all focusable widgets in the subtree
-/// will be disabled, preventing them from receiving focus.
+/// When [blocking] is true, all focusable widgets in the subtree
+/// will be blocked from receiving keyboard events.
 /// This is useful for disabling focus on background content
 /// when showing modal dialogs or overlays.
 class FocusScope extends StatelessComponent {
   /// The child widget tree.
   final Component child;
 
-  /// Whether to absorb focus events when disabled.
+  /// Whether to block focus events from reaching children.
   ///
-  /// When true and [enabled] is false, focus events are consumed
-  /// but not passed to children.
-  final bool absorb;
+  /// When true, keyboard events are blocked and not passed to children.
+  /// Defaults to true.
+  final bool blocking;
 
   const FocusScope({
     super.key,
-    this.absorb = true,
+    this.blocking = true,
     required this.child,
   });
 
   @override
   Component build(BuildContext context) {
-    // When disabled, wrap the child in a widget that blocks focus
-    return _FocusBlocker(
-      absorb: absorb,
+    // Use BlockFocus which is properly handled by TerminalBinding._dispatchKeyToElement
+    // to actually block keyboard events from reaching children
+    return BlockFocus(
+      blocking: blocking,
       child: child,
     );
-  }
-}
-
-/// Internal widget that blocks focus events from reaching its children.
-class _FocusBlocker extends StatelessComponent {
-  final bool absorb;
-  final Component child;
-
-  const _FocusBlocker({
-    required this.absorb,
-    required this.child,
-  });
-
-  @override
-  Component build(BuildContext context) {
-    // We need to intercept focus traversal
-    // For now, we'll use a simple approach with Focusable
-    if (absorb) {
-      // Create a focusable that captures but doesn't process events
-      return Focusable(
-        focused: false,
-        onKeyEvent: (_) => false, // Don't handle any events
-        child: child,
-      );
-    }
-
-    // Just return the child without modification
-    // In a more complete implementation, we would block pointer events
-    return child;
   }
 }

@@ -120,9 +120,7 @@ void main() {
       );
     });
 
-    test('modal dialog',
-        skip: 'Known issue: Dialog content visibility in overlay system',
-        () async {
+    test('modal dialog', () async {
       await testNocterm(
         'modal dialog navigation',
         (tester) async {
@@ -138,12 +136,13 @@ void main() {
           expect(tester.terminalState, containsText('Main Content'));
 
           // Show dialog
+          // Note: height must accommodate content + padding (2*2=4) + borders (2) + text (1) = 7 minimum
           final dialogFuture = navState.showDialog<bool>(
             builder: (context) => Container(
               decoration: BoxDecoration(
                 border: BoxBorder.all(),
               ),
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.all(1),
               child: const Text('Dialog Content'),
             ),
             width: 20,

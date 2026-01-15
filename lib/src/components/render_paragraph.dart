@@ -1,3 +1,4 @@
+import 'package:characters/characters.dart';
 import 'package:nocterm/nocterm.dart' hide TextAlign;
 import 'package:nocterm/src/framework/terminal_canvas.dart';
 
@@ -123,11 +124,12 @@ class RenderParagraph extends RenderObject {
   ) {
     final List<List<StyledTextSegment>> styledLines = [];
 
-    // Flatten segments into a list of (char, style) pairs for easier indexing
+    // Flatten segments into a list of (grapheme, style) pairs for easier indexing
+    // Use grapheme clusters for proper Unicode handling (emojis, ZWJ sequences, etc.)
     final List<(String, TextStyle?)> charStyles = [];
     for (final segment in segments) {
-      for (int i = 0; i < segment.text.length; i++) {
-        charStyles.add((segment.text[i], segment.style));
+      for (final grapheme in segment.text.characters) {
+        charStyles.add((grapheme, segment.style));
       }
     }
 
@@ -142,9 +144,11 @@ class RenderParagraph extends RenderObject {
         charIndex++;
       }
 
-      // Now consume characters for this line
+      // Now consume graphemes for this line
+      // Use grapheme count for proper Unicode handling
+      final lineGraphemeCount = line.characters.length;
       int linePos = 0;
-      while (linePos < line.length && charIndex < charStyles.length) {
+      while (linePos < lineGraphemeCount && charIndex < charStyles.length) {
         final (char, style) = charStyles[charIndex];
 
         // Skip newlines in source (they don't appear in laid out lines)
@@ -153,12 +157,12 @@ class RenderParagraph extends RenderObject {
           continue;
         }
 
-        // Find consecutive characters with same style
+        // Find consecutive graphemes with same style
         final currentStyle = style;
         final buffer = StringBuffer();
 
         while (charIndex < charStyles.length &&
-            linePos < line.length &&
+            linePos < lineGraphemeCount &&
             charStyles[charIndex].$2 == currentStyle &&
             charStyles[charIndex].$1 != '\n') {
           buffer.write(charStyles[charIndex].$1);

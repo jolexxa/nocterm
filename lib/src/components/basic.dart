@@ -79,6 +79,26 @@ class SizedBox extends SingleChildRenderObjectComponent {
     super.child,
   });
 
+  /// Creates a box that will become as large as its parent allows.
+  const SizedBox.expand({super.key, super.child})
+      : width = double.infinity,
+        height = double.infinity;
+
+  /// Creates a box with zero width and height.
+  const SizedBox.shrink({super.key, super.child})
+      : width = 0,
+        height = 0;
+
+  /// Creates a box with the specified size.
+  SizedBox.fromSize({super.key, super.child, Size? size})
+      : width = size?.width,
+        height = size?.height;
+
+  /// Creates a square box with the specified dimension.
+  const SizedBox.square({super.key, super.child, double? dimension})
+      : width = dimension,
+        height = dimension;
+
   final double? width;
   final double? height;
 
