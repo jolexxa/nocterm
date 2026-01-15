@@ -299,6 +299,16 @@ abstract class RenderObject {
   bool _needsLayout = true;
   bool _needsPaint = true;
   bool _hasLayoutError = false;
+
+  /// Whether this render object needs layout.
+  ///
+  /// This is true after [markNeedsLayout] is called and before layout is performed.
+  bool get needsLayout => _needsLayout;
+
+  /// Whether this render object needs paint.
+  ///
+  /// This is true after [markNeedsPaint] is called and before paint is performed.
+  bool get needsPaint => _needsPaint;
   Object? _lastError;
   StackTrace? _lastStackTrace;
 
