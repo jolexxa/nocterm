@@ -633,6 +633,42 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
   /// Tracks the average item extent for estimating total scroll extent
   double? _averageItemExtent;
 
+  /// Cache of measured item offsets for O(1) scroll lookup.
+  /// Maps item index to its scroll offset from the start of the list.
+  final Map<int, double> _itemOffsets = {};
+
+  /// Cache of measured item extents.
+  /// Maps item index to its main axis extent (height for vertical, width for horizontal).
+  final Map<int, double> _itemExtents = {};
+
+  /// Finds the best starting index for layout given a scroll offset.
+  /// Uses cached offsets when available for O(1) lookup instead of O(n).
+  (int index, double position) _findStartingPosition(double scrollOffset) {
+    if (itemExtent != null) {
+      // Fixed extent - exact calculation
+      final index = (scrollOffset / itemExtent!).floor();
+      return (index, index * itemExtent!);
+    }
+
+    if (_itemOffsets.isEmpty) {
+      return (0, 0.0);
+    }
+
+    // Find the cached item closest to (but not past) the scroll offset
+    int bestIndex = 0;
+    double bestOffset = 0.0;
+
+    for (final entry in _itemOffsets.entries) {
+      final offset = entry.value;
+      if (offset <= scrollOffset && offset >= bestOffset) {
+        bestIndex = entry.key;
+        bestOffset = offset;
+      }
+    }
+
+    return (bestIndex, bestOffset);
+  }
+
   @override
   void performLayout() {
     _visibleChildren.clear();
@@ -730,20 +766,11 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
     required int? itemCount,
   }) {
     final scrollOffset = _controller.offset;
-    double currentPosition = 0;
-    int itemIndex = 0;
 
-    // Find first visible item
-    if (itemExtent != null) {
-      // Fast path for fixed extent
-      itemIndex = (scrollOffset / itemExtent!).floor();
-      currentPosition = itemIndex * itemExtent!;
-    } else {
-      // For variable extent, start from 0
-      // TODO: Optimize with offset caching for large lists
-      itemIndex = 0;
-      currentPosition = 0;
-    }
+    // Find first visible item using cache for O(1) lookup
+    final (startIndex, startPosition) = _findStartingPosition(scrollOffset);
+    int itemIndex = startIndex;
+    double currentPosition = startPosition;
 
     // Track total extent of measured items for average calculation
     double totalMeasuredExtent = 0;
@@ -769,6 +796,10 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
           : renderObject.size.width;
       totalMeasuredExtent += childExtent;
       measuredCount++;
+
+      // Cache the item's position for future lookups
+      _itemOffsets[itemIndex] = currentPosition;
+      _itemExtents[itemIndex] = childExtent;
 
       // Store child info if visible
       if (currentPosition + childExtent > scrollOffset) {
