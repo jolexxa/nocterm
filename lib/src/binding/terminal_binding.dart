@@ -1013,14 +1013,12 @@ class TerminalBinding extends NoctermBinding
   int _profileDiffTime = 0;
   int _profileBufferAllocTime = 0;
   int _profileFrames = 0;
-  DateTime? _profileStartTime;
   bool _enableDetailedProfiling = false;
 
   /// Enable detailed profiling that measures time spent in each render phase.
   /// Results are printed every 5 seconds to nocterm logs.
   void startDetailedProfiling() {
     _enableDetailedProfiling = true;
-    _profileStartTime = DateTime.now();
     _profileFrames = 0;
     _profileBuildTime = 0;
     _profileLayoutTime = 0;
@@ -1052,7 +1050,7 @@ class TerminalBinding extends NoctermBinding
     final avgAlloc = _profileBufferAllocTime ~/ _profileFrames;
     final total = avgBuild + avgLayout + avgPaint + avgDiff + avgAlloc;
 
-    print('=== DETAILED PROFILE (${_profileFrames} frames) ===');
+    print('=== DETAILED PROFILE ($_profileFrames frames) ===');
     print('  Buffer alloc: ${avgAlloc}μs (${_pct(avgAlloc, total)}%)');
     print('  Build:        ${avgBuild}μs (${_pct(avgBuild, total)}%)');
     print('  Layout:       ${avgLayout}μs (${_pct(avgLayout, total)}%)');

@@ -41,7 +41,6 @@ void main() {
           print('=== BEFORE OVERLAY ===');
           // Find the cyan text "Overlay Demo" - should be centered
           final centerY = 12; // Roughly center of 24 row terminal
-          final centerX = 40; // Roughly center of 80 col terminal
 
           // Find a cell with content
           Cell? beforeCell;

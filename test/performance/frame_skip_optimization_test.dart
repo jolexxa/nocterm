@@ -354,6 +354,7 @@ class _TimerCounterState extends State<_TimerCounter> {
 class _NestedCounters extends StatefulComponent {
   const _NestedCounters();
 
+  // ignore: unused_field
   static _NestedCountersState? lastState;
 
   @override

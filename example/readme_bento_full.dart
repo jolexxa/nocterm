@@ -287,37 +287,6 @@ class _BentoFullDemoState extends State<BentoFullDemo> {
     );
   }
 
-  Component _buildMiniChart() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (int i = 0; i < 16; i++)
-          Text(
-            _chartBar(i),
-            style: TextStyle(
-              color: Color.fromRGB(
-                (80 + math.sin(_time * 2 + i * 0.4) * 60)
-                    .toInt()
-                    .clamp(40, 180),
-                (120 + math.cos(_time * 1.5 + i * 0.3) * 40)
-                    .toInt()
-                    .clamp(80, 200),
-                255,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  String _chartBar(int i) {
-    final v = math.sin(_time * 2 + i * 0.5);
-    if (v > 0.6) return '▇';
-    if (v > 0.2) return '▅';
-    if (v > -0.2) return '▃';
-    return '▁';
-  }
-
   Component _buildCodePanel(int width) {
     final lines = [
       ('class', ' App ', 'extends', ' StatefulComponent'),
@@ -344,7 +313,6 @@ class _BentoFullDemoState extends State<BentoFullDemo> {
               // Smooth wave that travels down the code lines
               final wave = math.sin(_time * 1 - i * 0.8);
               final intensity = ((wave + 1) / 2).clamp(0.0, 1.0); // 0 to 1
-              final bgAlpha = (intensity * 0.15).clamp(0.0, 0.15);
 
               return Container(
                 decoration: BoxDecoration(

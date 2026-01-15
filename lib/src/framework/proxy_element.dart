@@ -114,7 +114,7 @@ class ParentDataElement<T extends ParentData> extends ProxyElement {
         // copy properties instead of replacing. This handles cases like
         // TheaterParentData (extends StackParentData) where we want to
         // preserve the subtype but copy positioning values from StackParentData.
-        if (existingData != null && existingData is T && newData is T) {
+        if (existingData != null && existingData is T) {
           // Check if existingData is a subtype of StackParentData and newData is StackParentData
           // If so, copy the positioning properties instead of replacing
           if (existingData.runtimeType != newData.runtimeType &&
