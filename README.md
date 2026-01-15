@@ -1,7 +1,3 @@
-<p align="center">
-<img src="doc/assets/nocterm_banner.png" height="100" alt="Nocterm" />
-</p>
-
 [![CI](https://github.com/norbert515/nocterm/actions/workflows/ci.yml/badge.svg)](https://github.com/norbert515/nocterm/actions/workflows/ci.yml)
 [![Pub Version](https://img.shields.io/pub/v/nocterm)](https://pub.dev/packages/nocterm)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -15,7 +11,7 @@
 
 **If you know Flutter, you know Nocterm.** Build terminal UIs with the same patterns—`StatefulComponent`, `setState()`, `Column`, `Row`, and hot reload.
 
-![Nocterm Example](doc/assets/screenshot.png)
+![Nocterm Demo](doc/assets/demo.gif)
 
 > **Note**: Nocterm is in early development (0.3.5). APIs may change.
 

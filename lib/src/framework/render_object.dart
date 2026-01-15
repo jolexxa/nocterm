@@ -180,6 +180,19 @@ class BoxConstraints {
   }
 
   @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is BoxConstraints &&
+        other.minWidth == minWidth &&
+        other.maxWidth == maxWidth &&
+        other.minHeight == minHeight &&
+        other.maxHeight == maxHeight;
+  }
+
+  @override
+  int get hashCode => Object.hash(minWidth, maxWidth, minHeight, maxHeight);
+
+  @override
   String toString() {
     return 'BoxConstraints($minWidth..$maxWidth x $minHeight..$maxHeight)';
   }

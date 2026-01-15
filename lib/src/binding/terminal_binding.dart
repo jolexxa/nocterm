@@ -1006,6 +1006,75 @@ class TerminalBinding extends NoctermBinding
     terminal.flush();
   }
 
+  // Detailed timing instrumentation for profiling
+  int _profileBuildTime = 0;
+  int _profileLayoutTime = 0;
+  int _profilePaintTime = 0;
+  int _profileDiffTime = 0;
+  int _profileBufferAllocTime = 0;
+  int _profileFrames = 0;
+  DateTime? _profileStartTime;
+  bool _enableDetailedProfiling = false;
+
+  /// Enable detailed profiling that measures time spent in each render phase.
+  /// Results are printed every 5 seconds to nocterm logs.
+  void startDetailedProfiling() {
+    _enableDetailedProfiling = true;
+    _profileStartTime = DateTime.now();
+    _profileFrames = 0;
+    _profileBuildTime = 0;
+    _profileLayoutTime = 0;
+    _profilePaintTime = 0;
+    _profileDiffTime = 0;
+    _profileBufferAllocTime = 0;
+
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!_enableDetailedProfiling) {
+        timer.cancel();
+        return;
+      }
+      _reportDetailedProfile();
+    });
+  }
+
+  /// Stop detailed profiling.
+  void stopDetailedProfiling() {
+    _enableDetailedProfiling = false;
+  }
+
+  void _reportDetailedProfile() {
+    if (_profileFrames == 0) return;
+
+    final avgBuild = _profileBuildTime ~/ _profileFrames;
+    final avgLayout = _profileLayoutTime ~/ _profileFrames;
+    final avgPaint = _profilePaintTime ~/ _profileFrames;
+    final avgDiff = _profileDiffTime ~/ _profileFrames;
+    final avgAlloc = _profileBufferAllocTime ~/ _profileFrames;
+    final total = avgBuild + avgLayout + avgPaint + avgDiff + avgAlloc;
+
+    print('=== DETAILED PROFILE (${_profileFrames} frames) ===');
+    print('  Buffer alloc: ${avgAlloc}μs (${_pct(avgAlloc, total)}%)');
+    print('  Build:        ${avgBuild}μs (${_pct(avgBuild, total)}%)');
+    print('  Layout:       ${avgLayout}μs (${_pct(avgLayout, total)}%)');
+    print('  Paint:        ${avgPaint}μs (${_pct(avgPaint, total)}%)');
+    print('  Diff render:  ${avgDiff}μs (${_pct(avgDiff, total)}%)');
+    print('  TOTAL:        ${total}μs per frame');
+    print('');
+
+    // Reset
+    _profileFrames = 0;
+    _profileBuildTime = 0;
+    _profileLayoutTime = 0;
+    _profilePaintTime = 0;
+    _profileDiffTime = 0;
+    _profileBufferAllocTime = 0;
+  }
+
+  String _pct(int value, int total) {
+    if (total == 0) return '0.0';
+    return (value * 100 / total).toStringAsFixed(1);
+  }
+
   /// The actual frame drawing logic, registered as a persistent callback.
   void _drawFrameCallback(Duration timeStamp) {
     if (rootElement == null) return;
@@ -1024,14 +1093,29 @@ class TerminalBinding extends NoctermBinding
       return;
     }
 
+    final profiling = _enableDetailedProfiling;
+    int t0 = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
+
+    if (profiling) {
+      t0 = DateTime.now().microsecondsSinceEpoch;
+    }
+
     // Build phase - handled by BuildOwner via persistent callback
     super.drawFrame();
+
+    if (profiling) {
+      t1 = DateTime.now().microsecondsSinceEpoch;
+    }
 
     // Get current terminal size (may have been updated by resize event)
     final size = terminal.size;
     final buffer = buf.Buffer(size.width.toInt(), size.height.toInt());
     final screenRect =
         Rect.fromLTWH(0, 0, size.width.toDouble(), size.height.toDouble());
+
+    if (profiling) {
+      t2 = DateTime.now().microsecondsSinceEpoch;
+    }
 
     // Find render object in tree
     RenderObject? findRenderObject(Element element) {
@@ -1060,6 +1144,10 @@ class TerminalBinding extends NoctermBinding
       // Flush layout pipeline
       pipelineOwner.flushLayout();
 
+      if (profiling) {
+        t3 = DateTime.now().microsecondsSinceEpoch;
+      }
+
       // Flush paint pipeline
       pipelineOwner.flushPaint();
 
@@ -1068,8 +1156,22 @@ class TerminalBinding extends NoctermBinding
       renderObject.paintWithContext(canvas, Offset.zero);
     }
 
+    if (profiling) {
+      t4 = DateTime.now().microsecondsSinceEpoch;
+    }
+
     // Render to terminal using differential rendering (buffer diff)
     _renderDifferential(buffer);
+
+    if (profiling) {
+      t5 = DateTime.now().microsecondsSinceEpoch;
+      _profileFrames++;
+      _profileBuildTime += (t1 - t0);
+      _profileBufferAllocTime += (t2 - t1);
+      _profileLayoutTime += (t3 - t2);
+      _profilePaintTime += (t4 - t3);
+      _profileDiffTime += (t5 - t4);
+    }
 
     // Store buffer for next frame comparison
     _previousBuffer = buffer;
