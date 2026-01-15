@@ -48,6 +48,11 @@ class ScrollController extends ChangeNotifier {
   double get scrollExtent => maxScrollExtent - minScrollExtent;
 
   /// Updates the scroll metrics.
+  ///
+  /// This is called by scrollable widgets during layout to update the scroll
+  /// bounds. Following Flutter's pattern, the offset is silently corrected
+  /// (without notification) if it's out of the new bounds, to avoid feedback
+  /// loops when bounds are estimated and changing.
   void updateMetrics({
     required double minScrollExtent,
     required double maxScrollExtent,
@@ -57,7 +62,6 @@ class ScrollController extends ChangeNotifier {
     final oldMin = _minScrollExtent;
     final oldMax = _maxScrollExtent;
     final oldViewport = _viewportDimension;
-    final oldOffset = _offset;
     final oldAxisDirection = _axisDirection;
 
     _minScrollExtent = minScrollExtent;
@@ -67,14 +71,14 @@ class ScrollController extends ChangeNotifier {
       _axisDirection = axisDirection;
     }
 
-    // Clamp the current offset to valid range
+    // Silently correct offset if out of bounds (like Flutter's correctPixels).
+    // This doesn't notify listeners to avoid feedback loops during layout.
     _offset = _offset.clamp(minScrollExtent, maxScrollExtent);
 
-    // Only notify listeners if something actually changed
+    // Only notify listeners if the metrics (not offset) changed
     if (oldMin != _minScrollExtent ||
         oldMax != _maxScrollExtent ||
         oldViewport != _viewportDimension ||
-        oldOffset != _offset ||
         oldAxisDirection != _axisDirection) {
       notifyListeners();
     }

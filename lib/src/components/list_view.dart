@@ -901,13 +901,26 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
     if (itemExtent != null && itemCount != null) {
       // Fixed extent - exact calculation
       return itemExtent! * itemCount + (hasSeparators ? (itemCount - 1) : 0);
-    } else if (itemCount != null && _averageItemExtent != null) {
-      // Variable extent with known count - estimate based on average
-      double extent = _averageItemExtent! * itemCount;
-      if (hasSeparators) {
-        extent += itemCount - 1;
+    } else if (itemCount != null) {
+      // Check if we have the last item cached - then we know exact extent
+      final lastIndex = itemCount - 1;
+      if (_itemOffsets.containsKey(lastIndex) &&
+          _itemExtents.containsKey(lastIndex)) {
+        double extent = _itemOffsets[lastIndex]! + _itemExtents[lastIndex]!;
+        if (hasSeparators) {
+          extent += itemCount - 1; // Add separator heights
+        }
+        return extent;
       }
-      return extent;
+      // Fall back to estimate based on average
+      if (_averageItemExtent != null) {
+        double extent = _averageItemExtent! * itemCount;
+        if (hasSeparators) {
+          extent += itemCount - 1;
+        }
+        return extent;
+      }
+      return currentPosition;
     } else {
       // Unknown count or no measurements yet - use what we've built
       return currentPosition;
