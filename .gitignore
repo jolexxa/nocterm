@@ -21,3 +21,9 @@ build/
 
 # Melos generated files
 pubspec_overrides.yaml
+
+# Local MCP config
+.mcp.json
+
+# Debug logs
+*_debug.log
