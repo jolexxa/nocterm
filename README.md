@@ -13,7 +13,6 @@
 
 ![Nocterm Demo](doc/assets/demo.gif)
 
-> **Note**: Nocterm is in early development (0.3.5). APIs may change.
 
 ## Installation
 
