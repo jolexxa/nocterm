@@ -308,7 +308,9 @@ abstract class RenderObject {
   /// This will cause [performLayout] to be called during the next layout pass.
   /// The layout mark is propagated up the tree to ensure ancestors also re-layout.
   void markNeedsLayout() {
-    if (_needsLayout) return;
+    // Always set the flag and call markNeedsPaint() to ensure requestVisualUpdate()
+    // is called, even if the flag was already set. This prevents rendering from
+    // permanently stopping when the frame-skip optimization is active.
     _needsLayout = true;
     markNeedsPaint();
     parent?.markNeedsLayout();
@@ -320,14 +322,16 @@ abstract class RenderObject {
   /// The paint request will propagate up to the root, which will trigger
   /// a frame to be scheduled.
   void markNeedsPaint() {
-    if (_needsPaint) return;
+    // Always set the flag (don't early return if already dirty)
+    // We still need to propagate to ensure requestVisualUpdate() is called
     _needsPaint = true;
 
     if (parent != null) {
       // Continue propagation up the tree
       parent!.markNeedsPaint();
     } else {
-      // We're the root - request visual update
+      // We're the root - always request visual update to ensure a frame
+      // gets scheduled, even if the flag was already set
       owner?.requestVisualUpdate();
     }
   }
@@ -623,6 +627,26 @@ class BoxParentData extends ParentData {
 
   @override
   String toString() => 'offset=$offset';
+}
+
+/// Parent data for children in a ListView.
+///
+/// Stores layout position information that travels with the child,
+/// following Flutter's architecture where position data is attached
+/// to each child's render object rather than cached in separate maps.
+class ListViewParentData extends BoxParentData {
+  /// The scroll offset of this child from the start of the list.
+  double? layoutOffset;
+
+  /// The measured extent (height for vertical, width for horizontal) of this child.
+  double? extent;
+
+  /// The index of this child in the list.
+  int? index;
+
+  @override
+  String toString() =>
+      'layoutOffset=$layoutOffset; extent=$extent; index=$index; ${super.toString()}';
 }
 
 /// RenderObject that can have a single child
