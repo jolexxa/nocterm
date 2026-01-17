@@ -237,6 +237,12 @@ class TerminalBinding extends NoctermBinding
           // Add to keyboard event stream
           _keyboardEventController.add(keyEvent);
 
+          // Check for global debug key (F12)
+          // Only works in debug mode (assertions enabled)
+          if (_handleDebugKeyEvent(keyEvent)) {
+            continue; // Event was handled by debug system
+          }
+
           // Route the event through the component tree
           _routeKeyboardEvent(keyEvent);
 
@@ -550,6 +556,24 @@ class TerminalBinding extends NoctermBinding
     }
   }
 
+  /// Handle global debug key combinations.
+  ///
+  /// Returns true if the event was handled by the debug system.
+  /// Currently handles:
+  /// - Ctrl+G: Toggle debug mode
+  bool _handleDebugKeyEvent(KeyboardEvent event) {
+    // Ctrl+G: Toggle debug mode
+    // This sends 0x07 (BEL) which is rarely used by applications
+    if (event.logicalKey == LogicalKey.keyG && event.isControlPressed) {
+      toggleDebugMode();
+      // Schedule a frame to update the UI
+      scheduleFrame();
+      return true;
+    }
+
+    return false;
+  }
+
   /// Route a keyboard event through the component tree
   /// Returns true if the event was handled by a component
   bool _routeKeyboardEvent(KeyboardEvent event) {
@@ -829,7 +853,13 @@ class TerminalBinding extends NoctermBinding
   @override
   void scheduleFrameImpl() {
     // Override scheduler's frame implementation to also wake the event loop.
-    // Respects frame rate limiting from SchedulerBinding.
+    // Uses pendingFrameTimer from SchedulerBinding for rate limiting.
+
+    // Don't schedule if a timer is already pending
+    if (pendingFrameTimer != null && pendingFrameTimer!.isActive) {
+      return;
+    }
+
     if (enableFrameRateLimiting && lastFrameTime != null) {
       final now = DateTime.now();
       final elapsed = now.difference(lastFrameTime!);
@@ -837,15 +867,19 @@ class TerminalBinding extends NoctermBinding
       if (elapsed < targetFrameDuration) {
         // Too soon, delay the frame
         final delay = targetFrameDuration - elapsed;
-        Timer(delay, () {
+        pendingFrameTimer = Timer(delay, () {
+          pendingFrameTimer = null;
           _executeFrameAndWakeEventLoop();
         });
         return;
       }
     }
 
-    // Execute frame immediately
-    Timer.run(_executeFrameAndWakeEventLoop);
+    // Execute frame immediately (but still async to allow event loop to process)
+    pendingFrameTimer = Timer(Duration.zero, () {
+      pendingFrameTimer = null;
+      _executeFrameAndWakeEventLoop();
+    });
   }
 
   /// Executes frame and wakes the event loop.
@@ -1121,16 +1155,14 @@ class TerminalBinding extends NoctermBinding
     final profiling = _enableDetailedProfiling;
     int t0 = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
 
-    if (profiling) {
-      t0 = DateTime.now().microsecondsSinceEpoch;
-    }
+    t0 = DateTime.now().microsecondsSinceEpoch;
 
     // Build phase - handled by BuildOwner via persistent callback
     super.drawFrame();
 
-    if (profiling) {
-      t1 = DateTime.now().microsecondsSinceEpoch;
-    }
+    t1 = DateTime.now().microsecondsSinceEpoch;
+    // Report build end time to scheduler for FrameTiming
+    currentFrameBuildEnd = t1;
 
     // Get current terminal size (may have been updated by resize event)
     final size = terminal.size;
@@ -1138,9 +1170,7 @@ class TerminalBinding extends NoctermBinding
     final screenRect =
         Rect.fromLTWH(0, 0, size.width.toDouble(), size.height.toDouble());
 
-    if (profiling) {
-      t2 = DateTime.now().microsecondsSinceEpoch;
-    }
+    t2 = DateTime.now().microsecondsSinceEpoch;
 
     // Find render object in tree
     RenderObject? findRenderObject(Element element) {
@@ -1169,9 +1199,9 @@ class TerminalBinding extends NoctermBinding
       // Flush layout pipeline
       pipelineOwner.flushLayout();
 
-      if (profiling) {
-        t3 = DateTime.now().microsecondsSinceEpoch;
-      }
+      t3 = DateTime.now().microsecondsSinceEpoch;
+      // Report layout end time to scheduler for FrameTiming
+      currentFrameLayoutEnd = t3;
 
       // Flush paint pipeline
       pipelineOwner.flushPaint();
@@ -1181,9 +1211,9 @@ class TerminalBinding extends NoctermBinding
       renderObject.paintWithContext(canvas, Offset.zero);
     }
 
-    if (profiling) {
-      t4 = DateTime.now().microsecondsSinceEpoch;
-    }
+    t4 = DateTime.now().microsecondsSinceEpoch;
+    // Report paint end time to scheduler for FrameTiming
+    currentFramePaintEnd = t4;
 
     // Render to terminal using differential rendering (buffer diff)
     _renderDifferential(buffer);

@@ -159,7 +159,8 @@ class _PerformanceOverlayState extends State<PerformanceOverlay> {
 
     // Frame rate limiting status
     final limiting = SchedulerBinding.instance.enableFrameRateLimiting;
-    buffer.write('Rate limit: ${limiting ? "ON" : "OFF"}');
+    final targetFps = SchedulerBinding.instance.targetFps.toStringAsFixed(0);
+    buffer.write('Target: ${limiting ? "${targetFps}fps" : "unlimited"}');
 
     return buffer.toString();
   }

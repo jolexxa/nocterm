@@ -197,9 +197,13 @@ class Ticker {
   void _scheduleTick({bool rescheduling = false}) {
     assert(!muted);
     assert(shouldScheduleTick);
+    // Match Flutter's pattern: call scheduleFrame() first, then register
+    // the callback with scheduleNewFrame: false to avoid redundant scheduling.
+    SchedulerBinding.instance.scheduleFrame();
     _animationId = SchedulerBinding.instance.scheduleFrameCallback(
       _tick,
       rescheduling: rescheduling,
+      scheduleNewFrame: false,
       debugLabel: debugLabel,
     );
   }
