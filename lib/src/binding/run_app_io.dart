@@ -28,10 +28,13 @@ import 'package:nocterm/src/backend/terminal.dart' as term;
 
 /// Run a TUI application on native platforms (Linux, macOS, Windows).
 Future<void> runAppImpl(Component app, {bool enableHotReload = true}) async {
+  // Wrap the user's app with DebugOverlay so Ctrl+G toggle works out of the box
+  final wrappedApp = DebugOverlay(child: app);
+
   if (_useShellMode() case (final file?, true)) {
-    await _runAppInShellMode(app, file, enableHotReload);
+    await _runAppInShellMode(wrappedApp, file, enableHotReload);
   } else {
-    await _runAppNormalMode(app, enableHotReload);
+    await _runAppNormalMode(wrappedApp, enableHotReload);
   }
 }
 

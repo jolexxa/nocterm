@@ -79,6 +79,7 @@ export 'src/utils/escape_codes.dart';
 export 'src/foundation/performance.dart';
 export 'src/foundation/nocterm_error.dart';
 export 'src/rendering/debug.dart';
+export 'src/components/debug_overlay.dart';
 
 // Widgets
 export 'src/widgets/nocterm_app.dart';

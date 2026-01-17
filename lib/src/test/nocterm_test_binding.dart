@@ -200,9 +200,27 @@ class NoctermTestBinding extends NoctermBinding with SchedulerBinding {
     _instance = null;
   }
 
+  /// Handle global debug key combinations.
+  ///
+  /// Returns true if the event was handled by the debug system.
+  bool _handleDebugKeyEvent(KeyboardEvent event) {
+    // Ctrl+G: Toggle debug mode
+    if (event.logicalKey == LogicalKey.keyG && event.isControlPressed) {
+      toggleDebugMode();
+      return true;
+    }
+
+    return false;
+  }
+
   /// Route a keyboard event through the component tree
   void _routeKeyboardEvent(KeyboardEvent event) {
     if (rootElement == null) return;
+
+    // Check for global debug key combination first
+    if (_handleDebugKeyEvent(event)) {
+      return; // Event was handled by debug system
+    }
 
     // Try to dispatch the event to the root element
     _dispatchKeyToElement(rootElement!, event);

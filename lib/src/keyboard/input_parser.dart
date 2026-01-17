@@ -181,6 +181,17 @@ class InputParser {
       }
     }
 
+    // Ctrl+\ (backslash) sends 0x1C (File Separator)
+    if (first == 0x1C) {
+      return (
+        KeyboardEvent(
+          logicalKey: LogicalKey.backslash,
+          modifiers: const ModifierKeys(ctrl: true),
+        ),
+        1
+      );
+    }
+
     // Try to decode as UTF-8
     String? decodedChar;
     int bytesConsumed = 0;
