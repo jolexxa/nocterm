@@ -43,6 +43,12 @@
 
 /* Keyboard navigation selection styles */
 [data-nav] {
+  /* Default: no special cursor - keyboard nav is optional */
+}
+
+/* Only actual links and buttons get pointer cursor */
+a[data-nav],
+button[data-nav] {
   cursor: pointer;
 }
 
@@ -131,13 +137,18 @@ body {
   text-align: center;
 }
 
-.main-title {
-  font-size: 4rem;
+/* ASCII Art Title */
+.ascii-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(0.4rem, 1.2vw, 0.9rem);
   font-weight: bold;
   color: var(--purple);
-  letter-spacing: 0.1em;
-  margin-bottom: 16px;
+  letter-spacing: 0;
+  line-height: 1.1;
+  margin: 0 0 16px 0;
   animation: title-glow 2s ease-in-out infinite;
+  white-space: pre;
+  text-align: center;
 }
 
 @keyframes title-glow {
@@ -149,6 +160,49 @@ body {
     color: rgba(192, 160, 255, 1);
     text-shadow: 0 0 40px rgba(192, 160, 255, 0.6);
   }
+}
+
+/* Hero CTA Buttons */
+.hero-cta {
+  margin-top: 24px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.hero-cta-button {
+  padding: 12px 28px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid;
+}
+
+.hero-cta-button.primary {
+  background: var(--purple);
+  color: var(--bg-dark);
+  border-color: var(--purple);
+  font-weight: bold;
+}
+
+.hero-cta-button.primary:hover,
+.hero-cta-button.primary.nav-selected {
+  background: transparent;
+  color: var(--purple);
+  box-shadow: 0 0 20px rgba(192, 160, 255, 0.4);
+}
+
+.hero-cta-button.secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.hero-cta-button.secondary:hover,
+.hero-cta-button.secondary.nav-selected {
+  border-color: var(--purple);
+  color: var(--text-bright);
 }
 
 .hero-divider {
