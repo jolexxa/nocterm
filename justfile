@@ -2,6 +2,13 @@
 default:
     @just --list
 
+# Serve the landing page locally (requires Python 3)
+landing:
+    #!/usr/bin/env bash
+    port=$((8000 + RANDOM % 1000))
+    echo "Serving landing page at http://localhost:$port"
+    cd landing && python3 -m http.server $port
+
 # Interactive release workflow - updates README, commits, and creates tag
 release:
     #!/usr/bin/env bash

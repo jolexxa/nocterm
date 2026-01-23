@@ -211,6 +211,13 @@ body {
   font-size: 0.75rem;
 }
 
+.hero-subtitle {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: normal;
+  margin-bottom: 12px;
+}
+
 .hero-tagline {
   color: var(--text-primary);
   font-size: 1rem;
@@ -319,6 +326,49 @@ body {
   height: 280px;
   color: var(--pink);
   font-size: 0.8rem;
+}
+
+/* ============================================
+   About Section
+   ============================================ */
+
+.about-section {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-default);
+  padding: calc(var(--padding) * 1.5);
+}
+
+.about-section .section-title {
+  margin-bottom: 16px;
+}
+
+.about-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about-content p {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.about-content p:last-child {
+  margin-bottom: 0;
+}
+
+.about-content strong {
+  color: var(--text-bright);
+}
+
+.about-content code {
+  background: var(--bg-dark);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--cyan);
+  font-size: 0.85em;
 }
 
 /* ============================================
