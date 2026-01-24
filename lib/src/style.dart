@@ -357,7 +357,6 @@ class HSVColor {
   }
 }
 
-
 /// The thickness of the glyphs used to draw the text.
 ///
 /// Simplified version of Flutter's FontWeight for terminal use.
