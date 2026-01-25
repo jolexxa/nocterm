@@ -1,3 +1,24 @@
+# 0.4.3
+
+## New Features
+- **Image Protocol Support**: Implement image rendering in the terminal using the Kitty graphics protocol (experimental)
+
+## Bug Fixes
+- **Color Quantization**: Quantize colors in environments without true color support for better compatibility
+- **Web Backend**: Fix input handling and debug overlay stack fit issues
+
+## Documentation
+- **Image Documentation**: Add documentation for image support and mark as experimental
+- **Website**: Add nocterm.dev website link to README
+
+## Refactoring
+- **Internal**: Use built-in `getElementForInheritedComponentOfExactType` for cleaner code
+
+## Testing
+- **CI Fix**: Fix unicode block encoder tests for CI environment
+
+---
+
 # 0.4.2
 
 ## Bug Fixes
