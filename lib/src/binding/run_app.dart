@@ -11,6 +11,16 @@ import 'run_app_stub.dart'
 /// - Web: Uses WebBackend with static bridge for WASM/JS apps
 ///
 /// On native platforms, also checks for nocterm shell mode for IDE debugging.
-Future<void> runApp(Component app, {bool enableHotReload = true}) {
-  return runAppImpl(app, enableHotReload: enableHotReload);
+///
+/// If [backend] is provided, it will be used instead of the default backend.
+/// This is useful for custom I/O scenarios, such as:
+/// - Writing to `/dev/tty` directly while redirecting stdout to `/dev/null`
+/// - Custom terminal emulation
+/// - Testing with mock backends
+Future<void> runApp(
+  Component app, {
+  bool enableHotReload = true,
+  TerminalBackend? backend,
+}) {
+  return runAppImpl(app, enableHotReload: enableHotReload, backend: backend);
 }

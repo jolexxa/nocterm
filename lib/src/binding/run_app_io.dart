@@ -27,72 +27,42 @@ import 'package:nocterm/src/backend/terminal.dart' as term;
 }
 
 /// Run a TUI application on native platforms (Linux, macOS, Windows).
-Future<void> runAppImpl(Component app, {bool enableHotReload = true}) async {
+Future<void> runAppImpl(
+  Component app, {
+  bool enableHotReload = true,
+  TerminalBackend? backend,
+}) async {
   // Wrap the user's app with DebugOverlay so Ctrl+G toggle works out of the box
   final wrappedApp = DebugOverlay(child: app);
 
-  if (_useShellMode() case (final file?, true)) {
-    await _runAppInShellMode(wrappedApp, file, enableHotReload);
+  // Determine backend and whether we're in shell mode
+  final TerminalBackend effectiveBackend;
+  final bool isShellMode;
+
+  if (backend != null) {
+    effectiveBackend = backend;
+    isShellMode = false;
+  } else if (_useShellMode() case (final file?, true)) {
+    final socketPath = await file.readAsString();
+    final socket = await Socket.connect(
+      InternetAddress(socketPath.trim(), type: InternetAddressType.unix),
+      0,
+    );
+    effectiveBackend = SocketBackend(socket);
+    isShellMode = true;
   } else {
-    await _runAppNormalMode(wrappedApp, enableHotReload);
+    effectiveBackend = StdioBackend();
+    isShellMode = false;
   }
+
+  await _runApp(wrappedApp, effectiveBackend, enableHotReload, isShellMode);
 }
 
-Future<void> _runAppNormalMode(Component app, bool enableHotReload) async {
-  TerminalBinding? binding;
-  LogServer? logServer;
-  Logger? logger;
-
-  try {
-    // Start log server
-    logServer = LogServer();
-    try {
-      await logServer.start();
-      logger = Logger(logServer: logServer);
-    } catch (e) {
-      stderr.writeln('Failed to start log server: $e');
-    }
-
-    await runZoned(() async {
-      final backend = StdioBackend();
-      final terminal = term.Terminal(backend);
-      binding = TerminalBinding(terminal);
-
-      binding!.initialize();
-      binding!.attachRootComponent(app);
-
-      if (enableHotReload && !bool.fromEnvironment('dart.vm.product')) {
-        await binding!.initializeHotReload();
-      }
-
-      await binding!.runEventLoop();
-    },
-        zoneSpecification: ZoneSpecification(
-          print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
-            logger?.log(message);
-          },
-          handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone,
-              Object error, StackTrace stackTrace) {
-            logger?.log('ERROR: $error\n$stackTrace');
-          },
-        ));
-  } catch (e) {
-    // Handle signal-based exit
-  } finally {
-    if (binding != null && !binding!.shouldExit) {
-      binding!.shutdown();
-    }
-    try {
-      await logger?.close();
-      await logServer?.close();
-    } catch (_) {}
-  }
-}
-
-Future<void> _runAppInShellMode(
+Future<void> _runApp(
   Component app,
-  File shellHandleFile,
+  TerminalBackend backend,
   bool enableHotReload,
+  bool isShellMode,
 ) async {
   TerminalBinding? binding;
   LogServer? logServer;
@@ -107,14 +77,7 @@ Future<void> _runAppInShellMode(
       stderr.writeln('Failed to start log server: $e');
     }
 
-    final socketPath = await shellHandleFile.readAsString();
-    final socket = await Socket.connect(
-      InternetAddress(socketPath.trim(), type: InternetAddressType.unix),
-      0,
-    );
-
     await runZoned(() async {
-      final backend = SocketBackend(socket);
       final terminal = term.Terminal(backend);
       binding = TerminalBinding(terminal);
 
@@ -130,17 +93,23 @@ Future<void> _runAppInShellMode(
         zoneSpecification: ZoneSpecification(
           print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
             logger?.log(message);
-            parent.print(zone, message);
+            if (isShellMode) {
+              parent.print(zone, message);
+            }
           },
           handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone,
               Object error, StackTrace stackTrace) {
             final errorMessage = 'ERROR: $error\n$stackTrace';
             logger?.log(errorMessage);
-            stderr.writeln(errorMessage);
+            if (isShellMode) {
+              stderr.writeln(errorMessage);
+            }
           },
         ));
   } catch (e) {
-    stderr.writeln('Shell mode error: $e');
+    if (isShellMode) {
+      stderr.writeln('Shell mode error: $e');
+    }
   } finally {
     if (binding != null && !binding!.shouldExit) {
       binding!.shutdown();
