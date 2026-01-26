@@ -9,6 +9,10 @@ landing:
     echo "Serving landing page at http://localhost:$port"
     cd landing && python3 -m http.server $port
 
+# Build the blog with Hugo
+blog:
+    cd blog-hugo && hugo --minify
+
 # Interactive release workflow - updates README, commits, and creates tag
 release:
     #!/usr/bin/env bash
