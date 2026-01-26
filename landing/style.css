@@ -93,6 +93,73 @@ body {
 }
 
 /* ============================================
+   Top Navbar
+   ============================================ */
+
+.site-header {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-default);
+  padding: 12px var(--padding);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.site-brand-icon {
+  color: var(--code-keyword);
+  animation: site-brand-glow 2s ease-in-out infinite;
+}
+
+@keyframes site-brand-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; text-shadow: 0 0 10px var(--code-keyword); }
+}
+
+.site-brand-name {
+  color: var(--text-bright);
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+.site-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.site-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.site-nav a:hover {
+  color: var(--text-primary);
+}
+
+.site-nav a.active {
+  color: var(--purple);
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .site-nav {
+    gap: 12px;
+  }
+}
+
+/* ============================================
    Top Row - Hero + Sidebar
    ============================================ */
 
