@@ -179,10 +179,6 @@ Dev tools should take mental load off, not add to it. A TUI that shows what's av
 
 It doesn't need to replace the `justfile` or `Makefile`. I think of it as a layer on top. The TUI can call those same commands, but with context and visibility.
 
-Start simple. A list of commands with descriptions. Maybe a status indicator. Add a log viewer later. Each piece helps.
-
 ---
 
 The example dev dashboard from this post is in the [Nocterm repo](https://github.com/Norbert515/nocterm) under `example/dev_dashboard_demo.dart` if you want to poke around.
-
-Anyway, go write more TUIs.
