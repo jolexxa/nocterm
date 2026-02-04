@@ -55,16 +55,58 @@ class SelectionArea extends StatefulComponent {
 }
 
 class _SelectionAreaState extends State<SelectionArea> {
+  bool _isActive = false;
+  final Map<Object, SelectionRange> _ranges = {};
+
+  void _onDragStarted() {
+    if (!_isActive) {
+      setState(() {
+        _isActive = true;
+      });
+    }
+    // Also update global state for backwards compatibility
+    SelectionDragState.begin();
+  }
+
+  void _onDragEnded() {
+    SelectionDragState.end();
+    if (_isActive) {
+      setState(() {
+        _isActive = false;
+        _ranges.clear();
+      });
+    }
+  }
+
+  void _updateRange(Object context, int minIndex, int maxIndex) {
+    if (minIndex > maxIndex) return;
+    _ranges[context] = SelectionRange(minIndex, maxIndex);
+    // Also update global state for backwards compatibility
+    SelectionDragState.updateRange(context, minIndex, maxIndex);
+  }
+
+  SelectionRange? _rangeFor(Object context) {
+    return _ranges[context];
+  }
+
   @override
   Component build(BuildContext context) {
     final theme = TuiTheme.of(context);
     final effectiveColor = component.selectionColor ?? theme.selectionColor;
 
-    return _SelectionAreaWidget(
-      selectionColor: effectiveColor,
-      onSelectionChanged: component.onSelectionChanged,
-      onSelectionCompleted: component.onSelectionCompleted,
-      child: component.child,
+    return SelectionScope(
+      isActive: _isActive,
+      rangeFor: _rangeFor,
+      updateRange: _updateRange,
+      child: _SelectionAreaWidget(
+        selectionColor: effectiveColor,
+        onSelectionChanged: component.onSelectionChanged,
+        onSelectionCompleted: component.onSelectionCompleted,
+        onDragStarted: _onDragStarted,
+        onDragEnded: _onDragEnded,
+        onRangeUpdated: _updateRange,
+        child: component.child,
+      ),
     );
   }
 }
@@ -76,11 +118,18 @@ class _SelectionAreaWidget extends SingleChildRenderObjectComponent {
     required this.selectionColor,
     this.onSelectionChanged,
     this.onSelectionCompleted,
+    this.onDragStarted,
+    this.onDragEnded,
+    this.onRangeUpdated,
   });
 
   final Color selectionColor;
   final ValueChanged<String>? onSelectionChanged;
   final ValueChanged<String>? onSelectionCompleted;
+  final VoidCallback? onDragStarted;
+  final VoidCallback? onDragEnded;
+  final void Function(Object context, int minIndex, int maxIndex)?
+      onRangeUpdated;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -88,6 +137,9 @@ class _SelectionAreaWidget extends SingleChildRenderObjectComponent {
       selectionColor: selectionColor,
       onSelectionChanged: onSelectionChanged,
       onSelectionCompleted: onSelectionCompleted,
+      onDragStarted: onDragStarted,
+      onDragEnded: onDragEnded,
+      onRangeUpdated: onRangeUpdated,
     );
   }
 
@@ -97,7 +149,10 @@ class _SelectionAreaWidget extends SingleChildRenderObjectComponent {
     renderObject
       ..selectionColor = selectionColor
       ..onSelectionChanged = onSelectionChanged
-      ..onSelectionCompleted = onSelectionCompleted;
+      ..onSelectionCompleted = onSelectionCompleted
+      ..onDragStarted = onDragStarted
+      ..onDragEnded = onDragEnded
+      ..onRangeUpdated = onRangeUpdated;
   }
 }
 
@@ -110,6 +165,9 @@ class RenderSelectionArea extends RenderMouseRegion {
     required Color selectionColor,
     this.onSelectionChanged,
     this.onSelectionCompleted,
+    this.onDragStarted,
+    this.onDragEnded,
+    this.onRangeUpdated,
   }) : _selectionColor = selectionColor;
 
   Color _selectionColor;
@@ -126,6 +184,9 @@ class RenderSelectionArea extends RenderMouseRegion {
 
   ValueChanged<String>? onSelectionChanged;
   ValueChanged<String>? onSelectionCompleted;
+  VoidCallback? onDragStarted;
+  VoidCallback? onDragEnded;
+  void Function(Object context, int minIndex, int maxIndex)? onRangeUpdated;
 
   // Selection state
   bool _isDragging = false;
@@ -135,6 +196,11 @@ class RenderSelectionArea extends RenderMouseRegion {
   List<Selectable> _cachedSelectables = [];
   Map<Object, List<_SelectableEntry>> _contextLists = {};
 
+  // Selectables cache to avoid walking the tree on every mouse move
+  bool _selectablesCacheValid = false;
+  List<Selectable>? _selectablesCache;
+  Map<Object, List<_SelectableEntry>>? _contextListsCache;
+
   /// The position where the pointer was initially pressed.
   Offset _pressPosition = Offset.zero;
 
@@ -143,6 +209,32 @@ class RenderSelectionArea extends RenderMouseRegion {
 
   /// Focus (current drag position) selectable and char index.
   _SelectionPosition? _focus;
+
+  // Cache invalidation
+
+  void _invalidateSelectablesCache() {
+    _selectablesCacheValid = false;
+    _selectablesCache = null;
+    _contextListsCache = null;
+  }
+
+  @override
+  void markNeedsLayout() {
+    super.markNeedsLayout();
+    _invalidateSelectablesCache();
+  }
+
+  @override
+  void adoptChild(RenderObject child) {
+    super.adoptChild(child);
+    _invalidateSelectablesCache();
+  }
+
+  @override
+  void dropChild(RenderObject child) {
+    super.dropChild(child);
+    _invalidateSelectablesCache();
+  }
 
   // Gesture handling
 
@@ -215,7 +307,7 @@ class RenderSelectionArea extends RenderMouseRegion {
     final localPos = Offset(event.x.toDouble(), event.y.toDouble());
     _pressPosition = localPos;
     if (!_isDragging) {
-      SelectionDragState.begin();
+      onDragStarted?.call();
     }
 
     // Collect and sort selectables
@@ -382,13 +474,13 @@ class RenderSelectionArea extends RenderMouseRegion {
     if (anchorIndex == null || focusIndex == null) return;
     final minIndex = math.min(anchorIndex, focusIndex);
     final maxIndex = math.max(anchorIndex, focusIndex);
-    SelectionDragState.updateRange(contextKey, minIndex, maxIndex);
+    onRangeUpdated?.call(contextKey, minIndex, maxIndex);
   }
 
   void _handlePointerUp(MouseEvent event) {
     if (_isDragging) {
       _handlePointerMove(event);
-      SelectionDragState.end();
+      onDragEnded?.call();
       markNeedsLayout();
     }
     _isDragging = false;
@@ -440,7 +532,14 @@ class RenderSelectionArea extends RenderMouseRegion {
   // Subtree walking
   /// Walks the render subtree rooted at [root] and collects all [Selectable]
   /// render objects, sorted in reading order (top-to-bottom, left-to-right).
+  ///
+  /// Results are cached to avoid walking the entire tree on every mouse move
+  /// during drag selection. The cache is invalidated when layout changes.
   List<Selectable> _collectSelectables(RenderObject root) {
+    if (_selectablesCacheValid && _selectablesCache != null) {
+      return _selectablesCache!;
+    }
+
     final result = <Selectable>[];
     void visit(RenderObject node) {
       if (node is Selectable) {
@@ -460,6 +559,8 @@ class RenderSelectionArea extends RenderMouseRegion {
       return aPos.dx.compareTo(bPos.dx);
     });
 
+    _selectablesCache = result;
+    _selectablesCacheValid = true;
     return result;
   }
 
@@ -488,8 +589,13 @@ class RenderSelectionArea extends RenderMouseRegion {
     return null;
   }
 
+  /// Builds context lists from selectables, using cache when available.
   Map<Object, List<_SelectableEntry>> _buildContextLists(
       List<Selectable> selectables) {
+    if (_selectablesCacheValid && _contextListsCache != null) {
+      return _contextListsCache!;
+    }
+
     final lists = <Object, List<_SelectableEntry>>{};
     for (final selectable in selectables) {
       final ro = selectable as RenderObject;
@@ -528,6 +634,7 @@ class RenderSelectionArea extends RenderMouseRegion {
       }
     }
 
+    _contextListsCache = lists;
     return lists;
   }
 

@@ -9,7 +9,7 @@ export '../text/text_layout_engine.dart' show TextOverflow, TextAlign;
 /// Render object for displaying rich text (text with multiple styles).
 ///
 /// This is similar to RenderText but supports TextSpan with mixed styles.
-class RenderParagraph extends RenderObject {
+class RenderParagraph extends RenderObject with Selectable {
   RenderParagraph({
     required InlineSpan text,
     TextAlign textAlign = TextAlign.left,
@@ -184,6 +184,12 @@ class RenderParagraph extends RenderObject {
   String get plainText => _text.toPlainText();
 
   @override
+  String get selectableText => plainText;
+
+  @override
+  TextLayoutResult? get selectableLayout => _layoutResult;
+
+  @override
   void paint(TerminalCanvas canvas, Offset offset) {
     super.paint(canvas, offset);
 
@@ -217,18 +223,122 @@ class RenderParagraph extends RenderObject {
             _textAlign,
           );
 
-      // Paint each segment with its style
-      double currentX = xOffset;
-      for (final segment in lineSegments) {
+      // Use selection-aware painting if there is an active selection
+      if (hasSelection) {
+        _paintLineWithSelection(
+            canvas, Offset(xOffset, offset.dy + i), lineSegments, lineText, i);
+      } else {
+        // Paint each segment with its style
+        double currentX = xOffset;
+        for (final segment in lineSegments) {
+          canvas.drawText(
+            Offset(currentX, offset.dy + i),
+            segment.text,
+            style: segment.style,
+          );
+          // Move x position by the actual display width of the segment text
+          // This accounts for wide characters like emojis and CJK characters
+          currentX += UnicodeWidth.stringWidth(segment.text);
+        }
+      }
+    }
+  }
+
+  /// Paints a line with styled segments and selection highlighting.
+  void _paintLineWithSelection(
+    TerminalCanvas canvas,
+    Offset offset,
+    List<StyledTextSegment> segments,
+    String lineText,
+    int lineIndex,
+  ) {
+    final lines = _layoutResult?.lines ?? const [];
+    final text = selectableText;
+    final selStart = selectionStart;
+    final selEnd = selectionEnd;
+
+    // Calculate line start offset in the full text
+    final lineStartOffset = Selectable.lineStartOffsets(text, lines)[lineIndex];
+    final lineEndOffset = lineStartOffset + lineText.length;
+
+    // Normalize selection range
+    final normalizedSelStart =
+        selStart != null && selEnd != null ? selStart.clamp(0, text.length) : 0;
+    final normalizedSelEnd =
+        selStart != null && selEnd != null ? selEnd.clamp(0, text.length) : 0;
+    final selRangeStart = normalizedSelStart < normalizedSelEnd
+        ? normalizedSelStart
+        : normalizedSelEnd;
+    final selRangeEnd = normalizedSelStart < normalizedSelEnd
+        ? normalizedSelEnd
+        : normalizedSelStart;
+
+    // Check if selection intersects this line
+    final hasLineSelection =
+        selRangeEnd > lineStartOffset && selRangeStart < lineEndOffset;
+
+    double currentX = offset.dx;
+    int charOffset = lineStartOffset;
+
+    for (final segment in segments) {
+      final segmentText = segment.text;
+      final segmentEnd = charOffset + segmentText.length;
+
+      if (hasLineSelection &&
+          selRangeEnd > charOffset &&
+          selRangeStart < segmentEnd) {
+        // Selection intersects this segment - split it
+        final localSelStart =
+            (selRangeStart - charOffset).clamp(0, segmentText.length);
+        final localSelEnd =
+            (selRangeEnd - charOffset).clamp(0, segmentText.length);
+
+        // Paint before selection
+        if (localSelStart > 0) {
+          final beforeText = segmentText.substring(0, localSelStart);
+          canvas.drawText(
+            Offset(currentX, offset.dy),
+            beforeText,
+            style: segment.style,
+          );
+          currentX += UnicodeWidth.stringWidth(beforeText);
+        }
+
+        // Paint selected portion
+        if (localSelStart < localSelEnd) {
+          final selectedText =
+              segmentText.substring(localSelStart, localSelEnd);
+          final selectionStyle = (segment.style ?? const TextStyle())
+              .copyWith(backgroundColor: selectionColor ?? Colors.blue);
+          canvas.drawText(
+            Offset(currentX, offset.dy),
+            selectedText,
+            style: selectionStyle,
+          );
+          currentX += UnicodeWidth.stringWidth(selectedText);
+        }
+
+        // Paint after selection
+        if (localSelEnd < segmentText.length) {
+          final afterText = segmentText.substring(localSelEnd);
+          canvas.drawText(
+            Offset(currentX, offset.dy),
+            afterText,
+            style: segment.style,
+          );
+          currentX += UnicodeWidth.stringWidth(afterText);
+        }
+      } else {
+        // No selection in this segment, paint normally
         canvas.drawText(
-          Offset(currentX, offset.dy + i),
-          segment.text,
+          Offset(currentX, offset.dy),
+          segmentText,
           style: segment.style,
         );
-        // Move x position by the actual display width of the segment text
-        // This accounts for wide characters like emojis and CJK characters
-        currentX += UnicodeWidth.stringWidth(segment.text);
+        currentX += UnicodeWidth.stringWidth(segmentText);
       }
+
+      charOffset = segmentEnd;
     }
   }
 }
