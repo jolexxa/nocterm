@@ -276,6 +276,7 @@ class _ListViewport extends RenderObjectComponent {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
+    final scope = SelectionScope.maybeOf(context);
     return RenderListViewport(
       scrollDirection: scrollDirection,
       reverse: reverse,
@@ -285,12 +286,15 @@ class _ListViewport extends RenderObjectComponent {
       lazy: lazy,
       cacheExtent: cacheExtent,
       hasSeparators: separatorBuilder != null,
+      selectionDragActive: scope?.isActive ?? false,
+      selectionRangeFor: scope?.rangeFor,
     );
   }
 
   @override
   void updateRenderObject(
       BuildContext context, RenderListViewport renderObject) {
+    final scope = SelectionScope.maybeOf(context);
     renderObject
       ..scrollDirection = scrollDirection
       ..reverse = reverse
@@ -299,7 +303,9 @@ class _ListViewport extends RenderObjectComponent {
       ..itemExtent = itemExtent
       ..lazy = lazy
       ..cacheExtent = cacheExtent
-      ..hasSeparators = separatorBuilder != null;
+      ..hasSeparators = separatorBuilder != null
+      ..selectionDragActive = scope?.isActive ?? false
+      ..selectionRangeFor = scope?.rangeFor;
   }
 }
 
@@ -519,6 +525,8 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
     bool lazy = false,
     double cacheExtent = 250.0,
     bool hasSeparators = false,
+    bool selectionDragActive = false,
+    SelectionRange? Function(Object context)? selectionRangeFor,
   })  : _scrollDirection = scrollDirection,
         _reverse = reverse,
         _controller = controller,
@@ -526,7 +534,9 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
         _itemExtent = itemExtent,
         _lazy = lazy,
         _cacheExtent = cacheExtent,
-        _hasSeparators = hasSeparators {
+        _hasSeparators = hasSeparators,
+        _selectionDragActive = selectionDragActive,
+        _selectionRangeFor = selectionRangeFor {
     _controller.addListener(_handleScrollUpdate);
     _controller.attach(this);
   }
@@ -605,6 +615,25 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
   set hasSeparators(bool value) {
     if (_hasSeparators != value) {
       _hasSeparators = value;
+      markNeedsLayout();
+    }
+  }
+
+  bool _selectionDragActive;
+  bool get selectionDragActive => _selectionDragActive;
+  set selectionDragActive(bool value) {
+    if (_selectionDragActive != value) {
+      _selectionDragActive = value;
+      markNeedsLayout();
+    }
+  }
+
+  SelectionRange? Function(Object context)? _selectionRangeFor;
+  SelectionRange? Function(Object context)? get selectionRangeFor =>
+      _selectionRangeFor;
+  set selectionRangeFor(SelectionRange? Function(Object context)? value) {
+    if (_selectionRangeFor != value) {
+      _selectionRangeFor = value;
       markNeedsLayout();
     }
   }
@@ -858,14 +887,17 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
     );
 
     // Clean up children outside the cached range in lazy mode
-    if (_lazy && !SelectionDragState.isActive) {
+    // Use scope-based selection state, falling back to global for backwards compat
+    final isSelectionActive =
+        _selectionDragActive || SelectionDragState.isActive;
+    if (_lazy && !isSelectionActive) {
       _element!.removeInvisibleChildren(
         _firstBuiltIndex,
         _lastBuiltIndex,
       );
     }
 
-    if (_lazy && SelectionDragState.isActive) {
+    if (_lazy && isSelectionActive) {
       _forceBuildSelectionRange(
         childConstraints: childConstraints,
         itemCount: itemCount,
@@ -1114,7 +1146,9 @@ class RenderListViewport extends RenderObject with ScrollableRenderObjectMixin {
     required int? itemCount,
   }) {
     if (_element == null) return;
-    final range = SelectionDragState.rangeFor(this);
+    // Use scope-based range, falling back to global for backwards compat
+    final range =
+        _selectionRangeFor?.call(this) ?? SelectionDragState.rangeFor(this);
     if (range == null) return;
 
     final maxIndex = itemCount != null

@@ -104,4 +104,5 @@ export 'src/image/image_cleanup.dart' show ImageProtocol;
 
 // Text Selection
 export 'src/components/selection_area.dart';
+export 'src/components/selection_scope.dart';
 export 'src/components/selectable.dart';
