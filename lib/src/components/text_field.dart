@@ -4,6 +4,8 @@ import 'dart:math' as math;
 import 'package:characters/characters.dart';
 import 'package:nocterm/nocterm.dart' hide TextAlign;
 import 'package:nocterm/src/framework/terminal_canvas.dart';
+import '../rendering/mouse_hit_test.dart';
+import '../rendering/mouse_tracker.dart';
 import '../text/text_layout_engine.dart';
 import '../utils/unicode_width.dart';
 import '../text/selection_utils.dart' as selection_utils;
@@ -208,6 +210,10 @@ class _TextFieldState extends State<TextField> {
     setState(() {
       _controller.selection = newSelection;
     });
+    // Request focus if not already focused (e.g., user clicked in the field)
+    if (!component.focused) {
+      component.onFocusChange?.call(true);
+    }
   }
 
   @override
@@ -1056,7 +1062,7 @@ class _TextFieldContent extends SingleChildRenderObjectComponent {
 }
 
 /// Render object for text field
-class RenderTextField extends RenderObject {
+class RenderTextField extends RenderObject with MouseTrackerAnnotationProvider {
   RenderTextField({
     required String text,
     String? placeholder,
@@ -1088,7 +1094,9 @@ class RenderTextField extends RenderObject {
         _maxLines = maxLines,
         _isFocused = isFocused,
         _obscureText = obscureText,
-        _obscuringCharacter = obscuringCharacter;
+        _obscuringCharacter = obscuringCharacter {
+    _updateMouseAnnotation();
+  }
 
   String _text;
   String? _placeholder;
@@ -1117,6 +1125,17 @@ class RenderTextField extends RenderObject {
 
   // Track target visual column for vertical movement
   int? _targetVisualColumn;
+
+  // Mouse interaction state
+  MouseTrackerAnnotation? _mouseAnnotation;
+  bool _isLeftButtonPressed = false;
+  int? _dragAnchorOffset;
+  DateTime? _lastClickTime;
+  int? _lastClickOffset;
+  static const _doubleClickTimeout = Duration(milliseconds: 500);
+
+  @override
+  MouseTrackerAnnotation? get annotation => _mouseAnnotation;
 
   set text(String value) {
     if (_text != value) {
@@ -1347,6 +1366,245 @@ class RenderTextField extends RenderObject {
   /// Reset target visual column (used when text changes)
   void resetTargetColumn() {
     _targetVisualColumn = null;
+  }
+
+  // --- Mouse interaction ---
+
+  @override
+  void attach(PipelineOwner owner) {
+    super.attach(owner);
+    _mouseAnnotation?.validForMouseTracker = true;
+  }
+
+  @override
+  void detach() {
+    _mouseAnnotation?.validForMouseTracker = false;
+    super.detach();
+  }
+
+  @override
+  bool hitTest(HitTestResult result, {required Offset position}) {
+    final bounds = Rect.fromLTWH(0, 0, size.width, size.height);
+    if (!bounds.contains(position)) return false;
+
+    if (result is MouseHitTestResult && _mouseAnnotation != null) {
+      result.addWithPosition(target: this, localPosition: position);
+    }
+
+    return hitTestSelf(position);
+  }
+
+  void _updateMouseAnnotation() {
+    _mouseAnnotation = MouseTrackerAnnotation(
+      onEnter: (event) {
+        if (event.button == MouseButton.left) {
+          final leftDown = event.pressed || event.isPrimaryButtonDown;
+          if (leftDown && !_isLeftButtonPressed) {
+            _isLeftButtonPressed = true;
+            _handlePointerDown(event);
+          } else if (!leftDown) {
+            _isLeftButtonPressed = false;
+          }
+        }
+      },
+      onExit: (event) {
+        if (_dragAnchorOffset != null) {
+          // End drag when leaving the region, matching SelectionArea behavior.
+          _handlePointerMove(event);
+          _handlePointerUp(event);
+        }
+        _isLeftButtonPressed = false;
+      },
+      onHover: (event) {
+        if (event.button == MouseButton.wheelUp ||
+            event.button == MouseButton.wheelDown) {
+          return;
+        }
+
+        if (event.button == MouseButton.left) {
+          final leftDown = event.pressed || event.isPrimaryButtonDown;
+          if (leftDown && !_isLeftButtonPressed) {
+            _isLeftButtonPressed = true;
+            _handlePointerDown(event);
+          } else if (!leftDown && _isLeftButtonPressed) {
+            _isLeftButtonPressed = false;
+            _handlePointerUp(event);
+          } else if (leftDown && _isLeftButtonPressed) {
+            _handlePointerMove(event);
+          }
+        }
+      },
+      renderObject: this,
+    );
+  }
+
+  Offset get _globalPaintOffset {
+    double x = 0, y = 0;
+    RenderObject? node = this;
+    while (node != null) {
+      if (node.parentData is BoxParentData) {
+        final pd = node.parentData as BoxParentData;
+        x += pd.offset.dx;
+        y += pd.offset.dy;
+      }
+      node = node.parent;
+    }
+    return Offset(x, y);
+  }
+
+  int _getCharIndexFromMousePosition(int mouseX, int mouseY) {
+    final gpo = _globalPaintOffset;
+    final localX = mouseX - gpo.dx;
+    final localY = mouseY - gpo.dy;
+
+    // For obscured text, the layout lines contain obscuring characters (e.g. '•')
+    // which may have different byte lengths than the real text. We must pass the
+    // obscured text so character index computation matches the visual layout.
+    final textForHitTest =
+        _obscureText ? _obscuringCharacter * _text.length : _text;
+
+    final charIndex = selection_utils.getCharacterIndexAtLocalPosition(
+      localPos: Offset(localX, localY),
+      text: textForHitTest,
+      lines: _layoutResult?.lines ?? const [],
+    );
+
+    // For single-line fields with horizontal scrolling, the visible text starts
+    // at _viewOffset but the layout contains the full text. The local x=0
+    // corresponds to the character at _viewOffset, so we must add the offset.
+    if (_maxLines == 1 && _viewOffset > 0) {
+      return (charIndex + _viewOffset).clamp(0, _text.length);
+    }
+
+    return charIndex;
+  }
+
+  void _handlePointerDown(MouseEvent event) {
+    if (_layoutResult == null) return;
+
+    final charIndex = _getCharIndexFromMousePosition(event.x, event.y);
+    final now = DateTime.now();
+
+    // Double-click detection
+    if (_lastClickTime != null &&
+        _lastClickOffset != null &&
+        now.difference(_lastClickTime!) < _doubleClickTimeout &&
+        (_lastClickOffset! - charIndex).abs() <= 1) {
+      _selectWordAt(charIndex);
+      _lastClickTime = null;
+      _lastClickOffset = null;
+      _dragAnchorOffset = null;
+      return;
+    }
+
+    // Single click - position cursor
+    _lastClickTime = now;
+    _lastClickOffset = charIndex;
+    _dragAnchorOffset = charIndex;
+
+    final newSelection = TextSelection.collapsed(offset: charIndex);
+    if (newSelection != _selection) {
+      _selection = newSelection;
+      _targetVisualColumn = null;
+      onSelectionChange?.call(newSelection);
+      markNeedsPaint();
+    }
+  }
+
+  void _handlePointerMove(MouseEvent event) {
+    if (_dragAnchorOffset == null || _layoutResult == null) return;
+
+    final charIndex = _getCharIndexFromMousePosition(event.x, event.y);
+
+    final newSelection = TextSelection(
+      baseOffset: _dragAnchorOffset!,
+      extentOffset: charIndex,
+    );
+
+    if (newSelection != _selection) {
+      _selection = newSelection;
+      _targetVisualColumn = null;
+      onSelectionChange?.call(newSelection);
+      markNeedsPaint();
+    }
+  }
+
+  void _handlePointerUp(MouseEvent event) {
+    _dragAnchorOffset = null;
+  }
+
+  void _selectWordAt(int offset) {
+    if (_text.isEmpty) return;
+    final clampedOffset = offset.clamp(0, _text.length - 1);
+
+    int start = clampedOffset;
+    int end = clampedOffset;
+
+    while (start > 0 && !_isWordBoundary(_text[start - 1])) {
+      start--;
+    }
+    while (end < _text.length && !_isWordBoundary(_text[end])) {
+      end++;
+    }
+
+    if (start == end) {
+      // Double-click on whitespace/punctuation: just position cursor there
+      final newSelection = TextSelection.collapsed(offset: clampedOffset);
+      if (newSelection != _selection) {
+        _selection = newSelection;
+        _targetVisualColumn = null;
+        onSelectionChange?.call(newSelection);
+        markNeedsPaint();
+      }
+      return;
+    }
+
+    final newSelection = TextSelection(baseOffset: start, extentOffset: end);
+    _selection = newSelection;
+    _targetVisualColumn = null;
+    onSelectionChange?.call(newSelection);
+    markNeedsPaint();
+  }
+
+  static bool _isWordBoundary(String char) {
+    // Treat whitespace and common punctuation as word boundaries
+    const boundaries = {
+      ' ',
+      '\t',
+      '\n',
+      '\r',
+      '.',
+      ',',
+      ';',
+      ':',
+      '!',
+      '?',
+      '(',
+      ')',
+      '[',
+      ']',
+      '{',
+      '}',
+      '<',
+      '>',
+      '"',
+      "'",
+      '/',
+      '\\',
+      '|',
+      '-',
+      '+',
+      '=',
+      '*',
+      '&',
+      '^',
+      '%',
+      '#',
+      '@',
+      '~',
+      '`',
+    };
+    return boundaries.contains(char);
   }
 
   @override
