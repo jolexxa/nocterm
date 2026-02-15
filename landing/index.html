@@ -49,6 +49,9 @@
       rel="stylesheet"
     />
 
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <!-- xterm.js for embedded demos -->
     <link
       rel="stylesheet"
@@ -140,7 +143,7 @@
         <aside class="sidebar">
           <!-- Stats Panel -->
           <div class="panel stats-panel" data-nav>
-            <h2 class="panel-title"><span class="emoji">📊</span> Stats</h2>
+            <h2 class="panel-title"><i data-lucide="bar-chart-3" class="panel-icon"></i> Stats</h2>
             <div class="panel-divider"></div>
             <dl class="stats-list">
               <div class="stat-row">
@@ -157,14 +160,14 @@
               </div>
               <div class="stat-row">
                 <dt>Hot Reload</dt>
-                <dd class="stat-value">🔥</dd>
+                <dd class="stat-value"><i data-lucide="flame" class="stat-icon"></i></dd>
               </div>
             </dl>
           </div>
 
           <!-- Code Panel -->
           <div class="panel code-panel" data-nav>
-            <h2 class="panel-title"><span class="emoji">📝</span> Code</h2>
+            <h2 class="panel-title"><i data-lucide="file-code" class="panel-icon"></i> Code</h2>
             <div class="panel-divider"></div>
             <pre
               class="code-block"
@@ -189,52 +192,32 @@
 
       <!-- Row 2: Feature Cards -->
       <div class="features-row">
-        <article
-          class="feature-card"
-          data-nav
-          style="--card-index: 0; --accent-color: 255, 107, 157"
-        >
-          <h3><span class="feature-icon">⚡</span> Declarative UI</h3>
+        <article class="feature-card" data-nav style="--card-index: 0">
+          <h3><i data-lucide="zap" class="feature-icon"></i> Declarative UI</h3>
           <div class="feature-divider"></div>
           <p>setState() reactive updates</p>
         </article>
 
-        <article
-          class="feature-card"
-          data-nav
-          style="--card-index: 1; --accent-color: 254, 202, 87"
-        >
-          <h3><span class="feature-icon">📦</span> 45+ Components</h3>
+        <article class="feature-card" data-nav style="--card-index: 1">
+          <h3><i data-lucide="blocks" class="feature-icon"></i> 45+ Components</h3>
           <div class="feature-divider"></div>
           <p>Row, Column, ListView...</p>
         </article>
 
-        <article
-          class="feature-card"
-          data-nav
-          style="--card-index: 2; --accent-color: 72, 219, 251"
-        >
-          <h3><span class="feature-icon">🎨</span> 6 Themes</h3>
+        <article class="feature-card" data-nav style="--card-index: 2">
+          <h3><i data-lucide="palette" class="feature-icon"></i> 6 Themes</h3>
           <div class="feature-divider"></div>
           <p>Nord, Dracula, Gruvbox...</p>
         </article>
 
-        <article
-          class="feature-card"
-          data-nav
-          style="--card-index: 3; --accent-color: 255, 159, 67"
-        >
-          <h3><span class="feature-icon">🔥</span> Hot Reload</h3>
+        <article class="feature-card" data-nav style="--card-index: 3">
+          <h3><i data-lucide="flame" class="feature-icon"></i> Hot Reload</h3>
           <div class="feature-divider"></div>
           <p>Instant code updates</p>
         </article>
 
-        <article
-          class="feature-card"
-          data-nav
-          style="--card-index: 4; --accent-color: 29, 209, 161"
-        >
-          <h3><span class="feature-icon">✓</span> Testing</h3>
+        <article class="feature-card" data-nav style="--card-index: 4">
+          <h3><i data-lucide="check-circle" class="feature-icon"></i> Testing</h3>
           <div class="feature-divider"></div>
           <p>testNocterm() built-in</p>
         </article>
@@ -244,7 +227,7 @@
       <section class="why-section">
         <div class="why-grid">
           <div class="why-item" data-nav>
-            <span class="why-icon">≡</span>
+            <span class="why-icon"><i data-lucide="layers"></i></span>
             <div class="why-content">
               <h3>Flutter Patterns</h3>
               <p>
@@ -254,7 +237,7 @@
             </div>
           </div>
           <div class="why-item" data-nav>
-            <span class="why-icon">◊</span>
+            <span class="why-icon"><i data-lucide="code"></i></span>
             <div class="why-content">
               <h3>Declarative</h3>
               <p>
@@ -264,7 +247,7 @@
             </div>
           </div>
           <div class="why-item" data-nav>
-            <span class="why-icon">▸</span>
+            <span class="why-icon"><i data-lucide="package"></i></span>
             <div class="why-content">
               <h3>Complete</h3>
               <p>
@@ -297,7 +280,7 @@
           <div class="code-editor-panel">
             <div class="editor-header">
               <span class="editor-tab active">
-                <span class="file-icon">📄</span>
+                <i data-lucide="file-text" class="file-icon"></i>
                 <span class="file-name" id="editor-filename"
                   >text_field_demo.dart</span
                 >
@@ -343,7 +326,7 @@
         <h2 class="section-title">What Can You Build?</h2>
         <div class="usecase-grid">
           <div class="usecase-card" data-nav>
-            <div class="usecase-icon">📊</div>
+            <div class="usecase-icon"><i data-lucide="layout-dashboard"></i></div>
             <h3>Dashboards</h3>
             <p>
               System monitors, server dashboards, DevOps tools with real-time
@@ -351,29 +334,29 @@
             </p>
           </div>
           <div class="usecase-card" data-nav>
-            <div class="usecase-icon">💬</div>
+            <div class="usecase-icon"><i data-lucide="message-circle"></i></div>
             <h3>Chat Apps</h3>
             <p>IRC clients, messaging tools with auto-scroll and rich text</p>
           </div>
           <div class="usecase-card" data-nav>
-            <div class="usecase-icon">📝</div>
+            <div class="usecase-icon"><i data-lucide="list-todo"></i></div>
             <h3>Productivity</h3>
             <p>
               Todo apps, note takers, project managers with keyboard navigation
             </p>
           </div>
           <div class="usecase-card" data-nav>
-            <div class="usecase-icon">🛠️</div>
+            <div class="usecase-icon"><i data-lucide="wrench"></i></div>
             <h3>Dev Tools</h3>
             <p>Code generators, API testers, database CLIs with rich UIs</p>
           </div>
           <div class="usecase-card" data-nav>
-            <div class="usecase-icon">🏠</div>
+            <div class="usecase-icon"><i data-lucide="house"></i></div>
             <h3>Smart Home</h3>
             <p>Home automation dashboards, IoT controllers, climate monitors</p>
           </div>
           <div class="usecase-card" data-nav>
-            <div class="usecase-icon">🎮</div>
+            <div class="usecase-icon"><i data-lucide="gamepad-2"></i></div>
             <h3>Games</h3>
             <p>Roguelikes, text adventures, puzzle games with animations</p>
           </div>
@@ -796,6 +779,7 @@
     </script>
 
     <script src="effects.js"></script>
+    <script>lucide.createIcons();</script>
 
     <!-- xterm.js for embedded terminal demo -->
     <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
