@@ -84,6 +84,27 @@ await testNocterm('counter test', (tester) async {
 
 See the [full documentation](https://docs.nocterm.dev) for guides on components, state management, testing, and more.
 
+## Community
+
+### Packages
+
+| Package | Description |
+|---------|-------------|
+| [nocterm_bloc](https://pub.dev/packages/nocterm_bloc) | Bloc state management for Nocterm |
+| [nocterm_lints](https://pub.dev/packages/nocterm_lints) | IDE assists — wrap with, swap, move, convert to stateful/stateless |
+
+### Built with Nocterm
+
+| Project | Description |
+|---------|-------------|
+| [vide_cli](https://github.com/Norbert515/vide_cli) | Multi-agent coding IDE for the terminal |
+| [nocterm_3d](https://github.com/Norbert515/nocterm_3d) | Experimental 3D renderer for the terminal |
+| [cow](https://github.com/jolexxa/cow) | Local LLM chat client powered by llama.cpp |
+| [snake](https://github.com/mrgnhnt96/snake) | Classic Snake for the command line |
+| [minesweeper](https://github.com/mrgnhnt96/minesweeper) | Classic Minesweeper for the command line |
+
+> Built something with Nocterm? [Open an issue](https://github.com/norbert515/nocterm/issues) to get it listed here!
+
 ## Contributing
 
 ### Git Hooks
