@@ -256,5 +256,87 @@ That's all folks!'''),
         debugPrintAfterPump: true,
       );
     });
+
+    test('table wraps cell content in narrow terminal', () async {
+      await testNocterm(
+        'table smart wrap',
+        (tester) async {
+          // This table naturally needs ~60 cols but we give it 40
+          await tester.pumpComponent(
+            const MarkdownText('''| Service | Description |
+|---------|-------------|
+| auth | Authentication and authorization service |
+| api | Public REST API endpoint |'''),
+          );
+
+          // All content should still be visible (wrapped within cells)
+          // "Service" may be split across lines in the narrow column
+          expect(tester.terminalState, containsText('Serv'));
+          expect(tester.terminalState, containsText('Description'));
+          expect(tester.terminalState, containsText('auth'));
+          expect(tester.terminalState, containsText('api'));
+          // The long description should be wrapped, so check parts
+          expect(tester.terminalState, containsText('Authentication'));
+          expect(tester.terminalState, containsText('authorization'));
+          // Table borders should be intact (not broken by wrapping)
+          expect(tester.terminalState, containsText('┌'));
+          expect(tester.terminalState, containsText('┘'));
+          expect(tester.terminalState, containsText('├'));
+          expect(tester.terminalState, containsText('┤'));
+        },
+        size: const Size(40, 24),
+        debugPrintAfterPump: true,
+      );
+    });
+
+    test('table preserves structure when it fits', () async {
+      await testNocterm(
+        'table fits',
+        (tester) async {
+          await tester.pumpComponent(
+            const MarkdownText('''| A | B |
+|---|---|
+| 1 | 2 |'''),
+          );
+
+          // Small table should fit perfectly with borders
+          expect(tester.terminalState, containsText('│ A │ B │'));
+          expect(tester.terminalState, containsText('│ 1 │ 2 │'));
+          expect(tester.terminalState, containsText('┌'));
+          expect(tester.terminalState, containsText('┐'));
+          expect(tester.terminalState, containsText('└'));
+          expect(tester.terminalState, containsText('┘'));
+        },
+        debugPrintAfterPump: true,
+      );
+    });
+
+    test('table with multi-line cells pads shorter cells', () async {
+      await testNocterm(
+        'table multi-line cell padding',
+        (tester) async {
+          // In a 30-wide terminal, the long cell should wrap while short stays on one line
+          await tester.pumpComponent(
+            const MarkdownText('''| Key | Value |
+|-----|-------|
+| id | A very long value that must wrap |
+| ok | Short |'''),
+          );
+
+          // Both cells should be visible
+          expect(tester.terminalState, containsText('Key'));
+          expect(tester.terminalState, containsText('Value'));
+          expect(tester.terminalState, containsText('id'));
+          expect(tester.terminalState, containsText('ok'));
+          expect(tester.terminalState, containsText('Short'));
+          // The long value should be wrapped but still fully present
+          expect(tester.terminalState, containsText('very'));
+          expect(tester.terminalState, containsText('long'));
+          expect(tester.terminalState, containsText('wrap'));
+        },
+        size: const Size(30, 24),
+        debugPrintAfterPump: true,
+      );
+    });
   });
 }

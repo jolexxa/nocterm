@@ -1,3 +1,6 @@
+import 'dart:math' as math;
+
+import 'package:characters/characters.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:nocterm/nocterm.dart';
 import 'package:nocterm/src/utils/unicode_width.dart';
@@ -62,24 +65,12 @@ class MarkdownText extends StatefulComponent {
 }
 
 class _MarkdownTextState extends State<MarkdownText> {
-  late List<InlineSpan> _spans;
+  List<InlineSpan> _spans = const [];
+  int? _lastMaxWidth;
+  String? _lastData;
+  MarkdownStyleSheet? _lastStyleSheet;
 
-  @override
-  void initState() {
-    super.initState();
-    _parseMarkdown();
-  }
-
-  @override
-  void didUpdateComponent(MarkdownText oldComponent) {
-    super.didUpdateComponent(oldComponent);
-    if (oldComponent.data != component.data ||
-        oldComponent.styleSheet != component.styleSheet) {
-      _parseMarkdown();
-    }
-  }
-
-  void _parseMarkdown() {
+  List<InlineSpan> _parseMarkdown({int? maxWidth}) {
     final effectiveStyleSheet =
         component.styleSheet ?? MarkdownStyleSheet.terminal();
     final document = md.Document(
@@ -88,18 +79,34 @@ class _MarkdownTextState extends State<MarkdownText> {
     );
     final nodes = document.parse(component.data);
 
-    final visitor = _MarkdownVisitor(effectiveStyleSheet);
-    _spans = visitor.visitNodes(nodes);
+    final visitor = _MarkdownVisitor(effectiveStyleSheet, maxWidth: maxWidth);
+    return visitor.visitNodes(nodes);
   }
 
   @override
   Component build(BuildContext context) {
-    return RichText(
-      text: TextSpan(children: _spans),
-      textAlign: component.textAlign,
-      softWrap: component.softWrap,
-      overflow: component.overflow,
-      maxLines: component.maxLines,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth =
+            constraints.maxWidth.isFinite ? constraints.maxWidth.toInt() : null;
+
+        if (component.data != _lastData ||
+            component.styleSheet != _lastStyleSheet ||
+            maxWidth != _lastMaxWidth) {
+          _lastData = component.data;
+          _lastStyleSheet = component.styleSheet;
+          _lastMaxWidth = maxWidth;
+          _spans = _parseMarkdown(maxWidth: maxWidth);
+        }
+
+        return RichText(
+          text: TextSpan(children: _spans),
+          textAlign: component.textAlign,
+          softWrap: component.softWrap,
+          overflow: component.overflow,
+          maxLines: component.maxLines,
+        );
+      },
     );
   }
 }
@@ -192,9 +199,10 @@ class MarkdownStyleSheet {
 
 /// Visitor that converts markdown AST nodes to TextSpan trees.
 class _MarkdownVisitor {
-  _MarkdownVisitor(this.styleSheet);
+  _MarkdownVisitor(this.styleSheet, {this.maxWidth});
 
   final MarkdownStyleSheet styleSheet;
+  final int? maxWidth;
   int _listDepth = 0;
 
   List<InlineSpan> visitNodes(List<md.Node> nodes) {
@@ -372,7 +380,7 @@ class _MarkdownVisitor {
         children.add(const TextSpan(text: '\n'));
         return TextSpan(children: children);
       case 'hr':
-        final width = 40; // Default width for horizontal rule
+        final width = maxWidth ?? 40;
         return TextSpan(
           text: styleSheet.horizontalRule * width + '\n\n',
           style: const TextStyle(color: Colors.grey),
@@ -403,7 +411,7 @@ class _MarkdownVisitor {
 
   InlineSpan _renderTable(md.Element table) {
     final rows = <List<String>>[];
-    final columnWidths = <int>[];
+    final naturalWidths = <int>[];
 
     // Extract table data
     if (table.children != null) {
@@ -426,12 +434,12 @@ class _MarkdownVisitor {
 
                   // Update column widths (using display width, not string length)
                   for (int i = 0; i < cells.length; i++) {
-                    if (i >= columnWidths.length) {
-                      columnWidths.add(0);
+                    if (i >= naturalWidths.length) {
+                      naturalWidths.add(0);
                     }
                     final cellWidth = UnicodeWidth.stringWidth(cells[i]);
-                    columnWidths[i] = columnWidths[i] > cellWidth
-                        ? columnWidths[i]
+                    naturalWidths[i] = naturalWidths[i] > cellWidth
+                        ? naturalWidths[i]
                         : cellWidth;
                   }
                 }
@@ -442,60 +450,227 @@ class _MarkdownVisitor {
       }
     }
 
-    // Render table as ASCII
-    final buffer = StringBuffer();
-    if (rows.isNotEmpty) {
-      // Top border
-      buffer.write('┌');
-      for (int i = 0; i < columnWidths.length; i++) {
-        buffer.write('─' * (columnWidths[i] + 2));
-        if (i < columnWidths.length - 1) {
-          buffer.write('┬');
-        }
-      }
-      buffer.write('┐\n');
+    if (rows.isEmpty || naturalWidths.isEmpty) {
+      return const TextSpan(text: '');
+    }
 
-      // Rows
-      for (int r = 0; r < rows.length; r++) {
+    // Shrink columns to fit available width if needed
+    final columnWidths = _distributeColumnWidths(naturalWidths);
+
+    // Word-wrap all cell content to fit column widths
+    final wrappedRows = <List<List<String>>>[];
+    for (final row in rows) {
+      final wrappedCells = <List<String>>[];
+      for (int c = 0; c < naturalWidths.length; c++) {
+        final content = c < row.length ? row[c] : '';
+        wrappedCells.add(_wrapCell(content, columnWidths[c]));
+      }
+      wrappedRows.add(wrappedCells);
+    }
+
+    // Render table
+    final buffer = StringBuffer();
+
+    // Top border
+    _writeHorizontalBorder(buffer, columnWidths, '┌', '─', '┬', '┐');
+
+    for (int r = 0; r < wrappedRows.length; r++) {
+      final rowCells = wrappedRows[r];
+      final rowHeight =
+          rowCells.fold(1, (max, cell) => math.max(max, cell.length));
+
+      // Render each line of this row
+      for (int l = 0; l < rowHeight; l++) {
         buffer.write('│');
-        for (int c = 0; c < rows[r].length; c++) {
+        for (int c = 0; c < columnWidths.length; c++) {
+          final lines = c < rowCells.length ? rowCells[c] : const [''];
+          final line = l < lines.length ? lines[l] : '';
+          final displayWidth = UnicodeWidth.stringWidth(line);
+          final paddingNeeded = columnWidths[c] - displayWidth;
           buffer.write(' ');
-          // Use unicode-aware padding (pad based on display width, not string length)
-          final cellContent = rows[r][c];
-          final cellDisplayWidth = UnicodeWidth.stringWidth(cellContent);
-          final paddingNeeded = columnWidths[c] - cellDisplayWidth;
-          buffer.write(cellContent);
+          buffer.write(line);
           if (paddingNeeded > 0) {
             buffer.write(' ' * paddingNeeded);
           }
           buffer.write(' │');
         }
         buffer.write('\n');
-
-        // Separator after header
-        if (r == 0 && rows.length > 1) {
-          buffer.write('├');
-          for (int i = 0; i < columnWidths.length; i++) {
-            buffer.write('─' * (columnWidths[i] + 2));
-            if (i < columnWidths.length - 1) {
-              buffer.write('┼');
-            }
-          }
-          buffer.write('┤\n');
-        }
       }
 
-      // Bottom border
-      buffer.write('└');
-      for (int i = 0; i < columnWidths.length; i++) {
-        buffer.write('─' * (columnWidths[i] + 2));
-        if (i < columnWidths.length - 1) {
-          buffer.write('┴');
-        }
+      // Separator after header row
+      if (r == 0 && wrappedRows.length > 1) {
+        _writeHorizontalBorder(buffer, columnWidths, '├', '─', '┼', '┤');
       }
-      buffer.write('┘\n');
     }
 
+    // Bottom border
+    _writeHorizontalBorder(buffer, columnWidths, '└', '─', '┴', '┘');
+
     return TextSpan(text: buffer.toString());
+  }
+
+  /// Distributes column widths to fit within [maxWidth].
+  /// If the table fits naturally, returns the natural widths unchanged.
+  List<int> _distributeColumnWidths(List<int> naturalWidths) {
+    final numCols = naturalWidths.length;
+    // Each column uses: 1 border + 1 space + content + 1 space = 3 + content
+    // Plus the final border: +1
+    // Total overhead = 3 * numCols + 1
+    final overhead = 3 * numCols + 1;
+    final naturalTotal = naturalWidths.fold(0, (sum, w) => sum + w) + overhead;
+
+    if (maxWidth == null || naturalTotal <= maxWidth!) {
+      return List.of(naturalWidths);
+    }
+
+    const minColWidth = 3;
+    final available = maxWidth! - overhead;
+
+    // If even minimum widths don't fit, use minimums and accept overflow
+    if (available < numCols * minColWidth) {
+      return List.filled(numCols, minColWidth);
+    }
+
+    // Proportional reduction
+    final result = List<int>.filled(numCols, 0);
+    final totalNatural = naturalWidths.fold(0, (sum, w) => sum + w);
+
+    // First pass: proportional allocation
+    int allocated = 0;
+    for (int i = 0; i < numCols; i++) {
+      result[i] = math.max(
+        minColWidth,
+        (naturalWidths[i] * available / totalNatural).floor(),
+      );
+      allocated += result[i];
+    }
+
+    // Second pass: distribute remaining space to columns that need it most
+    var remaining = available - allocated;
+    while (remaining > 0) {
+      // Find the column with the biggest deficit (natural - assigned)
+      int bestIdx = 0;
+      int bestDeficit = 0;
+      for (int i = 0; i < numCols; i++) {
+        final deficit = naturalWidths[i] - result[i];
+        if (deficit > bestDeficit) {
+          bestDeficit = deficit;
+          bestIdx = i;
+        }
+      }
+      if (bestDeficit == 0) break;
+      result[bestIdx]++;
+      remaining--;
+    }
+
+    // Third pass: reclaim excess if we overallocated
+    while (remaining < 0) {
+      // Find the column with the most excess over minColWidth
+      int bestIdx = 0;
+      int bestExcess = 0;
+      for (int i = 0; i < numCols; i++) {
+        final excess = result[i] - minColWidth;
+        if (excess > bestExcess) {
+          bestExcess = excess;
+          bestIdx = i;
+        }
+      }
+      if (bestExcess == 0) break;
+      result[bestIdx]--;
+      remaining++;
+    }
+
+    return result;
+  }
+
+  /// Word-wraps cell content to fit within [cellWidth].
+  static List<String> _wrapCell(String content, int cellWidth) {
+    if (cellWidth <= 0) return [''];
+    if (UnicodeWidth.stringWidth(content) <= cellWidth) return [content];
+
+    final lines = <String>[];
+    final words = content.split(' ');
+    var currentLine = '';
+    var currentWidth = 0;
+
+    for (final word in words) {
+      final wordWidth = UnicodeWidth.stringWidth(word);
+
+      if (currentWidth == 0) {
+        // First word on line - may need to break if too long
+        if (wordWidth > cellWidth) {
+          lines.addAll(_breakLongWord(word, cellWidth));
+          final lastLine = lines.removeLast();
+          currentLine = lastLine;
+          currentWidth = UnicodeWidth.stringWidth(lastLine);
+        } else {
+          currentLine = word;
+          currentWidth = wordWidth;
+        }
+      } else if (currentWidth + 1 + wordWidth <= cellWidth) {
+        // Word fits with space
+        currentLine += ' $word';
+        currentWidth += 1 + wordWidth;
+      } else {
+        // Word doesn't fit - start new line
+        lines.add(currentLine);
+        if (wordWidth > cellWidth) {
+          lines.addAll(_breakLongWord(word, cellWidth));
+          final lastLine = lines.removeLast();
+          currentLine = lastLine;
+          currentWidth = UnicodeWidth.stringWidth(lastLine);
+        } else {
+          currentLine = word;
+          currentWidth = wordWidth;
+        }
+      }
+    }
+
+    if (currentLine.isNotEmpty) {
+      lines.add(currentLine);
+    }
+
+    return lines.isEmpty ? [''] : lines;
+  }
+
+  /// Breaks a single word that exceeds [maxWidth] into multiple lines.
+  static List<String> _breakLongWord(String word, int maxWidth) {
+    final parts = <String>[];
+    var current = '';
+    var currentWidth = 0;
+
+    for (final grapheme in word.characters) {
+      final w = UnicodeWidth.graphemeWidth(grapheme);
+      if (currentWidth + w > maxWidth && current.isNotEmpty) {
+        parts.add(current);
+        current = grapheme;
+        currentWidth = w;
+      } else {
+        current += grapheme;
+        currentWidth += w;
+      }
+    }
+    if (current.isNotEmpty) parts.add(current);
+    return parts.isEmpty ? [''] : parts;
+  }
+
+  /// Writes a horizontal border line like ┌──┬──┐ or ├──┼──┤.
+  static void _writeHorizontalBorder(
+    StringBuffer buffer,
+    List<int> columnWidths,
+    String left,
+    String fill,
+    String middle,
+    String right,
+  ) {
+    buffer.write(left);
+    for (int i = 0; i < columnWidths.length; i++) {
+      buffer.write(fill * (columnWidths[i] + 2));
+      if (i < columnWidths.length - 1) {
+        buffer.write(middle);
+      }
+    }
+    buffer.write(right);
+    buffer.write('\n');
   }
 }
