@@ -257,10 +257,16 @@ class RenderScrollbar extends RenderObject
     final scrollbarX = size.width - thickness;
     final scrollbarHeight = size.height;
 
-    // Calculate thumb size and position
+    // When arrows are shown, the thumb track is between the arrows
+    final hasArrows = scrollbarHeight >= 3;
+    final trackStart = hasArrows ? 1.0 : 0.0;
+    final trackEnd = hasArrows ? scrollbarHeight - 1 : scrollbarHeight;
+    final trackHeight = trackEnd - trackStart;
+
+    // Calculate thumb size and position within the track area
     final scrollFraction = controller.viewportDimension /
         (controller.maxScrollExtent + controller.viewportDimension);
-    final thumbHeight = math.max(1.0, scrollbarHeight * scrollFraction);
+    final thumbHeight = math.max(1.0, trackHeight * scrollFraction);
 
     // Calculate thumb position based on scroll offset
     double thumbOffset;
@@ -270,11 +276,11 @@ class RenderScrollbar extends RenderObject
       // When at maxScrollExtent (visual top), thumb should be at top
       final scrollOffset =
           1.0 - (controller.offset / controller.maxScrollExtent);
-      thumbOffset = scrollOffset * (scrollbarHeight - thumbHeight);
+      thumbOffset = trackStart + scrollOffset * (trackHeight - thumbHeight);
     } else {
       // Normal mode: offset 0 = top, maxScrollExtent = bottom
       final scrollOffset = controller.offset / controller.maxScrollExtent;
-      thumbOffset = scrollOffset * (scrollbarHeight - thumbHeight);
+      thumbOffset = trackStart + scrollOffset * (trackHeight - thumbHeight);
     }
 
     // Draw scrollbar track
@@ -286,8 +292,8 @@ class RenderScrollbar extends RenderObject
       );
     }
 
-    // Draw arrows at top and bottom (before thumb so thumb can overwrite if needed)
-    if (scrollbarHeight >= 3) {
+    // Draw arrows at top and bottom
+    if (hasArrows) {
       // In reverse mode, arrows should reflect the inverted scroll direction
       final topArrowActive =
           _isReversed ? !controller.atEnd : !controller.atStart;
@@ -311,11 +317,11 @@ class RenderScrollbar extends RenderObject
       );
     }
 
-    // Draw scrollbar thumb (after arrows so it can overwrite them if overlapping)
+    // Draw scrollbar thumb (constrained to track area between arrows)
     final thumbStart = thumbOffset.toInt();
     final thumbEnd = math.min(
       (thumbOffset + thumbHeight).toInt(),
-      scrollbarHeight.toInt(),
+      trackEnd.toInt(),
     );
 
     for (int y = thumbStart; y < thumbEnd; y++) {
