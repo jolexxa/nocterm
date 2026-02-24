@@ -112,7 +112,14 @@ class StdioBackend implements TerminalBackend {
 
   @override
   void requestExit([int exitCode = 0]) {
-    exit(exitCode);
+    // Flush stdout before exiting to ensure all terminal cleanup escape
+    // sequences (disable mouse tracking, leave alternate screen, show cursor,
+    // etc.) are actually written to the terminal. Without this, macOS terminals
+    // can be left in a bad state (e.g., echo mode off, stuck in alt screen).
+    // See: https://github.com/Norbert515/nocterm/issues/57
+    Future.wait<void>([stdout.flush(), stderr.flush()])
+        .then((_) => exit(exitCode))
+        .catchError((_) => exit(exitCode));
   }
 
   @override

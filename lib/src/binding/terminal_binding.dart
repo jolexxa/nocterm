@@ -561,11 +561,16 @@ class TerminalBinding extends NoctermBinding
       terminal.showCursor();
       terminal.leaveAlternateScreen();
       terminal.clear();
-
-      // Restore raw mode via backend
-      terminal.backend.disableRawMode();
     } catch (_) {
       // Ignore any errors during cleanup
+    }
+
+    // Restore terminal mode in its own try-catch to ensure it runs
+    // even if writing escape codes above fails
+    try {
+      terminal.backend.disableRawMode();
+    } catch (_) {
+      // Ignore errors when running without a proper terminal
     }
   }
 
