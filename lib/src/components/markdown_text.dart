@@ -213,7 +213,40 @@ class _MarkdownVisitor {
         spans.add(span);
       }
     }
+    // Trim trailing newlines from the last span so the final block element
+    // doesn't produce extra blank lines at the bottom.
+    if (spans.isNotEmpty) {
+      spans[spans.length - 1] = _trimTrailingNewlines(spans.last);
+    }
     return spans;
+  }
+
+  /// Recursively removes trailing newline-only children from a span tree.
+  static InlineSpan _trimTrailingNewlines(InlineSpan span) {
+    if (span is! TextSpan) return span;
+
+    final children = span.children;
+    if (children != null && children.isNotEmpty) {
+      final last = children.last;
+      if (last is TextSpan &&
+          last.text != null &&
+          RegExp(r'^\n+$').hasMatch(last.text!)) {
+        // Last child is a pure-newline span — drop it.
+        final trimmed = children.sublist(0, children.length - 1);
+        return TextSpan(children: trimmed, style: span.style);
+      }
+      // Otherwise recurse into the last child.
+      final trimmedLast = _trimTrailingNewlines(last);
+      if (trimmedLast != last) {
+        final updated = [...children];
+        updated[updated.length - 1] = trimmedLast;
+        return TextSpan(children: updated, style: span.style);
+      }
+    } else if (span.text != null && span.text!.endsWith('\n')) {
+      return TextSpan(text: span.text!.trimRight(), style: span.style);
+    }
+
+    return span;
   }
 
   InlineSpan? visitNode(md.Node node) {
