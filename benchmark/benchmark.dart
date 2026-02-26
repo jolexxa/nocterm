@@ -165,7 +165,7 @@ void saveBaseline(Map<String, double> baseline) {
   final sorted = Map.fromEntries(
     baseline.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
   );
-  file.writeAsStringSync(encoder.convert(sorted) + '\n');
+  file.writeAsStringSync('${encoder.convert(sorted)}\n');
 }
 
 String _deltaStr(double currentUs, double? baselineUs) {
@@ -191,24 +191,23 @@ void printSuiteResults(
   const deltaWidth = 10;
 
   // Header
-  var header = suiteName.padRight(nameWidth) +
-      'median'.padLeft(colWidth) +
-      'min'.padLeft(colWidth) +
-      'max'.padLeft(colWidth) +
+  var header = '${suiteName.padRight(nameWidth)}'
+      '${'median'.padLeft(colWidth)}'
+      '${'min'.padLeft(colWidth)}'
+      '${'max'.padLeft(colWidth)}'
       '  iters';
   if (hasBaseline) header += 'vs base'.padLeft(deltaWidth);
   print(header);
-  print(
-      '${'─' * (nameWidth + colWidth * 3 + 8 + (hasBaseline ? deltaWidth : 0))}');
+  print('─' * (nameWidth + colWidth * 3 + 8 + (hasBaseline ? deltaWidth : 0)));
 
   // Results
   for (final r in results) {
     final key = _baselineKey(suiteName, r.name);
     final baseMedian = baseline[key];
-    var line = r.name.padRight(nameWidth) +
-        r.medianStr.padLeft(colWidth) +
-        r.minStr.padLeft(colWidth) +
-        r.maxStr.padLeft(colWidth) +
+    var line = '${r.name.padRight(nameWidth)}'
+        '${r.medianStr.padLeft(colWidth)}'
+        '${r.minStr.padLeft(colWidth)}'
+        '${r.maxStr.padLeft(colWidth)}'
         '  x${r.iterations}';
     if (hasBaseline) {
       final delta = _deltaStr(r.medianUs, baseMedian);
@@ -295,7 +294,6 @@ BenchmarkSuite bufferSuite() {
     () {
       final cell1 = Cell(char: 'A', style: style);
       final cell2 = Cell(char: 'A', style: style);
-      final cell3 = Cell(char: 'B', style: style2);
       return Benchmark.sync('Cell equality (same)', () {
         cell1 == cell2;
       });
@@ -488,7 +486,7 @@ BenchmarkSuite canvasSuite() {
 BenchmarkSuite widgetPipelineSuite(String label, Size size) {
   NoctermTestBinding? binding;
 
-  Benchmark _widgetBench(
+  Benchmark widgetBench(
     String name,
     Component Function() buildWidget, {
     int warmup = 20,
@@ -516,13 +514,13 @@ BenchmarkSuite widgetPipelineSuite(String label, Size size) {
 
   return BenchmarkSuite('Widget Pipeline ($label)', [
     // Single Text widget
-    _widgetBench(
+    widgetBench(
       'Text widget',
       () => Text('Hello, benchmark world!'),
     ),
 
     // Column with 10 Text children
-    _widgetBench(
+    widgetBench(
       'Column with 10 Text children',
       () => Column(
         children: List.generate(10, (i) => Text('Row $i: some content')),
@@ -530,7 +528,7 @@ BenchmarkSuite widgetPipelineSuite(String label, Size size) {
     ),
 
     // Nested Containers (5 deep)
-    _widgetBench(
+    widgetBench(
       'Nested Containers (5 deep)',
       () {
         Component child = Text('inner');
@@ -548,7 +546,7 @@ BenchmarkSuite widgetPipelineSuite(String label, Size size) {
     ),
 
     // Row with 8 children
-    _widgetBench(
+    widgetBench(
       'Row with 8 children',
       () => Row(
         children: List.generate(
@@ -559,7 +557,7 @@ BenchmarkSuite widgetPipelineSuite(String label, Size size) {
     ),
 
     // ListView with 100 items
-    _widgetBench(
+    widgetBench(
       'ListView.builder (100 items)',
       () => ListView.builder(
         itemCount: 100,
@@ -569,7 +567,7 @@ BenchmarkSuite widgetPipelineSuite(String label, Size size) {
     ),
 
     // Stack with overlapping children
-    _widgetBench(
+    widgetBench(
       'Stack with 5 positioned children',
       () => Stack(
         children: List.generate(
