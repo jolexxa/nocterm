@@ -43,11 +43,13 @@ class KeyboardParser {
       );
     }
 
-    // Enter/Return (0x0D = CR). In raw mode, Enter sends 0x0D.
-    // Note: 0x0A (LF / Ctrl+J) is NOT handled here — it falls through to
-    // the control character handler so it's parsed as Ctrl+J, which is the
-    // universal newline fallback (works in all terminals).
-    if (first == 0x0D) {
+    // Enter/Return - 0x0D (CR) and 0x0A (LF).
+    // In raw mode most terminals send 0x0D for Enter, but some (e.g. Warp)
+    // may send 0x0A. We treat both as Enter for compatibility.
+    // When kitty keyboard protocol is active, Ctrl+J arrives as a kitty
+    // CSI sequence (\x1b[106;5u), not as raw 0x0A, so this doesn't
+    // interfere with Ctrl+J newline detection in kitty-capable terminals.
+    if (first == 0x0D || first == 0x0A) {
       return KeyboardEvent(
         logicalKey: LogicalKey.enter,
         character: '\n',
@@ -64,9 +66,7 @@ class KeyboardParser {
     }
 
     // Control characters (Ctrl+A through Ctrl+Z)
-    // Note: 0x08 (Ctrl+H/Backspace), 0x09 (Ctrl+I/Tab), 0x0D (Ctrl+M/Enter) are handled above.
-    // 0x0A (Ctrl+J/linefeed) is intentionally NOT intercepted — it falls through here
-    // so it's parsed as Ctrl+J, the universal newline fallback.
+    // Note: 0x08 (Ctrl+H), 0x09 (Ctrl+I/Tab), 0x0A (Ctrl+J), 0x0D (Ctrl+M/Enter) are handled above
     if (first >= 0x01 && first <= 0x1A) {
       return _parseControlChar(first);
     }
@@ -479,8 +479,10 @@ class KeyboardParser {
   }
 
   /// Parse kitty keyboard protocol sequence: CSI codepoint ; modifier u
+  /// Supports `:` sub-parameters per the kitty spec (e.g. \x1b[13:10;2u).
   KeyboardEvent? _parseKittySequence() {
     // Find 'u' terminator (0x75)
+    // Valid parameter bytes: digits (0x30-0x39), ';' (0x3B), ':' (0x3A)
     int uIndex = -1;
     for (int i = 2; i < _buffer.length; i++) {
       if (_buffer[i] == 0x75) {
@@ -488,6 +490,7 @@ class KeyboardParser {
         break;
       }
       if (_buffer[i] != 0x3B && // ';'
+          _buffer[i] != 0x3A && // ':' (sub-parameter separator)
           !(_buffer[i] >= 0x30 && _buffer[i] <= 0x39)) {
         return null;
       }
@@ -500,10 +503,17 @@ class KeyboardParser {
 
     if (parts.isEmpty || parts.length > 3) return null;
 
-    final codepoint = int.tryParse(parts[0]);
+    // The codepoint field may contain `:` sub-parameters (e.g. "13:10").
+    // Per the kitty spec, the first value is the Unicode codepoint.
+    final codepointStr = parts[0].split(':').first;
+    final codepoint = int.tryParse(codepointStr);
     if (codepoint == null) return null;
 
-    final modifierValue = parts.length >= 2 ? int.tryParse(parts[1]) : null;
+    // The modifier field may also contain `:` sub-parameters (e.g. "2:1").
+    // The first value is the modifier bitmask.
+    final modifierStr = parts.length >= 2 ? parts[1].split(':').first : null;
+    final modifierValue =
+        modifierStr != null ? int.tryParse(modifierStr) : null;
     final modifiers = modifierValue != null
         ? _decodeModifiers(modifierValue)
         : const ModifierKeys();

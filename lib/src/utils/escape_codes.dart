@@ -51,9 +51,8 @@ class _Enable {
 
   /// Push kitty keyboard mode with flags:
   /// - Bit 0 (1): Disambiguate escape codes
-  /// - Bit 2 (4): Report alternate keys
-  /// Combined flags = 5 (0b00101)
-  String get kittyKeyboard => '\x1B[>5u';
+  /// This is sufficient for detecting Shift+Enter, Ctrl+Enter, etc.
+  String get kittyKeyboard => '\x1B[>1u';
 
   /// Enable xterm modifyOtherKeys mode (level 1).
   String get modifyOtherKeys => '\x1B[>4;1m';

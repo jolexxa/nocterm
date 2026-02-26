@@ -124,6 +124,46 @@ void main() {
         expect(event.modifiers.meta, isTrue);
         expect(event.modifiers.shift, isFalse);
       });
+
+      test('Enter with colon sub-params: \\x1b[13:10u', () {
+        parser.clear();
+        // "report alternate keys" may produce colon sub-parameters
+        final bytes = '\x1B[13:10u'.codeUnits;
+        final event = parser.parseBytes(bytes);
+        expect(event, isNotNull);
+        expect(event!.logicalKey, equals(LogicalKey.enter));
+        expect(event.modifiers.hasAnyModifier, isFalse);
+      });
+
+      test('Shift+Enter with colon sub-params: \\x1b[13:10;2u', () {
+        parser.clear();
+        final bytes = '\x1B[13:10;2u'.codeUnits;
+        final event = parser.parseBytes(bytes);
+        expect(event, isNotNull);
+        expect(event!.logicalKey, equals(LogicalKey.enter));
+        expect(event.modifiers.shift, isTrue);
+      });
+
+      test('Key with colon sub-params in modifier: \\x1b[97;5:1u', () {
+        parser.clear();
+        // codepoint 97 = 'a', modifier 5 = ctrl, event type 1
+        final bytes = '\x1B[97;5:1u'.codeUnits;
+        final event = parser.parseBytes(bytes);
+        expect(event, isNotNull);
+        expect(event!.logicalKey, equals(LogicalKey.keyA));
+        expect(event.modifiers.ctrl, isTrue);
+      });
+
+      test('Ctrl+J via kitty: \\x1b[106;5u (newline fallback)', () {
+        parser.clear();
+        // codepoint 106 = 'j', modifier 5 = ctrl
+        final bytes = '\x1B[106;5u'.codeUnits;
+        final event = parser.parseBytes(bytes);
+        expect(event, isNotNull);
+        expect(event!.logicalKey, equals(LogicalKey.keyJ));
+        expect(event.character, equals('j'));
+        expect(event.modifiers.ctrl, isTrue);
+      });
     });
 
     group('InputParser', () {
@@ -150,6 +190,25 @@ void main() {
         final keyEvent = (event as KeyboardInputEvent).event;
         expect(keyEvent.logicalKey, equals(LogicalKey.enter));
         expect(keyEvent.modifiers.ctrl, isTrue);
+      });
+
+      test('Enter with colon sub-params via kitty', () {
+        // \x1b[13:10u — Enter with alternate key sub-parameter
+        parser.addBytes('\x1B[13:10u'.codeUnits);
+        final event = parser.parseNext();
+        expect(event, isA<KeyboardInputEvent>());
+        final keyEvent = (event as KeyboardInputEvent).event;
+        expect(keyEvent.logicalKey, equals(LogicalKey.enter));
+        expect(keyEvent.modifiers.hasAnyModifier, isFalse);
+      });
+
+      test('Shift+Enter with colon sub-params via kitty', () {
+        parser.addBytes('\x1B[13:10;2u'.codeUnits);
+        final event = parser.parseNext();
+        expect(event, isA<KeyboardInputEvent>());
+        final keyEvent = (event as KeyboardInputEvent).event;
+        expect(keyEvent.logicalKey, equals(LogicalKey.enter));
+        expect(keyEvent.modifiers.shift, isTrue);
       });
 
       test('kitty sequence followed by regular character', () {
@@ -389,12 +448,13 @@ void main() {
       expect(event.modifiers.ctrl, isTrue);
     });
 
-    test('Ctrl+J (0x0A) is parsed as Ctrl+J, not as Enter', () {
+    test('0x0A (LF) is parsed as Enter for terminal compatibility', () {
       parser.clear();
       final event = parser.parseBytes([0x0A]);
-      expect(event!.logicalKey, equals(LogicalKey.keyJ));
-      expect(event.modifiers.ctrl, isTrue);
-      // This is the universal newline fallback — must NOT be confused with Enter
+      expect(event!.logicalKey, equals(LogicalKey.enter));
+      expect(event.modifiers.hasAnyModifier, isFalse);
+      // Some terminals (e.g. Warp) send 0x0A for Enter.
+      // With kitty protocol active, Ctrl+J arrives as \x1b[106;5u instead.
     });
 
     test('F5 (ESC[15~) still works and is not confused with modifyOtherKeys',
