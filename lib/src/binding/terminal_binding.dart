@@ -176,6 +176,13 @@ class TerminalBinding extends NoctermBinding
     // When enabled, pasted text is wrapped in ESC[200~ ... ESC[201~
     // This allows applications to distinguish pasted text from typed text
     terminal.write(EscapeCodes.enable.bracketedPasteMode);
+
+    // Enable kitty keyboard protocol for enhanced modifier key detection.
+    // This allows distinguishing Shift+Enter from Enter, Ctrl+Enter, etc.
+    // Terminals that don't support it will silently ignore the sequence.
+    // We also enable modifyOtherKeys as a fallback for terminals like xterm.
+    terminal.write(EscapeCodes.enable.kittyKeyboard);
+    terminal.write(EscapeCodes.enable.modifyOtherKeys);
     terminal.flush();
 
     // Store initial size
@@ -554,6 +561,9 @@ class TerminalBinding extends NoctermBinding
       terminal.backend.writeRaw('\x1B[?1006l'); // Disable SGR mouse mode
       terminal.backend.writeRaw('\x1B[?1002l'); // Disable button event tracking
       terminal.backend.writeRaw('\x1B[?1000l'); // Disable basic mouse tracking
+      // Pop kitty keyboard mode and reset modifyOtherKeys
+      terminal.backend.writeRaw(EscapeCodes.disable.kittyKeyboard);
+      terminal.backend.writeRaw(EscapeCodes.disable.modifyOtherKeys);
       terminal.restoreColors(); // Restore terminal colors
       terminal.flush();
 
@@ -834,6 +844,9 @@ class TerminalBinding extends NoctermBinding
       terminal.backend.writeRaw(EscapeCodes.disable.buttonEventTracking);
       terminal.backend.writeRaw(EscapeCodes.disable.basicMouseTracking);
       terminal.backend.writeRaw(EscapeCodes.disable.bracketedPasteMode);
+      // Pop kitty keyboard mode and reset modifyOtherKeys
+      terminal.backend.writeRaw(EscapeCodes.disable.kittyKeyboard);
+      terminal.backend.writeRaw(EscapeCodes.disable.modifyOtherKeys);
 
       // Restore terminal (this includes leaving alternate screen)
       terminal.showCursor();

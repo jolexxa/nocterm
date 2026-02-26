@@ -376,18 +376,25 @@ class _TextFieldState extends State<TextField> {
       return false;
     }
 
-    // Handle special keys
-    // Note: Shift+Enter detection doesn't work in most terminals due to input limitations
-    // Most terminals send the same code for Enter and Shift+Enter
-    if (key == LogicalKey.enter && event.isShiftPressed) {
-      // This branch rarely works in real terminals but is kept for compatibility
-      // with test environments and potential future terminal improvements
+    // Handle newline insertion: Shift+Enter, Ctrl+Enter, Alt+Enter, or Ctrl+J
+    // With kitty keyboard protocol enabled, terminals can distinguish modified Enter.
+    // Ctrl+J (linefeed) is a universal fallback that works in all terminals.
+    if (key == LogicalKey.enter &&
+        (event.isShiftPressed ||
+            event.isControlPressed ||
+            event.isAltPressed)) {
       if (component.maxLines != 1) {
         _insertText('\n');
       }
       return true;
-    } else if (key == LogicalKey.enter && !event.isShiftPressed) {
-      // Enter submits in all fields (both single-line and multi-line)
+    } else if (event.matches(LogicalKey.keyJ, ctrl: true)) {
+      // Ctrl+J = universal newline fallback (works in all terminals)
+      if (component.maxLines != 1) {
+        _insertText('\n');
+      }
+      return true;
+    } else if (key == LogicalKey.enter) {
+      // Plain Enter submits in all fields (both single-line and multi-line)
       component.onEditingComplete?.call();
       component.onSubmitted?.call(_controller.text);
       return true;

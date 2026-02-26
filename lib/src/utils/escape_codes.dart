@@ -23,6 +23,12 @@ class _Disable {
   String get basicMouseTracking => '\x1B[?1000l';
   String get bracketedPasteMode => '\x1B[?2004l';
 
+  /// Pop kitty keyboard mode from the stack.
+  String get kittyKeyboard => '\x1B[<u';
+
+  /// Reset xterm modifyOtherKeys mode to disabled.
+  String get modifyOtherKeys => '\x1B[>4;0m';
+
   List<String> get values => [
         motionTracking,
         sgrMouseMode,
@@ -40,6 +46,15 @@ class _Enable {
   String get buttonEventTracking => '\x1B[?1002h';
   String get basicMouseTracking => '\x1B[?1000h';
   String get bracketedPasteMode => '\x1B[?2004h';
+
+  /// Push kitty keyboard mode with flags:
+  /// - Bit 0 (1): Disambiguate escape codes
+  /// - Bit 2 (4): Report alternate keys
+  /// Combined flags = 5 (0b00101)
+  String get kittyKeyboard => '\x1B[>5u';
+
+  /// Enable xterm modifyOtherKeys mode (level 1).
+  String get modifyOtherKeys => '\x1B[>4;1m';
 
   List<String> get values => [
         motionTracking,

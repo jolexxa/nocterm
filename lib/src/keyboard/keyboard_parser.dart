@@ -43,8 +43,11 @@ class KeyboardParser {
       );
     }
 
-    // Enter/Return - check before control characters since 0x0A and 0x0D are in control range
-    if (first == 0x0D || first == 0x0A) {
+    // Enter/Return (0x0D = CR). In raw mode, Enter sends 0x0D.
+    // Note: 0x0A (LF / Ctrl+J) is NOT handled here — it falls through to
+    // the control character handler so it's parsed as Ctrl+J, which is the
+    // universal newline fallback (works in all terminals).
+    if (first == 0x0D) {
       return KeyboardEvent(
         logicalKey: LogicalKey.enter,
         character: '\n',
@@ -61,7 +64,9 @@ class KeyboardParser {
     }
 
     // Control characters (Ctrl+A through Ctrl+Z)
-    // Note: 0x08 (Ctrl+H), 0x09 (Ctrl+I/Tab), 0x0A (Ctrl+J), 0x0D (Ctrl+M/Enter) are handled above
+    // Note: 0x08 (Ctrl+H/Backspace), 0x09 (Ctrl+I/Tab), 0x0D (Ctrl+M/Enter) are handled above.
+    // 0x0A (Ctrl+J/linefeed) is intentionally NOT intercepted — it falls through here
+    // so it's parsed as Ctrl+J, the universal newline fallback.
     if (first >= 0x01 && first <= 0x1A) {
       return _parseControlChar(first);
     }
@@ -192,6 +197,18 @@ class KeyboardParser {
   }
 
   KeyboardEvent? _parseCSISequence() {
+    // Try kitty keyboard protocol: CSI codepoint ; modifier u
+    {
+      final result = _parseKittySequence();
+      if (result != null) return result;
+    }
+
+    // Try xterm modifyOtherKeys: CSI 27 ; modifier ; charcode ~
+    {
+      final result = _parseModifyOtherKeysSequence();
+      if (result != null) return result;
+    }
+
     // Arrow keys: ESC [ A/B/C/D
     if (_buffer.length == 3) {
       switch (_buffer[2]) {
@@ -459,6 +476,119 @@ class KeyboardParser {
     }
 
     return null;
+  }
+
+  /// Parse kitty keyboard protocol sequence: CSI codepoint ; modifier u
+  KeyboardEvent? _parseKittySequence() {
+    // Find 'u' terminator (0x75)
+    int uIndex = -1;
+    for (int i = 2; i < _buffer.length; i++) {
+      if (_buffer[i] == 0x75) {
+        uIndex = i;
+        break;
+      }
+      if (_buffer[i] != 0x3B && // ';'
+          !(_buffer[i] >= 0x30 && _buffer[i] <= 0x39)) {
+        return null;
+      }
+    }
+
+    if (uIndex == -1) return null;
+
+    final paramStr = String.fromCharCodes(_buffer.sublist(2, uIndex));
+    final parts = paramStr.split(';');
+
+    if (parts.isEmpty || parts.length > 3) return null;
+
+    final codepoint = int.tryParse(parts[0]);
+    if (codepoint == null) return null;
+
+    final modifierValue = parts.length >= 2 ? int.tryParse(parts[1]) : null;
+    final modifiers = modifierValue != null
+        ? _decodeModifiers(modifierValue)
+        : const ModifierKeys();
+
+    return _codepointToKeyEvent(codepoint, modifiers);
+  }
+
+  /// Parse xterm modifyOtherKeys sequence: CSI 27 ; modifier ; charcode ~
+  KeyboardEvent? _parseModifyOtherKeysSequence() {
+    if (_buffer.length < 3 || _buffer[2] != 0x32) return null;
+
+    // Find '~' terminator
+    int tildeIndex = -1;
+    for (int i = 2; i < _buffer.length; i++) {
+      if (_buffer[i] == 0x7E) {
+        tildeIndex = i;
+        break;
+      }
+    }
+
+    if (tildeIndex == -1) return null;
+
+    final paramStr = String.fromCharCodes(_buffer.sublist(2, tildeIndex));
+    final parts = paramStr.split(';');
+
+    if (parts.length != 3) return null;
+
+    final marker = int.tryParse(parts[0]);
+    if (marker != 27) return null;
+
+    final modifierValue = int.tryParse(parts[1]);
+    final charCode = int.tryParse(parts[2]);
+    if (modifierValue == null || charCode == null) return null;
+
+    final modifiers = _decodeModifiers(modifierValue);
+    return _codepointToKeyEvent(charCode, modifiers);
+  }
+
+  /// Decode modifier bitmask. Value is 1 + bitmask.
+  /// Bit 0 = shift, Bit 1 = alt, Bit 2 = ctrl, Bit 3 = super/meta
+  ModifierKeys _decodeModifiers(int value) {
+    final bitmask = value - 1;
+    return ModifierKeys(
+      shift: (bitmask & 1) != 0,
+      alt: (bitmask & 2) != 0,
+      ctrl: (bitmask & 4) != 0,
+      meta: (bitmask & 8) != 0,
+    );
+  }
+
+  /// Convert a Unicode codepoint to a KeyboardEvent.
+  KeyboardEvent _codepointToKeyEvent(int codepoint, ModifierKeys modifiers) {
+    switch (codepoint) {
+      case 13:
+        return KeyboardEvent(
+          logicalKey: LogicalKey.enter,
+          character: '\n',
+          modifiers: modifiers,
+        );
+      case 9:
+        return KeyboardEvent(
+          logicalKey: LogicalKey.tab,
+          character: '\t',
+          modifiers: modifiers,
+        );
+      case 27:
+        return KeyboardEvent(
+          logicalKey: LogicalKey.escape,
+          modifiers: modifiers,
+        );
+      case 127:
+        return KeyboardEvent(
+          logicalKey: LogicalKey.backspace,
+          modifiers: modifiers,
+        );
+      default:
+        final char = String.fromCharCode(codepoint);
+        final key = LogicalKey.fromCharacter(char) ??
+            LogicalKey(codepoint, 'codepoint($codepoint)');
+        return KeyboardEvent(
+          logicalKey: key,
+          character: char,
+          modifiers: modifiers,
+        );
+    }
   }
 
   /// Clear any buffered input
