@@ -282,8 +282,23 @@ class RenderSingleChildViewport extends RenderObject
 
     child!.layout(childConstraints, parentUsesSize: true);
 
-    // Shrink-wrap to child size, clamped by parent constraints
-    size = constraints.constrain(child!.size);
+    // Shrink-wrap to child size in the cross axis, but use the parent's
+    // max extent in the scroll direction so the viewport is always finite.
+    // Without this cap, an unconstrained child can propagate infinity as
+    // the viewport size, causing NaN/Infinity crashes during painting.
+    final childSize = child!.size;
+    final clampedSize = scrollDirection == Axis.vertical
+        ? Size(
+            childSize.width,
+            childSize.height.isFinite
+                ? childSize.height
+                : constraints.maxHeight,
+          )
+        : Size(
+            childSize.width.isFinite ? childSize.width : constraints.maxWidth,
+            childSize.height,
+          );
+    size = constraints.constrain(clampedSize);
 
     // Update scroll controller metrics
     final double viewportExtent =

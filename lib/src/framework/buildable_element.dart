@@ -69,8 +69,11 @@ abstract class BuildableElement extends Element {
   }
 }
 
-/// Component shown when there's an error during build
-class ErrorComponent extends StatelessComponent {
+/// Component shown when there's an error during build.
+///
+/// Uses [RenderTUIErrorBox] to display a red bordered box with the error
+/// message and stack trace, matching the visual style of layout/paint errors.
+class ErrorComponent extends SingleChildRenderObjectComponent {
   const ErrorComponent({
     required this.error,
     required this.stackTrace,
@@ -80,7 +83,17 @@ class ErrorComponent extends StatelessComponent {
   final StackTrace stackTrace;
 
   @override
-  Component build(BuildContext context) {
-    return Text('$error\n$stackTrace');
+  RenderObject createRenderObject(BuildContext context) {
+    return RenderTUIErrorBox(
+      message: 'Build error',
+      error: error,
+      stackTrace: stackTrace,
+    );
+  }
+
+  @override
+  void updateRenderObject(
+      BuildContext context, RenderTUIErrorBox renderObject) {
+    // RenderTUIErrorBox is immutable after creation
   }
 }

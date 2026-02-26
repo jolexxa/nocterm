@@ -481,6 +481,9 @@ class RenderDecoratedBox extends RenderObject
   }
 
   void _paintDecoration(TerminalCanvas canvas, Offset offset) {
+    // Skip painting if size is non-finite (e.g. from unconstrained scroll views)
+    if (!size.width.isFinite || !size.height.isFinite) return;
+
     // Create rect in absolute canvas coordinates for background
     final absoluteRect =
         Rect.fromLTWH(offset.dx, offset.dy, size.width, size.height);

@@ -64,10 +64,27 @@ class RenderTUIErrorBox extends RenderObject
         _drawErrorText(canvas, rect);
       }
     } catch (e) {
-      // If painting fails, at least try to output something
+      // If painting the bordered box fails, render the error as plain text lines
       try {
-        canvas.drawText(offset, 'ERROR',
-            style: TextStyle(color: Color.fromRGB(255, 0, 0)));
+        final errorStyle = TextStyle(color: Color.fromRGB(255, 0, 0));
+        canvas.drawText(offset, 'ERROR: $_message', style: errorStyle);
+        if (_error != null) {
+          canvas.drawText(
+            Offset(offset.dx, offset.dy + 1),
+            _error.toString(),
+            style: errorStyle,
+          );
+        }
+        if (_stackTrace != null) {
+          final stackLines = _stackTrace.toString().split('\n');
+          for (int i = 0; i < stackLines.length && i < 8; i++) {
+            canvas.drawText(
+              Offset(offset.dx, offset.dy + 2 + i),
+              stackLines[i],
+              style: errorStyle,
+            );
+          }
+        }
       } catch (_) {
         // Give up silently
       }

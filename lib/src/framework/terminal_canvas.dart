@@ -133,6 +133,14 @@ class TerminalCanvas {
 
   /// Fill a rectangle with a character
   void fillRect(Rect rect, String char, {TextStyle? style}) {
+    // Guard against non-finite values (Infinity/NaN) which crash .round()
+    if (!rect.left.isFinite ||
+        !rect.top.isFinite ||
+        !rect.width.isFinite ||
+        !rect.height.isFinite) {
+      return;
+    }
+
     final left = math.max(0, rect.left.round());
     final top = math.max(0, rect.top.round());
     final right = math.min(area.width, (rect.left + rect.width).round());
