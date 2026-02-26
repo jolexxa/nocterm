@@ -35,6 +35,8 @@ class _Disable {
         buttonEventTracking,
         basicMouseTracking,
         bracketedPasteMode,
+        kittyKeyboard,
+        modifyOtherKeys,
       ];
 }
 
@@ -62,5 +64,7 @@ class _Enable {
         buttonEventTracking,
         basicMouseTracking,
         bracketedPasteMode,
+        kittyKeyboard,
+        modifyOtherKeys,
       ];
 }
