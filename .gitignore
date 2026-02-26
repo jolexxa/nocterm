@@ -28,3 +28,7 @@ pubspec_overrides.yaml
 
 # Debug logs
 *_debug.log
+
+# Benchmark baseline (machine-specific) and CI output
+benchmark/baseline.json
+benchmark/results.md

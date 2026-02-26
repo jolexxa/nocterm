@@ -9,6 +9,14 @@ landing:
     echo "Serving landing page at http://localhost:$port"
     cd landing && python3 -m http.server $port
 
+# Run the benchmark suite (pass filter to run specific suites, e.g. just benchmark buffer)
+benchmark *ARGS:
+    dart run benchmark/benchmark.dart {{ARGS}}
+
+# Run benchmarks and save results as the new baseline
+benchmark-save *ARGS:
+    dart run benchmark/benchmark.dart --save {{ARGS}}
+
 # Build the blog with Hugo
 blog:
     cd blog-hugo && hugo --minify
