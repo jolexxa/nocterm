@@ -342,12 +342,20 @@ class ColoredBox extends SingleChildRenderObjectComponent {
   const ColoredBox({
     super.key,
     required this.color,
+    this.foregroundColor,
     this.obscure = false,
     super.child,
   });
 
-  /// The color to paint.
+  /// The background color to paint.
   final Color color;
+
+  /// Optional foreground color to set on filled cells.
+  ///
+  /// When non-null, cells filled by this box will have this as their
+  /// explicit foreground color. Child text widgets that don't specify
+  /// their own color will inherit it.
+  final Color? foregroundColor;
 
   /// When true, fills the area with spaces to completely hide underlying content.
   /// When false (default), semi-transparent colors only tint the underlying content.
@@ -355,13 +363,18 @@ class ColoredBox extends SingleChildRenderObjectComponent {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    return RenderColoredBox(color: color, obscure: obscure);
+    return RenderColoredBox(
+      color: color,
+      foregroundColor: foregroundColor,
+      obscure: obscure,
+    );
   }
 
   @override
   void updateRenderObject(BuildContext context, RenderColoredBox renderObject) {
     renderObject
       ..color = color
+      ..foregroundColor = foregroundColor
       ..obscure = obscure;
   }
 }
@@ -369,8 +382,12 @@ class ColoredBox extends SingleChildRenderObjectComponent {
 /// A render object that paints a solid color.
 class RenderColoredBox extends RenderObject
     with RenderObjectWithChildMixin<RenderObject> {
-  RenderColoredBox({required Color color, bool obscure = false})
-      : _color = color,
+  RenderColoredBox({
+    required Color color,
+    Color? foregroundColor,
+    bool obscure = false,
+  })  : _color = color,
+        _foregroundColor = foregroundColor,
         _obscure = obscure;
 
   Color _color;
@@ -378,6 +395,14 @@ class RenderColoredBox extends RenderObject
   set color(Color value) {
     if (_color == value) return;
     _color = value;
+    markNeedsPaint();
+  }
+
+  Color? _foregroundColor;
+  Color? get foregroundColor => _foregroundColor;
+  set foregroundColor(Color? value) {
+    if (_foregroundColor == value) return;
+    _foregroundColor = value;
     markNeedsPaint();
   }
 
@@ -431,7 +456,10 @@ class RenderColoredBox extends RenderObject
       canvas.fillRect(
         rect,
         ' ',
-        style: TextStyle(backgroundColor: _color),
+        style: TextStyle(
+          color: _foregroundColor,
+          backgroundColor: _color,
+        ),
       );
     } else {
       // Semi-transparent without obscure: apply as a tint overlay, preserving characters

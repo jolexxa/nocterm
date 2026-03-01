@@ -346,6 +346,20 @@ class _NoctermAppState extends State<NoctermApp> {
     // Wrap in TuiTheme if a theme is provided or auto-detected
     final effectiveTheme = component.theme ?? _detectedTheme;
     if (effectiveTheme != null) {
+      // Fill the entire screen with the theme's background and foreground
+      // colors. This ensures every cell in the buffer has explicit RGB values,
+      // which is required for correct alpha blending in applyTint / modal
+      // barriers. Without this, cells would have null colors (meaning
+      // "terminal default") and blending would have to guess the RGB values.
+      content = SizedBox.expand(
+        child: ColoredBox(
+          color: effectiveTheme.background,
+          foregroundColor: effectiveTheme.onBackground,
+          obscure: true,
+          child: content,
+        ),
+      );
+
       content = TuiTheme(
         data: effectiveTheme,
         child: content,

@@ -40,6 +40,11 @@ class TerminalCanvas {
       blendedBgColor = Color.alphaBlend(style.backgroundColor!, existingBg);
     }
 
+    // If no foreground was specified in the style, preserve existing
+    if (style.color == null) {
+      blendedColor = existingCell.style.color;
+    }
+
     // If no background was specified in the style, preserve existing
     if (style.backgroundColor == null) {
       blendedBgColor = existingCell.style.backgroundColor;
@@ -176,6 +181,10 @@ class TerminalCanvas {
   ///
   /// This is useful for modal barriers and dimming effects where you want
   /// to darken or tint the underlying content without erasing it.
+  ///
+  /// Cells are expected to have explicit foreground/background colors
+  /// (set by the root [NoctermApp] fill). Cells with null colors are
+  /// left unchanged since there is no RGB value to blend with.
   void applyTint(Rect rect, Color tintColor) {
     final left = math.max(0, rect.left.round());
     final top = math.max(0, rect.top.round());
@@ -189,14 +198,17 @@ class TerminalCanvas {
 
         final existingCell = _buffer.getCell(cellX, cellY);
 
-        // Blend the tint color over both foreground and background colors
-        final existingFg = existingCell.style.color ?? Color.defaultColor;
-        final existingBg =
-            existingCell.style.backgroundColor ?? Color.defaultColor;
+        final existingFg = existingCell.style.color;
+        final existingBg = existingCell.style.backgroundColor;
 
-        // Apply tint to both foreground and background
-        final blendedFg = Color.alphaBlend(tintColor, existingFg);
-        final blendedBg = Color.alphaBlend(tintColor, existingBg);
+        // Blend tint over explicit colors; skip null/default colors since
+        // there is no concrete RGB value to blend with.
+        final blendedFg = (existingFg != null && !existingFg.isDefault)
+            ? Color.alphaBlend(tintColor, existingFg)
+            : existingFg;
+        final blendedBg = (existingBg != null && !existingBg.isDefault)
+            ? Color.alphaBlend(tintColor, existingBg)
+            : existingBg;
 
         _buffer.setCell(
           cellX,
