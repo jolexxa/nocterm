@@ -1,3 +1,32 @@
+# 0.5.1
+
+## Bug Fixes
+- **SingleChildScrollView**: Should shrink-wrap to child size instead of expanding
+- **Selection**: Use screen position sorting for all viewports
+- **Render Object**: Fix attach lifecycle
+- **Shutdown**: Cancel pendingFrameTimer on shutdown to prevent dangling timers
+
+---
+
+# 0.5.0
+
+## New Features
+- **Text Selection**: Full text selection support with mouse drag, copy to clipboard, and visual highlight
+- **TextField Mouse Interaction**: Click to position cursor and drag to select text
+
+## Bug Fixes
+- **Selection Cleanup**: Clean up drag state on unmount and exit
+- **Scrollbar Position**: Fix scrollbar thumb positioning
+
+---
+
+# 0.4.4
+
+## New Features
+- **Backend Parameter**: Add optional backend parameter to `runApp` for custom terminal backends
+
+---
+
 # 0.4.3
 
 ## New Features
