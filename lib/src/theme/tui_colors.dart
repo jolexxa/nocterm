@@ -29,8 +29,8 @@ abstract class TuiColors {
 
   /// Text/icon color on top of [background].
   static const AdaptiveColor onBackground = AdaptiveColor(
-    light: Color(0x18181C),
-    dark: Color(0xF8F8F2),
+    light: Color(0x3C3C44),
+    dark: Color(0xD4D4D4),
   );
 
   // ===== Surface Colors =====
@@ -43,8 +43,8 @@ abstract class TuiColors {
 
   /// Text/icon color on top of [surface].
   static const AdaptiveColor onSurface = AdaptiveColor(
-    light: Color(0x18181C),
-    dark: Color(0xF8F8F2),
+    light: Color(0x3C3C44),
+    dark: Color(0xD4D4D4),
   );
 
   // ===== Primary Colors =====
