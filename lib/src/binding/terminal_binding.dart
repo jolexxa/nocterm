@@ -1103,7 +1103,13 @@ class TerminalBinding extends NoctermBinding
     // Render pending sixel images
     _renderPendingImages(buffer);
 
+    // Sub-phase timing for FrameTiming.diffLoopDuration / writeIoDuration.
+    // Captured here just before flush so callers see "diff scan + escape
+    // generation" as one bucket and "stringbuffer materialize + utf8.encode
+    // + stdout write" as the other.
+    currentFrameDiffLoopEnd = DateTime.now().microsecondsSinceEpoch;
     terminal.flush();
+    currentFrameWriteIoEnd = DateTime.now().microsecondsSinceEpoch;
   }
 
   /// Full redraw (used for first frame or after resize).
